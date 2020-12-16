@@ -23,8 +23,7 @@ function formatUserFields(user) {
   const dated = user['Dated']
   const liked = user['Liked']
   const nexted = user['Nexted']
-  return {
-    // id: user['id'],
+  let person = {
     name: user['First Name'],
     email: user['Email'], 
     here,
@@ -40,4 +39,6 @@ function formatUserFields(user) {
     radius,
     dated, liked, nexted,
   }
+  if (user['id']) person.id = user['id']
+  return person
 }
