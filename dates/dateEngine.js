@@ -1,4 +1,5 @@
 const math = require('mathjs')
+const graphToMatrix = require('./graphToMatrix.js')
 
 module.exports = dateEngine
 
@@ -8,10 +9,11 @@ function dateEngine (people, matches) {
   if (N < 2) return dates
   // People are sorted in the order in which to find them dates.
   let M = graphToMatrix({ graph: matches, order: people.map(p => p.id) })
+  const all = math.range(0,N).valueOf()
   for (let i=0; i<N; i++) {
     let Mi = math.squeeze(math.subset(M, math.index(i, all)))
     let maxval = math.max(Mi)
-    let j = Mi.findIndex(x => x==maxval)
+    let j = Mi.valueOf().findIndex(x => x==maxval)
     if (maxval > 0) {
       // Create a date
       dates.push({

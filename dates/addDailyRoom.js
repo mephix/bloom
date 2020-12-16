@@ -1,4 +1,4 @@
-const dailyApi = require('./dailyApi.js')
+const dailyApi = require('../dailyApi.js')
 
 module.exports = addDailyRoom
 
@@ -11,7 +11,7 @@ async function addDailyRoom(date, params) {
   date.day = DAY
 
   // Augment date object with newly created fields.
-  const startDateTimestamp = Math.floor(new Date(date.startDateTime).getTime()/1000)
+  const startDateTimestamp = Math.floor(new Date(date.startTime).getTime()/1000)
   // `nbf`: allow entry sometime before start
   const nbf = startDateTimestamp - SLOT_PREENTRY*60
   // `exp`: kick everyone out sometime after start

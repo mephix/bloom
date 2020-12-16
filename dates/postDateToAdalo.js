@@ -8,8 +8,8 @@ async function postDateToAdalo (date, params) {
   // Create Adalo date object.
   if (!date.name) date.name = `${date.name1} <-> ${date.name2}` || 'NO NAME'
   const adaloDate = {
-    'Time Start': startDateTime,
-    'Time End': endDateTime,
+    'Time Start': date.startTime,
+    'Time End': date.endTime,
     'Date': DAY,
     'Name':	date.name,
     'Active': true,

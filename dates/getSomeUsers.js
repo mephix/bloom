@@ -3,8 +3,8 @@ const adaloApi = require('../adaloApi.js')
 
 module.exports = getSomeUsers
 
-function getSomeUsers(ids, backupFile)
-  let users, usersHere
+async function getSomeUsers(ids, backupFile) {
+  let usersHere
   let usersUpdated = false
   try {
     usersHere = await Promise.all(ids.map(id => adaloApi.get('Users', id)))
@@ -16,7 +16,8 @@ function getSomeUsers(ids, backupFile)
     console.warn(e)
     console.log(`Downloading Users here FAILED... loading from local storage.`)
     usersUpdated = false
-    users = JSON.parse(fs.readFileSync(backupFile, 'utf8'))
+    let users = JSON.parse(fs.readFileSync(backupFile, 'utf8'))
     usersHere = users.filter(u => ids.includes(u.id))
   }
   return { usersHere, usersUpdated }
+}
