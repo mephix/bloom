@@ -1,7 +1,7 @@
 const getUsers = require('./getUsers.js')
 const formatUserFields = require('../formatUserFields.js')
 const matchEngine = require('./matchEngine.js')
-const writeMatchesFile = require('./writeMatchesToFile.js')
+const writeScoresToFile = require('../scores/writeScoresToFile.js')
 
 module.exports = runMatchEngine
 
@@ -19,21 +19,22 @@ async function runMatchEngine() {
   // Get Users. refresh=false is for testing and debugging
   // because downloading the collections from Adalo is slow.
   let users = getUsers({ refresh, fileName: USER_LOCAL_FILE })
-
-  // `people` is `users` keyed by id.
-  const people = []
-  users.map(({ id, ...rest }) => people[id] = formatUserFields(rest))
+  let people = users.map(formatUserFields)
 
   // Rank matches according to people's preferences.
   let { compositeScore, subScores } = matchEngine(people)
 
+  // Keep only scores above a cutoff.
+  const CUTOFF = 0.01
+  score = subsetScores(compositeScore, { above: CUTOFF })
+
   // Write matches to file, along with prefs and subscores.
-  writeMatchesFile({
+  writeScoresToFile({
     people,
-    matches: compositeScore,
-    scores: subScores,
+    score,
+    subScores,
     fileName: MATCH_GRAPH_FILE,
   })
 
-  return matches
+  return score
 }
