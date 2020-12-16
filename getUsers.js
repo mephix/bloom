@@ -1,9 +1,10 @@
 const fs = require('fs')
-const adaloApi = require('../adaloApi.js')
+const adaloApi = require('./adaloApi.js')
 
 module.exports = getUsers
 
 async function getUsers({ refresh, fileName }) {
+  let users
   if (refresh) {
     console.log(`Loading Users collection from Adalo`)
     users = await adaloApi.get('Users')
