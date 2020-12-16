@@ -21,7 +21,7 @@ curl --request GET \
   */
 }
 
-async function makeDailyRoom (startDateTimestamp, length, preentry) {
+async function makeDailyRoom ({ nbf, exp }) {
   let response = await axios({
     url: 'https://api.daily.co/v1/rooms/',
     method: 'post',
@@ -32,8 +32,8 @@ async function makeDailyRoom (startDateTimestamp, length, preentry) {
     data: {
       'privacy': 'public',
       'properties': {
-        nbf: startDateTimestamp - preentry*60,  // allow entry sometime before start
-        exp: startDateTimestamp + length*60, // kick everyone out sometime after start
+        nbf,
+        exp,
         eject_at_room_exp: true,
         autojoin: true,
         enable_screenshare: false,

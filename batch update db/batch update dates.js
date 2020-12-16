@@ -14,7 +14,7 @@ async function getActiveRound() {
 
 async function setUsersHereToFalse() {
   console.log(`Setting all users to Here=false...`)
-  let users = await adaloApi.get('Users')
+  let users = await adaloApi.get('Dates')
   let usersHere = users.filter(d => d.Here || d.Finished || !d.Free)
   console.log(`found ${usersHere.length}.`)
   // !! SLICE FOR DEBUGGING !!
