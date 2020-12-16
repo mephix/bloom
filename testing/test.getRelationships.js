@@ -1,6 +1,6 @@
 const fs = require('fs')
 const adaloApi = require('../adaloApi.js')
-const getInviteGraph = require('../getInviteGraph.js.js')
+const getInviteGraph = require('../getInviteGraph.js')
 const getDateGraph = require('../getDateGraph.js')
 // Path relative to bloom root.
 INVITES_FILE = './csvs/Invites.csv'
