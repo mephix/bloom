@@ -1,9 +1,14 @@
-const axios = require('axios').default
 const adaloApi = require('../adaloApi.js')
 
-runTest()
+testList(200)
 
-async function runTest() {
+async function testList(N=250) {
+  let records = await adaloApi.list('People', N)
+  console.log(`${records.length} records found.`)
+  return records
+}
+
+async function testSortingOfIds() {
   let activeRound = await getActiveRound()
   let userIdsToSetHere = [300, 200, 40]
   await addUsersHereToRound(activeRound, userIdsToSetHere)
