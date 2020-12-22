@@ -2,7 +2,7 @@ const math = require('mathjs')
 
 module.exports = graphToMatrix
 
-// Convert a graph to a (symmetric) matrix.
+// Convert a graph to a (symmetric) matrix in the specified order.
 function graphToMatrix({ graph, order }) {
   // `order` is the list of ids in which order to create the matrix from
   // `graph`.

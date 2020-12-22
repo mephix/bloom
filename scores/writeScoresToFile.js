@@ -15,20 +15,20 @@ function writeScoresToFile({ people, score, subScores, fileName }) {
 
   let scoreFileContent = Object.keys(score).map(id1 => {
     const printedLineArray = Object.entries(score[id1]).map(([id2,score_id2]) => `\
-      ${people[id1].name},${people[id1].email},\
-      ${people[id2].name},${people[id2].email},\
+      ${people[id1]['First Name']},\
+      ${people[id2]['First Name']},${people[id2]['Email']},\
       ${score_id2},\
       ${subScores['dated'].score?.[id1]?.[id2] ? 'dated' : ''},\
       ${subScores['liked'].score?.[id1]?.[id2] ? 'liked' : ''},\
       ${subScores['nexted'].score?.[id1]?.[id2] ? 'nexted' : ''},\
-      ${people[id1].gender},${people[id2].genderPreference},\
-      ${people[id2].gender},${people[id1].genderPreference},\
+      ${people[id1]['Gender']},${people[id2]['Gender Preference']},\
+      ${people[id2]['Gender']},${people[id1]['Gender Preference']},\
       ${subScores['gender'].score?.[id1]?.[id2] || 0},\
-      ${people[id2].agePreferenceLo},${people[id1].age},${people[id2].agePreferenceHi},\
-      ${people[id1].agePreferenceLo},${people[id2].age},${people[id1].agePreferenceHi},\
+      ${people[id2]['Age Preference Low']},${people[id1]['Age']},${people[id2]['Age Preference High']},\
+      ${people[id1]['Age Preference Low']},${people[id2]['Age']},${people[id1]['Age Preference High']},\
       ${subScores['age'].score?.[id1]?.[id2] || 0},\
-      ${people[id1].zip},${people[id1].radius},\
-      ${people[id2].zip},${people[id2].radius},\
+      ${people[id1]['Zipcode']},${people[id1]['Radius']},\
+      ${people[id2]['Zipcode']},${people[id2]['Radius']},\
       ${subScores['location'].score?.[id1]?.[id2] || 0},\
     `)
     return printedLineArray.join('\n')

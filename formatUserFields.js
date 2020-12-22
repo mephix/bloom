@@ -18,7 +18,7 @@ function formatUserFields(user) {
   const agePreferenceLo = user['Age Preference Low'] || math.max(18, (age/2)+7)
   const agePreferenceHi = user['Age Preference High'] || math.min(99, (age-5)*1.5)
   // Default location is set to San Francisco (94110).
-  const zip = Number(user['Zipcode']) || Number(user['Location']) || 94110
+  const zip = Number(user['Zipcode']) || 94110
   const radius = Number(user['Radius']) || 50
   const dated = user['Dated']
   const liked = user['Liked']
@@ -29,6 +29,7 @@ function formatUserFields(user) {
     here,
     free,
     checkInTime: user['Check In Time'],
+    waitStartTime: user['Wait Start Time'],
     posivibes,
     gender,
     genderPreference,

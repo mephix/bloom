@@ -1,10 +1,10 @@
 /*
 SET THESE PARAMS
 */
-let ROUND_ID = 10
-let DAY = '2020-12-15'
-let HOUR = 19
-let SLOT = 1
+let ROUND_ID = 1
+let DAY = '2020-12-20'
+let HOUR = 21
+let SLOT = 5
 let RERUN = false
 
 // Less frequently changed params:
@@ -30,27 +30,25 @@ const SLOT_ENDS = {
 }
 // Dependencies.
 const adaloApi = require('../adaloApi.js')
-const getSomeUsers = require('./getSomeUsers.js')
-const formatUserFields = require('../formatUserFields.js')
-const sortByPriority = require('./sortByPriority.js')
-const updateUsersForTodaysDates = require('./updateUsersForTodaysDates.js')
+const getSomeUsers = require('../users/getSomeUsers.js')
+const setProfileDefaults = require('../users/setProfileDefaults.js')
+const addTodaysDates = require('../users/addTodaysDates.js')
+const sortByPriority = require('../users/sortByPriority.js')
 const matchEngine = require('../matches/matchEngine.js')
 const dateEngine = require('./dateEngine.js')
-const addDailyRoom = require('./addDailyRoom.js')
+const addRoom = require('./addRoom.js')
 const postDateToAdalo = require('./postDateToAdalo.js')
-const { writeDatesFile } = require('../handleDatesFile.js')
+const { writeToCsv } = require('../csv.js')
 
 // No need to set these params.
 let TODAYS_DATES_FILE = `./csvs/Dates ${DAY}T${HOUR}.csv`
-const fserr = err => {if (err) return console.log(err)}
 
 runDateEngine()
 
 async function runDateEngine() {
 
-  // Date Engine: get current Round.Here
-  // !! FOR DEBUGGING !!
-  const round = { Here: [40, 200, 300] } // await adaloApi.get('Rounds', ROUND_ID)
+  // Get users here in this round.
+  const round = await adaloApi.get('Rounds', ROUND_ID)
   let idsOfUsersHere = round.Here
   console.log(`${idsOfUsersHere.length} people are Here.`)
 
@@ -58,43 +56,51 @@ async function runDateEngine() {
   let { usersHere, usersUpdated } = await getSomeUsers(idsOfUsersHere,
     `./csvs/Users (ids added).json`)
   // let { usersHere, usersUpdated } = await getSomeUsers(idsOfUsersHere, `../csvs/Users (${DAY}).json`)
-  let peopleHere = usersHere.map(formatUserFields)
+  usersHere = usersHere.map(setProfileDefaults)
 
   // If slot rerun, filter for people who are Free.
   // Make sure we actually got fresh data on who's free.
-  if (RERUN && usersUpdated) peopleHere = peopleHere.filter(u => u.free)
-
-  // Prioritize Users Here in some way (wait start time, posivibes...)
-  peopleHere = sortByPriority(peopleHere)
+  if (RERUN && usersUpdated) usersHere = usersHere.filter(u => u['Free'])
 
   // Load today's dates in case Users were loaded instead of downloaded.
   // Make sure Users have recorded who they dated today.
+  // Updates Wait Start Time of users with a date.
   let todaysDates
-  [ peopleHere, todaysDates] = updateUsersForTodaysDates(peopleHere, TODAYS_DATES_FILE)
+  [ usersHere, todaysDates] = addTodaysDates(usersHere, TODAYS_DATES_FILE)
+
+  // Prioritize Users Here in some way (wait start time, posivibes...)
+  usersHere = sortByPriority(usersHere)
 
   // Match Users Here
   console.log(`Matching people in real-time.`)
-  let { score: matches, subScores } = matchEngine(peopleHere)
+  let { score: matches, subScores } = matchEngine(usersHere)
 
   // Make dates for them in the order they are sorted.
   console.log(`Finding dates for people.`)
-  let dates = dateEngine(peopleHere, matches)
+  let dates = dateEngine(usersHere, matches)
   console.log(`${dates.length} dates created.`)
 
   if (dates.length > 0) {
 
-    // Add Daily rooms to Dates.
+    // Add videochat Rooms to Dates.
     console.log(`Adding Daily rooms to Dates...`)
     const params = { DAY, HOUR, SLOT, TIMEZONE_OFFSET, SLOT_LENGTH, SLOT_PREENTRY, SLOT_STARTS, SLOT_ENDS }
-    await Promise.all(dates.map(date => addDailyRoom(date, params)))
+    await Promise.all(dates.map(date => addRoom(date, params)))
 
-    // Post the dates to Adalo.
+    // Save the Dates locally.
+    // Used to use `writeDatesFile`.
+    writeToCsv([...todaysDates, ...dates], TODAYS_DATES_FILE)
+
+    // Post the Dates to Adalo.
     console.log(`Uploading dates to Adalo...`)
-    let responses = await Promise.all(dates.map(date => postDateToAdalo(date, params)))
-    console.log(`Dates created: ${responses.map(r=>r.statusText)}`)
+    let adaloPostPromises = dates
+      .map(date => postDateToAdalo(date, params))
+      // Flatten out the pairs of dates generated.
+      .reduce((t, c) => t.concat(c), [])
 
-    // Save Dates locally.
-    writeDatesFile([...todaysDates, ...dates], TODAYS_DATES_FILE)
+    // Report on success of posting dates to Adalo.
+    let responses = await Promise.all(adaloPostPromises)
+    console.log(`Date creation statuses: ${responses.map(r=>r.statusText)}`)
 
   } else {
     console.log(`No dates created. Exiting`)

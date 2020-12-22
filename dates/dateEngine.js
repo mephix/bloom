@@ -19,10 +19,10 @@ function dateEngine (people, matches) {
       dates.push({
         id1: people[i].id,
         id2: people[j].id,
-        name1: people[i].name,
-        name2: people[j].name,
-        email1: people[i].email,
-        email2: people[j].email,
+        name1: people[i]['First Name'],
+        name2: people[j]['First Name'],
+        email1: people[i]['Email'],
+        email2: people[j]['Email'],
         matchscore: maxval,
       })
       // Zero out person i with anyone else for this slot

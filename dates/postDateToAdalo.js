@@ -2,22 +2,34 @@ const adaloApi = require('../adaloApi.js')
 
 module.exports = postDateToAdalo
 
-async function postDateToAdalo (date, params) {
-  const { DAY } = params
+function postDateToAdalo (date, params) {
 
-  // Create Adalo date object.
-  if (!date.name) date.name = `${date.name1} <-> ${date.name2}` || 'NO NAME'
-  const adaloDate = {
+  // Create a pair of Adalo date objects.
+  const commonFields = {
+    'Active': true,
     'Time Start': date.startTime,
     'Time End': date.endTime,
-    'Date': DAY,
-    'Name':	date.name,
-    'Active': true,
-    'daily link': date.dailyRoomURL,
-    'daily room name': date.dailyRoomName,
-    'email1': date.email1,
-    'email2': date.email2,
-    'emails': date.email1 + ',' + date.email2,
+    'Room Link': date.dailyRoomURL,
+    'Room Name': date.dailyRoomName,
+    'Had Fun': true,
+    'Heart': false,
   }
-  return adaloApi.create('Dates', adaloDate)
+  const for1 = {
+    'Name':	`${date.name1} <- ${date.name2}`,
+    'For': date.id1,
+    'For Email': date.email1,
+    'With': date.id2,
+    'With Email': date.email2,
+  }
+  const for2 = {
+    'Name':	`${date.name2} <- ${date.name1}`,
+    'For': date.id2,
+    'For Email': date.email2,
+    'With': date.id1,
+    'With Email': date.email1,
+  }
+  return [
+    adaloApi.create('Dates', { ...commonFields, ...for1, }),
+    adaloApi.create('Dates', { ...commonFields, ...for2, }),
+  ]
 }
