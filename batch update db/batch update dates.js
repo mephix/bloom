@@ -1,12 +1,60 @@
 const axios = require('axios').default
 const adaloApi = require('../adaloApi.js')
+const fs = require('fs')
+const errf = err => {if (err) return console.log(err)}
+const Airtable = require('airtable')
+const { airtable_api_key, airtable_base_id } = require('../DO_NOT_COMMIT.js')
 
-setUsersHereToFalse()
+testAdalo503Error()
+
+async function testAdalo503Error() {
+  let testIds = [1,2]
+  let responses = await Promise.all(testIds.map(testId => {
+    return adaloApi.get('People', testId)
+  }))
+  console.log(`${responses.map(r=>r.statusText)}`)
+}
+
+async function testAirtableApi() {
+  const base = new Airtable({apiKey: airtable_api_key})
+    .base(airtable_base_id)
+
+  let record = await base('Rounds').find('recI5Rfxrvfc4YYLa')
+  console.log(``)
+  // , function(err, record) {
+  //     if (err) { console.error(err); return; }
+  //     console.log('Retrieved', record.id);
+  // });
+}
+
+async function testUserOrdering() {
+  let users = JSON.parse(fs.readFileSync('./csvs/Users (ids added).json', 'utf8'))
+  let Here = users.map(u=>u.id).reverse().slice(0,20) // [2, 1, 20, 26, 19, 27]
+  console.log(`POST: ${Here}`)
+  await adaloApi.update('Rounds', 10, { Here })
+  let round = await adaloApi.get('Rounds', 10)
+  console.log(`GET: ${round.Here}`)
+  let orderedUsers = []
+  for (id of round.Here) {
+    orderedUsers.push(...users.filter(u => id===u.id))
+  }
+  // users.filter(u => round.Here.includes(u.id))
+  let orderedUsersCsv = jsonToCsv(orderedUsers)
+  fs.writeFile('./csvs/ordered Users.csv', orderedUsersCsv, errf)
+}
+
+function jsonToCsv(items) {
+  const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
+  const header = Object.keys(items[0])
+  let csv = items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+  csv.unshift(header.join(','))
+  return csv.join('\r\n')  
+}
 
 async function getActiveRound() {
   console.log(`Getting active Round(s)...`)
   // !! CHANGE BACK AFTER debug User 500 testing
-  let rounds = await adaloApi.get('Users')
+  let rounds = await adaloApi.get('Rounds')
   let activeRounds = rounds.filter(r => r.Active)
   console.log(`found ${activeRounds.length}.`)
   console.log(`Users Here: ${activeRounds[0].Here}`)
@@ -14,7 +62,7 @@ async function getActiveRound() {
 
 async function setUsersHereToFalse() {
   console.log(`Setting all users to Here=false...`)
-  let users = await adaloApi.get('Dates')
+  let users = await adaloApi.get('Users')
   let usersHere = users.filter(d => d.Here || d.Finished || !d.Free)
   console.log(`found ${usersHere.length}.`)
   // !! SLICE FOR DEBUGGING !!
