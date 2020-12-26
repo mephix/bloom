@@ -56,5 +56,5 @@ function nexted(p,q) {
 }
 
 function dated(p,q) {
-  return p.dated?.includes(q.id) || false
+  return p['Dated']?.includes(q.id) || false
 }
