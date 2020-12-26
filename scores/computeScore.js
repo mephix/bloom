@@ -9,16 +9,16 @@ const computeSubScore = require('./computeSubScore.js')
 module.exports = computeScore
 
 function computeScore (people, subScores) {
-  let compositeScore = []
+  let compositeScore = {}
   for (const [pid, p] of Object.entries(people)) {
-    compositeScore[pid] = []
+    compositeScore[pid] = {}
     for (const [qid, q] of Object.entries(people)) {
       // Initialize composite score.
       let z = 1
       // Go through sub scores in order.
       // Its better for ones which will produce more zeros to come first.
       for (const [type, s] of Object.entries(subScores)) {
-        if (!s.score[pid]) s.score[pid] = []
+        if (!s.score[pid]) s.score[pid] = {}
         // Record this sub-score before transforming it.
         s.score[pid][qid] = computeSubScore[type](p, q, s.params)
         // Add it to the composite score after transforming it.
