@@ -14,23 +14,27 @@ function writeScoresToFile({ people, score, subScores, fileName }) {
   \n`
 
   let scoreFileContent = Object.keys(score).map(id1 => {
-    const printedLineArray = Object.entries(score[id1]).map(([id2,score_id2]) => `\
-      ${people[id1]['First Name']},\
-      ${people[id2]['First Name']},${people[id2]['Email']},\
-      ${score_id2},\
-      ${subScores['dated'].score?.[id1]?.[id2] ? 'dated' : ''},\
-      ${subScores['liked'].score?.[id1]?.[id2] ? 'liked' : ''},\
-      ${subScores['nexted'].score?.[id1]?.[id2] ? 'nexted' : ''},\
-      ${people[id1]['Gender']},${people[id2]['Gender Preference']},\
-      ${people[id2]['Gender']},${people[id1]['Gender Preference']},\
-      ${subScores['gender'].score?.[id1]?.[id2] || 0},\
-      ${people[id2]['Age Preference Low']},${people[id1]['Age']},${people[id2]['Age Preference High']},\
-      ${people[id1]['Age Preference Low']},${people[id2]['Age']},${people[id1]['Age Preference High']},\
-      ${subScores['age'].score?.[id1]?.[id2] || 0},\
-      ${people[id1]['Zipcode']},${people[id1]['Radius']},\
-      ${people[id2]['Zipcode']},${people[id2]['Radius']},\
-      ${subScores['location'].score?.[id1]?.[id2] || 0},\
-    `)
+    const printedLineArray = Object.entries(score[id1]).map(([id2,score_id2]) => {
+      const p1 = people[id1].profile
+      const p2 = people[id2].profile
+      return `\
+        ${p1['First Name']},${p1['Email']},\
+        ${p2['First Name']},${p2['Email']},\
+        ${score_id2},\
+        ${subScores['dated'].score?.[id1]?.[id2] ? 'dated' : ''},\
+        ${subScores['liked'].score?.[id1]?.[id2] ? 'liked' : ''},\
+        ${subScores['nexted'].score?.[id1]?.[id2] ? 'nexted' : ''},\
+        ${p1['Gender']},${p2['Gender Preference']},\
+        ${p2['Gender']},${p1['Gender Preference']},\
+        ${subScores['gender'].score?.[id1]?.[id2] || 0},\
+        ${p2['Age Preference Low']},${p1['Age']},${p2['Age Preference High']},\
+        ${p1['Age Preference Low']},${p2['Age']},${p1['Age Preference High']},\
+        ${subScores['age'].score?.[id1]?.[id2] || 0},\
+        ${p1['Zipcode']},${p1['Radius']},\
+        ${p2['Zipcode']},${p2['Radius']},\
+        ${subScores['location'].score?.[id1]?.[id2] || 0},\
+      `
+    })
     return printedLineArray.join('\n')
   }).join('\n')
 
