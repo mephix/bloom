@@ -1,5 +1,7 @@
-const getUsers = require('./getUsers.js')
-const formatUserFields = require('../formatUserFields.js')
+// const getUsers = require('./getUsers.js')
+// const formatUserFields = require('../formatUserFields.js')
+const getAllUsers = require('../users/getAllUsers.js')
+const setProfileDefaults = require('../users/setProfileDefaults.js')
 const matchEngine = require('./matchEngine.js')
 const writeScoresToFile = require('../scores/writeScoresToFile.js')
 
@@ -18,11 +20,11 @@ async function runMatchEngine() {
   console.log(`Starting Match Engine...`)
   // Get Users. refresh=false is for testing and debugging
   // because downloading the collections from Adalo is slow.
-  let users = getUsers({ refresh, fileName: USER_LOCAL_FILE })
-  let people = users.map(formatUserFields)
+  let users = getAllUsers({ refresh, backupFile: USER_LOCAL_FILE })
+  users = users.map(setProfileDefaults)
 
   // Rank matches according to people's preferences.
-  let { compositeScore, subScores } = matchEngine(people)
+  let { compositeScore, subScores } = matchEngine(users)
 
   // Keep only scores above a cutoff.
   const CUTOFF = 0.01
