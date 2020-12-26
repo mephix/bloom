@@ -33,11 +33,11 @@ const headers = {
   'Authorization': 'Bearer ' + adaloApiKey,
 }
 
-async function list(collection, N) {
+async function list(collection, N, LIMIT = 100) {
   // N is a guesstimate of the size of the collection.
   if (!N) throw new Error(`You must currently provide an estimate of the size of the collection.`)
   // Adalo pagination limit is 100.
-  const LIMIT = 100
+  LIMIT = LIMIT > 100 ? 100 : LIMIT
   let offsets = []
   for (let i=0; i<N; i+=LIMIT) offsets.push(i)
   let responses = await Promise.all(offsets.map(offset => {
