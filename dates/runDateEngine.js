@@ -2,9 +2,9 @@
 SET THESE PARAMS
 */
 let ROUND_ID = 1
-let DAY = '2020-12-20'
-let HOUR = 21
-let SLOT = 5
+let DAY = '2020-12-29'
+let HOUR = 15
+let SLOT = 4
 let RERUN = false
 
 // Less frequently changed params:
@@ -19,6 +19,7 @@ const SLOT_STARTS = {
   3: HOUR + ':26',
   4: HOUR + ':34',
   5: HOUR + ':42',
+  6: HOUR + ':50',
 }
 const SLOT_ENDS = {
   0: HOUR + ':10',
@@ -27,6 +28,7 @@ const SLOT_ENDS = {
   3: HOUR + ':34',
   4: HOUR + ':42',
   5: HOUR + ':50',
+  6: HOUR + ':58',
 }
 // Dependencies.
 const adaloApi = require('../adaloApi.js')

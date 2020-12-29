@@ -12,8 +12,9 @@ module.exports = runProspectEngine
  * Test and run here
  */
 const PROSPECT_GRAPH_FILE = './csvs/Prospects (all positive).csv'
-const USER_LOCAL_FILE = './csvs/Users 1644 (ids added).json' //'./csvs/Users (prospects).json'
-const newBackupFile = './csvs/Users 20201222.json'
+// const USER_LOCAL_FILE = './csvs/Users 1644 (ids added).json' //'./csvs/Users (prospects).json'
+const backupFile = './csvs/Users 20201222.json'
+const newBackupFile = './csvs/Users 20201225.json'
 
 runProspectEngine()
 
@@ -23,7 +24,7 @@ async function runProspectEngine() {
   // because downloading the collections from Adalo is slow.
   let { users } = await getAllUsers({
     refresh: false,
-    backupFile: newBackupFile,
+    backupFile,
     newBackupFile,
     maxUsers: 300,
   })
@@ -45,19 +46,19 @@ async function runProspectEngine() {
   })
 
   // Post prospects to Adalo.
-  // Object.keys(score)
-  // !! FOR DEBUGGING TRY JUST ONE !!
-  const ids = Object.keys(score).slice(0,100)
-  for (id of ids) {
-    const Prospects = Object.keys(score[id]).map(Number)
-    if (Prospects.length > 0) {
-      try {
-        adaloApi.update('Users', id, { Prospects })
-      } catch (e) {
-        console.warn(e)
-      }
-      msleep(1000)
-    }
+  let ids = Object.keys(score)
+  // Try sending them in batches, last ids first, with pauses in between. 
+  ids = ids.reverse()
+  let BATCH_LENGTH = 30
+  for (let i=90; i<ids.length; i+=BATCH_LENGTH) {
+    const batchOfIds = ids.slice(i,i+BATCH_LENGTH)
+    let r = await Promise.all(batchOfIds.map(id => {
+      const Prospects = Object.keys(score[id]).map(Number)
+      if (Prospects.length > 0)
+        return adaloApi.update('Users', id, { Prospects })
+    }))
+    console.log(`Distinct responses: ${[...new Set(r.map(ri=>ri.statusText))]}`)
+    msleep(7000)
   }
 
   return score
