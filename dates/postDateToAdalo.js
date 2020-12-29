@@ -20,6 +20,7 @@ function postDateToAdalo (date, params) {
     'For Email': date.email1,
     'With': date.id2,
     'With Email': date.email2,
+    'Room Token': date.token1,
   }
   const for2 = {
     'Name':	`${date.name2} <- ${date.name1}`,
@@ -27,6 +28,7 @@ function postDateToAdalo (date, params) {
     'For Email': date.email2,
     'With': date.id1,
     'With Email': date.email1,
+    'Room Token': date.token2,
   }
   return [
     adaloApi.create('Dates', { ...commonFields, ...for1, }),

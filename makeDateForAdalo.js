@@ -33,7 +33,7 @@ async function makeDateForAdalo (day, hour, date, dailyRoomURL) {
 
   // Get Daily room URL.
   if (!dailyRoomURL) {
-    const dailyResponse = await makeDailyRoom (startDateTimestamp, LENGTH, PREENTRY)
+    const dailyResponse = await daily.makeRoom (startDateTimestamp, LENGTH, PREENTRY)
     dailyRoomURL = dailyResponse.data.url
     dailyRoomName = dailyResponse.data.name
   }
