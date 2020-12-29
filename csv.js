@@ -4,14 +4,17 @@ exports.readCsv = readCsv
 exports.writeToCsv = writeToCsv
 
 function readCsv(fileName) {
-  const rows = fs.readFileSync(fileName, 'utf8').split('\n')
-  const fields = rows[0].split(',')
+  let rows = []
+  try { rows = fs.readFileSync(fileName, 'utf8').split('\n') } catch (e) { console.warn(e) }
   let arr = []
-  for (let i=1; i<rows.length; i++) {
-    if (rows[i]==='') continue
-    arr[i-1] = []
-    const values = rows[i].split(',')
-    values.forEach((v,k) => arr[i-1][fields[k]] = v)
+  if (rows.length > 0) {
+    const fields = rows[0].split(',')
+    for (let i=1; i<rows.length; i++) {
+      if (rows[i]==='') continue
+      arr[i-1] = []
+      const values = rows[i].split(',')
+      values.forEach((v,k) => arr[i-1][fields[k]] = v)
+    }
   }
   return arr
 }
