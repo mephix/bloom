@@ -1,6 +1,6 @@
 const fetch = require('node-fetch')
 const axios = require('axios').default
-const { daily_api_key } = require('./DO_NOT_COMMIT.js')
+const { daily_api_key } = require('../DO_NOT_COMMIT.js')
 
 exports.getRoom = getRoom
 exports.makeRoom = makeRoom

@@ -1,5 +1,5 @@
 const axios = require('axios').default
-const { adaloApiKey } = require('./DO_NOT_COMMIT.js')
+const { adaloApiKey } = require('../DO_NOT_COMMIT.js')
 
 exports.get = get
 exports.list = list
