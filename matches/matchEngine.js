@@ -16,9 +16,8 @@ function matchEngine (users) {
     'liked': { transform: z => z ? 1 : 0.5, weight: 2, score: [] },
     // Match less with someone they've nexted.
     'nexted': { transform: z => z ? 0.5 : 1, weight: 1, score: [] },
-    // For prospects, the further away, the better.
-    // Less chance of them being in the round.
-    'location': { transform: z => (1-z), weight: 0.79, score: [] },
+    // For matches, the closer, the better.
+    'location': { transform: z => z, weight: 0.79, score: [] },
     // Don't show someone themself.
     'notself': { transform: z => z, weight: 1, score: [] },
   }
