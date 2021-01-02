@@ -3,6 +3,7 @@ const computeScore = require('../scores/computeScore.js')
 module.exports = prospectEngine
 
 function prospectEngine (users) {
+  // Weights should multiply to 1 or less.
   const subScores = {
     // Show people of their gender preference.
     'gender': { transform: z => z, weight: 1, score: [] },
