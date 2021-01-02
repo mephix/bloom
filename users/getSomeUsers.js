@@ -1,5 +1,5 @@
 const fs = require('fs')
-const adaloApi = require('../adaloApi.js')
+const adaloApi = require('../apis/adaloApi.js')
 
 module.exports = getSomeUsers
 

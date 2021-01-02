@@ -1,4 +1,4 @@
-const daily = require('../dailyApi.js')
+const daily = require('../apis/dailyApi.js')
 
 module.exports = addRoom
 
