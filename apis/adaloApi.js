@@ -34,18 +34,25 @@ const headers = {
 }
 
 async function list(collection, N, LIMIT = 100) {
-  // N is a guesstimate of the size of the collection.
+  // N is a guesstimate of the size of the collection. If it is too large
+  // (modulus LIMIT), it will only incur one extra API call because the
+  // loop will break once receiving no records.
   if (!N) throw new Error(`You must currently provide an estimate of the size of the collection.`)
   // Adalo pagination limit is 100.
   LIMIT = LIMIT > 100 ? 100 : LIMIT
-  let offsets = []
-  for (let i=0; i<N; i+=LIMIT) offsets.push(i)
-  let responses = await Promise.all(offsets.map(offset => {
-    const url = endpoint + collectionIds[collection] + `?` +
+  let responses = []
+  for (let offset=0; offset<N; offset+=LIMIT) {
+    const params = 
       (offset ? `offset=${offset}&` : ``) +
       (LIMIT ? `limit=${LIMIT}&` : ``)
-    return axios({ url, method: 'get', headers })
-  }))
+    console.log(params)
+    const url = endpoint + collectionIds[collection] + `?` + params
+    let response = await axios({ url, method: 'get', headers })
+    // !! NOTE could rewrite this better to use the response's own OFFSET field.
+    if (response.data.records.length===0) break
+    responses.push(response)
+  }
+
   let records = responses.reduce((r, ri) => [...r, ...ri.data.records],[])
   if (records.length===N)
     console.warn(`Found as many records (${records.length}) as the upper bound you supplied,` +

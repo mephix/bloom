@@ -1,9 +1,9 @@
-const adaloApi = require('../adaloApi.js')
+const adaloApi = require('../apis/adaloApi.js')
 
-testList(200)
+testList(350)
 
 async function testList(N=250) {
-  let records = await adaloApi.list('People', N)
+  let records = await adaloApi.list('Users', N)
   console.log(`${records.length} records found.`)
   return records
 }
