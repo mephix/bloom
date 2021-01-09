@@ -2,13 +2,16 @@
 SET THESE PARAMS
 */
 let ROUND_ID = 1
-let DAY = '2020-12-29'
-let HOUR = 15
-let SLOT = 4
+let DAY = '2021-01-07'
+let HOUR = 17
+let SLOT = 3
 let RERUN = false
 
+// Change from "parallel" to "sequential" in case of dire 503 error
+// when posting dates to Adalo.
+let seqOrPar = 'parallel' // 'sequential'
+
 // Less frequently changed params:
-// timezone, slot length, preentry, starts and ends.
 const TIMEZONE_OFFSET = '-08:00'
 const SLOT_LENGTH = 8
 const SLOT_PREENTRY = 2
@@ -31,7 +34,7 @@ const SLOT_ENDS = {
   6: HOUR + ':58',
 }
 // Dependencies.
-const adaloApi = require('../adaloApi.js')
+const adaloApi = require('../apis/adaloApi.js')
 const getSomeUsers = require('../users/getSomeUsers.js')
 const setProfileDefaults = require('../users/setProfileDefaults.js')
 const addTodaysDates = require('../users/addTodaysDates.js')
@@ -39,11 +42,12 @@ const sortByPriority = require('../users/sortByPriority.js')
 const matchEngine = require('../matches/matchEngine.js')
 const dateEngine = require('./dateEngine.js')
 const addRoom = require('./addRoom.js')
-const postDateToAdalo = require('./postDateToAdalo.js')
+const postDates = require('./postDates.js')
 const { writeToCsv } = require('../csv.js')
 
 // No need to set these params.
 let TODAYS_DATES_FILE = `./csvs/Dates ${DAY}T${HOUR}.csv`
+let TODAYS_USERS_FILE = `./csvs/Users ${DAY}.json`
 
 runDateEngine()
 
@@ -51,20 +55,26 @@ async function runDateEngine() {
 
   // Get users here in this round.
   const round = await adaloApi.get('Rounds', ROUND_ID)
-  let idsOfUsersHere = round.Here
-  console.log(`${idsOfUsersHere.length} people are Here.`)
+  // WRITE A POSTIT WHEN USING THESE DEBUGGING IDS
+  // !! DEBUGGING ONLY !!!! [702,727,750,765,760,897] // 
+  let idsOfUsersHere = round.Here || []
+  if (idsOfUsersHere) console.log(`${idsOfUsersHere.length} people are Here.`)
 
   // Download Users Here (or load Users and filter to Here).
-  let { usersHere, usersUpdated } = await getSomeUsers(idsOfUsersHere,
-    `./csvs/Users (ids added).json`)
-  // let { usersHere, usersUpdated } = await getSomeUsers(idsOfUsersHere, `../csvs/Users (${DAY}).json`)
+  let { usersHere, usersUpdated } =
+    await getSomeUsers(idsOfUsersHere, TODAYS_USERS_FILE)
   usersHere = usersHere.map(setProfileDefaults)
 
   // If slot rerun, filter for people who are Free.
   // Make sure we actually got fresh data on who's free.
-  if (RERUN && usersUpdated) usersHere = usersHere.filter(u => u['Free'])
+  // So if we loaded Users locally, skip this.
+  // Today's dates file saved locally will avoid double-dates.
+  if (RERUN && usersUpdated) {
+    usersHere = usersHere.filter(u => u['Free'])
+    console.log(`${usersHere.length} people are Free.`)
+  }
 
-  // Load today's dates in case Users were loaded instead of downloaded.
+  // Load today's dates in case Users were loaded locally instead of downloaded.
   // Make sure Users have recorded who they dated today.
   // Updates Wait Start Time of users with a date.
   let todaysDates
@@ -73,7 +83,8 @@ async function runDateEngine() {
   // Prioritize Users Here in some way (wait start time, posivibes...)
   usersHere = sortByPriority(usersHere)
 
-  // Match Users Here
+  // Match Users in real time.
+  // Keep subScores so we can inspect them.
   console.log(`Matching people in real-time.`)
   let { score: matches, subScores } = matchEngine(usersHere)
 
@@ -94,15 +105,7 @@ async function runDateEngine() {
     writeToCsv([...todaysDates, ...dates], TODAYS_DATES_FILE)
 
     // Post the Dates to Adalo.
-    console.log(`Uploading dates to Adalo...`)
-    let adaloPostPromises = dates
-      .map(date => postDateToAdalo(date, params))
-      // Flatten out the pairs of dates generated.
-      .reduce((t, c) => t.concat(c), [])
-
-    // Report on success of posting dates to Adalo.
-    let responses = await Promise.all(adaloPostPromises)
-    console.log(`Date creation statuses: ${responses.map(r=>r.statusText)}`)
+    postDates(dates, seqOrPar, params)
 
   } else {
     console.log(`No dates created. Exiting`)
