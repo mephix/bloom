@@ -12,7 +12,11 @@ function setProfileDefaults(user) {
   // Gender default is nonbinary.
   user.profile['Gender'] = user.profile['Gender'] || 'X'
   // Users are pansexual by default.
-  if (!user.profile['Gender Preference'] || user.profile['Gender Preference']==='X')
+  if (
+    !user.profile['Gender Preference']
+    || user.profile['Gender Preference']==='X'
+    || user.profile['Gender Preference']==='All'
+  )
     user.profile['Gender Preference'] =  'FMX'
   // 50 seems like the least worst default for age.
   user.profile['Age'] = user.profile['Age'] || 50

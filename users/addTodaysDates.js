@@ -13,9 +13,10 @@ function updateUsersForTodaysDates(users, fileName) {
     if (u1) u1['Wait Start Time'] = now 
     if (u2) u2['Wait Start Time'] = now   
     if (u1 && u2) {
-      // Add each to the other's list of 'dated'
-      u1.dated ? u1.dated.push(u2.id) : u1.dated = [u2.id]
-      u2.dated ? u2.dated.push(u1.id) : u2.dated = [u1.id]
+      // Add each to the other's list of 'dated'.
+      // This will add each twice now that we have 2 records for 1 date.
+      u1.Dated ? u1.Dated.push(u2.id) : u1.Dated = [u2.id]
+      u2.Dated ? u2.Dated.push(u1.id) : u2.Dated = [u1.id]
     }
   }
   return [ users, dates ]

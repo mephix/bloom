@@ -2,14 +2,19 @@
 SET THESE PARAMS
 */
 let ROUND_ID = 1
-let DAY = '2021-01-07'
-let HOUR = 17
-let SLOT = 3
+let DAY = '2021-01-11'
+let HOUR = 21
+let SLOT = 2
 let RERUN = false
+let CUTOFF = 0.01
 
-// Change from "parallel" to "sequential" in case of dire 503 error
-// when posting dates to Adalo.
-let seqOrPar = 'parallel' // 'sequential'
+// `throwError` in getSomeUsers should be FALSE unless debugging.
+let throwError = true
+
+// `seqOrPar` should be "parallel" unless there is a dire 503 error when
+// posting dates to Adalo. In that case, change it to to "sequential".
+let seqOrPar = 'parallel' // 'sequential' // 
+
 
 // Less frequently changed params:
 const TIMEZONE_OFFSET = '-08:00'
@@ -40,6 +45,7 @@ const setProfileDefaults = require('../users/setProfileDefaults.js')
 const addTodaysDates = require('../users/addTodaysDates.js')
 const sortByPriority = require('../users/sortByPriority.js')
 const matchEngine = require('../matches/matchEngine.js')
+const subsetScores = require('../scores/subsetScores.js')
 const dateEngine = require('./dateEngine.js')
 const addRoom = require('./addRoom.js')
 const postDates = require('./postDates.js')
@@ -55,14 +61,18 @@ async function runDateEngine() {
 
   // Get users here in this round.
   const round = await adaloApi.get('Rounds', ROUND_ID)
-  // WRITE A POSTIT WHEN USING THESE DEBUGGING IDS
-  // !! DEBUGGING ONLY !!!! [702,727,750,765,760,897] // 
-  let idsOfUsersHere = round.Here || []
+  /*
+   * !! DEBUGGING ONLY !!!! 
+   * WRITE A POSTIT WHEN USING THESE DEBUGGING IDS
+   */
+  // let idsOfUsersHere = [702,727,750,765,760,897] // 
+  let idsOfUsersHere = [726, 735, 738, 742, 772, 798, 828, 848, 877, 915, 934, 969, 971, 1018, 1020, 1023, 1027, 1029, 1030, 1031]
+  // let idsOfUsersHere = round.Here || []
   if (idsOfUsersHere) console.log(`${idsOfUsersHere.length} people are Here.`)
 
   // Download Users Here (or load Users and filter to Here).
   let { usersHere, usersUpdated } =
-    await getSomeUsers(idsOfUsersHere, TODAYS_USERS_FILE)
+    await getSomeUsers(idsOfUsersHere, TODAYS_USERS_FILE, throwError) //, method='sequential')
   usersHere = usersHere.map(setProfileDefaults)
 
   // If slot rerun, filter for people who are Free.
@@ -76,7 +86,7 @@ async function runDateEngine() {
 
   // Load today's dates in case Users were loaded locally instead of downloaded.
   // Make sure Users have recorded who they dated today.
-  // Updates Wait Start Time of users with a date.
+  // Updates Watrueit Start Time of users with a date.
   let todaysDates
   [ usersHere, todaysDates] = addTodaysDates(usersHere, TODAYS_DATES_FILE)
 
@@ -86,7 +96,8 @@ async function runDateEngine() {
   // Match Users in real time.
   // Keep subScores so we can inspect them.
   console.log(`Matching people in real-time.`)
-  let { score: matches, subScores } = matchEngine(usersHere)
+  let { score, subScores } = matchEngine(usersHere)
+  matches = subsetScores(score, { above: CUTOFF })
 
   // Make dates for them in the order they are sorted.
   console.log(`Finding dates for people.`)
@@ -98,14 +109,14 @@ async function runDateEngine() {
     // Add videochat Rooms to Dates.
     console.log(`Adding Daily rooms to Dates...`)
     const params = { DAY, HOUR, SLOT, TIMEZONE_OFFSET, SLOT_LENGTH, SLOT_PREENTRY, SLOT_STARTS, SLOT_ENDS }
-    await Promise.all(dates.map(date => addRoom(date, params)))
+    // await Promise.all(dates.map(date => addRoom(date, params)))
 
-    // Save the Dates locally.
+    // Save the Dates locally.true
     // Used to use `writeDatesFile`.
     writeToCsv([...todaysDates, ...dates], TODAYS_DATES_FILE)
 
     // Post the Dates to Adalo.
-    postDates(dates, seqOrPar, params)
+    // postDates(dates, seqOrPar, params)
 
   } else {
     console.log(`No dates created. Exiting`)
