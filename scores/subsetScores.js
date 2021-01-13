@@ -14,7 +14,7 @@ function subsetScores(score, { top, above }) {
         filteredScoresOf1 = sortedScoresOf1.slice(0,top)
       }
       // Apply 'above'
-      if (above) {
+      if (above !== undefined) {
         filteredScoresOf1 = sortedScoresOf1.filter(([,score]) => (score > above))
       }
       return [id1, Object.fromEntries(filteredScoresOf1)]
