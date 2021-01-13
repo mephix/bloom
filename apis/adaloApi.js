@@ -1,8 +1,9 @@
 const axios = require('axios').default
 const { adaloApiKey } = require('../DO_NOT_COMMIT.js')
 
-exports.get = get
+exports.augment = augment
 exports.list = list
+exports.get = get
 exports.create = create
 exports.update = update
 exports.delete = remove
@@ -14,6 +15,7 @@ const collectionIds = {
   Dates:    't_737e58ba8418441faf1d88dc5a027774',
   Rounds:   't_e15c7e6e859a4ef6a91059b7638059c8',
   Cities:   't_ce22a13d75d0465b8b59274864cb6214',
+  Rooms:    't_dfx71lkr27032sw3haummjqmr',
 }
 
 // const collectionIds = {
@@ -31,6 +33,27 @@ const endpoint = `https://api.adalo.com/v0/apps/${appId}/collections/`
 const headers = {
   'Content-Type': 'application/json',
   'Authorization': 'Bearer ' + adaloApiKey,
+}
+
+async function augment(collection, offset) {
+  if (offset === undefined) throw new Error(`offset should not start off undefined.`)
+  // Adalo pagination limit is 100.
+  let limit = 100
+  let newRecords = []
+  while (offset !== undefined) {
+    const params = 
+      (offset ? `offset=${offset}&` : ``) +
+      (limit ? `limit=${limit}&` : ``)
+    const url = endpoint + collectionIds[collection] + `?` + params
+    let response = await axios({ url, method: 'get', headers })
+    console.log(`${params}...${response.statusText}`)
+    newRecords = [...newRecords, ...response.data.records]
+    // If there are no more records remaining after these, offset will be
+    // undefined.
+    offset = response.data.offset
+  }
+  // let newRecords = responses.reduce((r, ri) => [...r, ...ri.data.records],[])
+  return newRecords
 }
 
 async function list(collection, N, LIMIT = 100) {

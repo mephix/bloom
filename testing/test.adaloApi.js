@@ -1,6 +1,15 @@
 const adaloApi = require('../apis/adaloApi.js')
+const fs = require('fs')
 
-testList(350)
+let usersLocalFile = `./csvs/Users 2021-01-11.json`
+testAugment()
+
+async function testAugment() {
+  let existingUsers = JSON.parse(fs.readFileSync(usersLocalFile, 'utf8'))
+  let newUsers = await adaloApi.augment('Users', existingUsers.length)
+  console.log(`${newUsers.length} new users obtained.`)
+  return
+}
 
 async function testList(N=250) {
   let records = await adaloApi.list('Users', N)
