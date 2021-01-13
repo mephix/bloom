@@ -1,9 +1,9 @@
 // File to store prospects
-const PROSPECT_GRAPH_FILE = './csvs/Prospects 20210111.csv'
+const PROSPECT_GRAPH_FILE = './csvs/Prospects 20210112.csv'
 // File to load users from if API fails.
-const backupFile = './csvs/Users 2021-01-11.json'
+const backupFile = './csvs/Users 2021-01-12.json'
 // File to store users in if API succeeds.
-const newBackupFile = './csvs/Prospects - Users 2021-01-11.json'
+const newBackupFile = './csvs/Prospects - Users 2021-01-12.json'
 
 // const { msleep } = require('sleep')
 const getAllUsers = require('../users/getAllUsers.js')
@@ -28,7 +28,7 @@ async function runProspectEngine() {
     refresh: false,
     backupFile,
     newBackupFile,
-    maxUsers: 350,
+    maxUsers: 370,
   })
   users = users.map(setProfileDefaults)
 
@@ -51,7 +51,7 @@ async function runProspectEngine() {
   // one by one to avoid 503 errors.
   let ids = Object.keys(score).reverse()
   let responses = []
-  for (let i=0; i<25; i++) { // !! CHANGE BACK TO: ids.length
+  for (let i=0; i<15; i++) { // !! CHANGE BACK TO: ids.length
     let id = ids[i]
     const Prospects = Object.keys(score[id]).map(Number)
     if (Prospects.length > 0) {
