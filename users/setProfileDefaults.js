@@ -24,7 +24,7 @@ function setProfileDefaults(user) {
   user.profile['Age Preference High'] = user.profile['Age Preference High'] || math.min(99, (user.profile['Age']-5)*1.5)
   // Default location is set to San Francisco (94110).
   user.profile['Zipcode'] = Number(user.profile['Zipcode']) || 94110
-  user.profile['Radius'] = Number(user.profile['Radius']) || 50
+  user.profile['Radius'] = math.min(Number(user.profile['Radius']) || 50, 999)
 
   // !! These M2M fields get omitted if they are empty !!
   user['Prospects'] = user['Prospects'] || []
