@@ -1,9 +1,9 @@
 // File to store prospects
-const PROSPECT_GRAPH_FILE = './csvs/Prospects 20210112.csv'
+const PROSPECT_GRAPH_FILE = './csvs/Prospects 2021-01-19.csv'
 // File to load users from if API fails.
-const backupFile = './csvs/Users 2021-01-12.json'
-// File to store users in if API succeeds.
-const newBackupFile = './csvs/Prospects - Users 2021-01-12.json'
+const loadFromLocalFile = './csvs/Users 2021-01-19.json'
+// // File to store users in if API succeeds.
+// const newBackupFile = './csvs/Prospects - Users 2021-01-12.json'
 
 // const { msleep } = require('sleep')
 const getAllUsers = require('../users/getAllUsers.js')
@@ -22,13 +22,13 @@ runProspectEngine()
 
 async function runProspectEngine() {
   console.log(`Starting Thomas the Prospect Engine...`)
-  // Get Users. refresh=false is for testing and debugging
-  // because downloading the collections from Adalo is slow.
+  // Get Users. refresh=false now because we can't get all users
+  // from Adalo anymore due to 503s.
   let { users } = await getAllUsers({
     refresh: false,
-    backupFile,
-    newBackupFile,
-    maxUsers: 370,
+    backupFile: loadFromLocalFile,
+    // newBackupFile,
+    // maxUsers: 370,
   })
   users = users.map(setProfileDefaults)
 
@@ -51,7 +51,7 @@ async function runProspectEngine() {
   // one by one to avoid 503 errors.
   let ids = Object.keys(score).reverse()
   let responses = []
-  for (let i=0; i<15; i++) { // !! CHANGE BACK TO: ids.length
+  for (let i=0; i<12; i++) { // !! CHANGE BACK TO: ids.length
     let id = ids[i]
     const Prospects = Object.keys(score[id]).map(Number)
     if (Prospects.length > 0) {

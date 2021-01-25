@@ -10,6 +10,7 @@ exports.location = location
 exports.liked = liked
 exports.nexted = nexted
 exports.dated = dated
+exports.posivibes = posivibes
 
 function notself(p,q) {
   // If not checked for a missing id will cause notself to return false.
@@ -57,4 +58,8 @@ function nexted(p,q) {
 
 function dated(p,q) {
   return p['Dated']?.includes(q.id) || false
+}
+
+function posivibes(p,q) {
+  return (q['Posivibes'] || q['Posivibes']===0) ? q['Posivibes'] : 1
 }

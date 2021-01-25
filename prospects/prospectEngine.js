@@ -20,6 +20,8 @@ function prospectEngine (users) {
     // For prospects, the further away, the better.
     // Less chance of them being in the round.
     'location': { transform: z => (1-z), weight: 1, score: [] },
+    // Only show people with posivibes >=1 as Prospects.
+    'posivibes': { transform: z => z>=1, weight: 1, score: [] },
   }
   // Key by id for `computeScore`.
   const usersById = []
