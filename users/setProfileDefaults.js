@@ -7,8 +7,8 @@ module.exports = setProfileDefaults
 function setProfileDefaults(user) {
   user['Here'] = user['Here'] || false
   // Be careful with Boolean defaults when the default is 'true'.
-  user['Free'] = user['Free']===undefined ? true : user['Free']
-  user['Posivibes'] = user['Posivibes'] || 1
+  user['Free'] = user['Free']===false ? false : (user['Free'] || true)
+  user['Posivibes'] = user['Posivibes']===0 ? 0 : (user['Posivibes'] || 1)
   // Gender default is nonbinary.
   user.profile['Gender'] = user.profile['Gender'] || 'X'
   // Users are pansexual by default.
