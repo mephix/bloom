@@ -2,16 +2,16 @@
 SET THESE PARAMS
 */
 let ROUND_ID = 1
-let DAY = '2021-01-12'
+let DAY = '2021-01-19'
 let HOUR = 16
-let SLOT = 5
+let SLOT = 3
 let RERUN = false
 // `cutoff` above zero will make the dateEngine more picky.
 // Useful for later rounds.
 let CUTOFF = 0
 // `avoid503` can be set to true to avoid a 503 error.
 // In this case it will only use the local backup of Users.
-let avoid503 = false
+let avoid503 = true
 
 // `seqOrPar` should be "parallel" unless there is a dire 503 error when
 // posting dates to Adalo. In that case, change it to to "sequential".
@@ -68,7 +68,7 @@ async function runDateEngine() {
    * WRITE A POSTIT WHEN USING THESE DEBUGGING IDS
    */
   // let idsOfUsersHere = [702,727,750,765,760,897] // 
-  // let idsOfUsersHere = [726, 735, 738, 742, 772, 798, 828, 848, 877, 915, 934, 969, 971, 1018, 1020, 1023, 1027, 1029, 1030, 1031]
+  // let idsOfUsersHere = [3,4] // [1052,1051,1050,1049, 1081,1080,1076,1075,]
   let idsOfUsersHere = round.Here || []
   if (idsOfUsersHere) console.log(`${idsOfUsersHere.length} people are Here.`)
 
@@ -77,24 +77,26 @@ async function runDateEngine() {
     await getSomeUsers(idsOfUsersHere, TODAYS_USERS_FILE, avoid503) //, method='sequential')
   usersHere = usersHere.map(setProfileDefaults)
 
-  // If slot rerun, filter for people who are Free.
-  // Make sure we actually got fresh data on who's free.
-  // So if we loaded Users locally, skip this.
+  // Load today's dates in case Users were loaded locally.
   // Today's dates file saved locally will avoid double-dates.
-  if (RERUN && usersUpdated) {
+  // Updates Start Time of users who had a date.
+  // If we don't have fresh data on who's free, set people who have a date
+  // already in this slot to Not-Free.
+  let SLOTNOTFREE = usersUpdated ? -1 : SLOT
+  let todaysDates
+  [ usersHere, todaysDates] = addTodaysDates(usersHere, TODAYS_DATES_FILE, SLOTNOTFREE)
+
+  // During reruns, filter out people who aren't free.
+  // Make sure, when we haven't got fresh data on users, we already set
+  // people who have a date in this slot to not be free above.
+ if (RERUN) {
+    console.log(`Out of ${usersHere.length} people Here,`)
     usersHere = usersHere.filter(u => u['Free'])
     console.log(`${usersHere.length} people are Free.`)
   }
 
-  // Load today's dates in case Users were loaded locally instead of downloaded.
-  // Make sure Users have recorded who they dated today.
-  // Updates Start Time of users who had a date.
-  let todaysDates
-  [ usersHere, todaysDates] = addTodaysDates(usersHere, TODAYS_DATES_FILE)
-
   // Prioritize Users Here in some way (wait start time, posivibes...)
   usersHere = sortByPriority(usersHere)
-
   // Match Users in real time.
   // Keep subScores so we can inspect them.
   console.log(`Matching people in real-time.`)
