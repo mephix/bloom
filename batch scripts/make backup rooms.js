@@ -2,12 +2,10 @@ const daily = require('../apis/dailyApi.js')
 const adalo = require('../apis/adaloApi.js')
 module.exports = makeBackupRooms
 
-// DAY, SLOT, TIMEZONE_OFFSET, SLOT_LENGTH, SLOT_PREENTRY, SLOT_STARTS, SLOT_ENDS
-let DAY = '2021-01-12'
-let HOUR = 16
-// let SLOT = 0
+// DAY, HOUR, TIMEZONE_OFFSET, SLOT_LENGTH, SLOT_PREENTRY, SLOT_STARTS, SLOT_ENDS
+let DAY = '2021-01-27'
+let HOUR = 17
 const TIMEZONE_OFFSET = '-08:00'
-const SLOT_LENGTH = 8
 const SLOT_PREENTRY = 2
 const SLOT_STARTS = {
   0: HOUR + ':02',
@@ -29,22 +27,18 @@ const SLOT_ENDS = {
 }
 
 let nRooms = 5
-let slots = [5]
+let slots = [0,1,2,3,4,5]
 makeBackupRooms()
 
 async function makeBackupRooms() {
 
-  let endTime, startTime, startDateTimestamp, nbf, exp
+  let endTime, startTime, nbf, exp
   let room
   for (let s=0; s<slots.length; s++) {
     endTime   = DAY + 'T' + SLOT_ENDS[slots[s]] + TIMEZONE_OFFSET
     startTime = DAY + 'T' + SLOT_STARTS[slots[s]] + TIMEZONE_OFFSET
-    // Augment date object with newly created fields.
-    startDateTimestamp = Math.floor(new Date(startTime).getTime()/1000)
-    // `nbf`: allow entry sometime before start
-    nbf = startDateTimestamp - SLOT_PREENTRY*60
-    // `exp`: kick everyone out sometime after start
-    exp = startDateTimestamp + SLOT_LENGTH*60
+    nbf = daily.calcNbf({ startTime, preentry: SLOT_PREENTRY })
+    exp = daily.calcExp({ endTime })
 
     // `r` is just a counter and doesn't get used. 
     for (let r=0; r<nRooms; r++) {
