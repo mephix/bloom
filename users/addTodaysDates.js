@@ -3,7 +3,7 @@ const { readCsv } = require('../csv.js')
 
 module.exports = updateUsersForTodaysDates
 
-function updateUsersForTodaysDates(users, fileName, SLOTNOTFREE=-1) {
+function updateUsersForTodaysDates(users, fileName, notFreeSlot=-1) {
   const dates = readCsv(fileName)
   for ({ email1, email2, slot } of dates) {
     let u1 = users.filter(u => u['Email'] === email1)[0]
@@ -13,7 +13,7 @@ function updateUsersForTodaysDates(users, fileName, SLOTNOTFREE=-1) {
     if (u1) u1['Wait Start Time'] = now 
     if (u2) u2['Wait Start Time'] = now   
     // Set these people to not free in the selected slot.
-    if (Number(slot)===SLOTNOTFREE) {
+    if (Number(slot)===notFreeSlot) {
       if (u1) u1['Free'] = false 
       if (u2) u2['Free'] = false   
     }

@@ -2,13 +2,13 @@
 SET THESE PARAMS
 */
 let ROUND_ID = 1
-let DAY = '2021-01-19'
-let HOUR = 16
-let SLOT = 3
+let DAY = '2021-01-27'
+let HOUR = 17
+let SLOT = 4
 let RERUN = false
 // `cutoff` above zero will make the dateEngine more picky.
 // Useful for later rounds.
-let CUTOFF = 0
+let CUTOFF = 0.0
 // `avoid503` can be set to true to avoid a 503 error.
 // In this case it will only use the local backup of Users.
 let avoid503 = true
@@ -20,7 +20,7 @@ let seqOrPar = 'parallel' // 'sequential' //
 
 // Less frequently changed params:
 const TIMEZONE_OFFSET = '-08:00'
-const SLOT_LENGTH = 8
+// const SLOT_LENGTH = 8
 const SLOT_PREENTRY = 2
 const SLOT_STARTS = {
   0: HOUR + ':02',
@@ -49,6 +49,7 @@ const sortByPriority = require('../users/sortByPriority.js')
 const matchEngine = require('../matches/matchEngine.js')
 const subsetScores = require('../scores/subsetScores.js')
 const dateEngine = require('./dateEngine.js')
+const displayPretty = require('./displayPretty.js')
 const addRoom = require('./addRoom.js')
 const postDates = require('./postDates.js')
 const { writeToCsv } = require('../csv.js')
@@ -75,6 +76,16 @@ async function runDateEngine() {
   // Download Users Here (or load Users and filter to Here).
   let { usersHere, usersUpdated } =
     await getSomeUsers(idsOfUsersHere, TODAYS_USERS_FILE, avoid503) //, method='sequential')
+    
+  // Filter out users with no profile.
+  let uc = usersHere.length
+  usersHere = usersHere.filter(u => u.profile)
+  let nUsersRemoved = uc - usersHere.length
+  if (nUsersRemoved > 0) {
+    console.log(`Removed ${nUsersRemoved} users with no profile, reducing total number to ${usersHere.length}`)
+  }
+
+  // Fill in missing profile fields with best guesses.
   usersHere = usersHere.map(setProfileDefaults)
 
   // Load today's dates in case Users were loaded locally.
@@ -82,9 +93,9 @@ async function runDateEngine() {
   // Updates Start Time of users who had a date.
   // If we don't have fresh data on who's free, set people who have a date
   // already in this slot to Not-Free.
-  let SLOTNOTFREE = usersUpdated ? -1 : SLOT
+  let notFreeSlot = usersUpdated ? -1 : SLOT
   let todaysDates
-  [ usersHere, todaysDates] = addTodaysDates(usersHere, TODAYS_DATES_FILE, SLOTNOTFREE)
+  [ usersHere, todaysDates] = addTodaysDates(usersHere, TODAYS_DATES_FILE, notFreeSlot)
 
   // During reruns, filter out people who aren't free.
   // Make sure, when we haven't got fresh data on users, we already set
@@ -107,12 +118,13 @@ async function runDateEngine() {
   console.log(`Finding dates for people.`)
   let dates = dateEngine(usersHere, matches)
   console.log(`${dates.length} dates created.`)
+  displayPretty(dates, usersHere)
 
   if (dates.length > 0) {
 
     // Add videochat Rooms to Dates.
     console.log(`Adding Daily rooms to Dates...`)
-    const params = { DAY, HOUR, SLOT, TIMEZONE_OFFSET, SLOT_LENGTH, SLOT_PREENTRY, SLOT_STARTS, SLOT_ENDS }
+    const params = { DAY, HOUR, SLOT, TIMEZONE_OFFSET, SLOT_PREENTRY, SLOT_STARTS, SLOT_ENDS }
     await Promise.all(dates.map(date => addRoom(date, params)))
 
     // Save the Dates locally

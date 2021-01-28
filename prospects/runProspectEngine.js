@@ -1,7 +1,7 @@
 // File to store prospects
-const PROSPECT_GRAPH_FILE = './csvs/Prospects 2021-01-19.csv'
+const PROSPECT_GRAPH_FILE = './csvs/Prospects 2021-01-27.csv'
 // File to load users from if API fails.
-const loadFromLocalFile = './csvs/Users 2021-01-19.json'
+const loadFromLocalFile = './csvs/Users 2021-01-27.json'
 // // File to store users in if API succeeds.
 // const newBackupFile = './csvs/Prospects - Users 2021-01-12.json'
 
@@ -30,6 +30,11 @@ async function runProspectEngine() {
     // newBackupFile,
     // maxUsers: 370,
   })
+  // Filter out users with no profile.
+  let uc = users.length
+  users = users.filter(u => u.profile)
+  console.log(`Removed ${uc-users.length} users with no profile, reducing total number to ${users.length}`)
+  // Fill in missing profile fields.
   users = users.map(setProfileDefaults)
 
   // Rank prospects according to people's preferences.
@@ -51,7 +56,7 @@ async function runProspectEngine() {
   // one by one to avoid 503 errors.
   let ids = Object.keys(score).reverse()
   let responses = []
-  for (let i=0; i<12; i++) { // !! CHANGE BACK TO: ids.length
+  for (let i=0; i<3; i++) { // !! CHANGE BACK TO: ids.length
     let id = ids[i]
     const Prospects = Object.keys(score[id]).map(Number)
     if (Prospects.length > 0) {
