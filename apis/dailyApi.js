@@ -5,6 +5,8 @@ const { daily_api_key } = require('../DO_NOT_COMMIT.js')
 exports.getRoom = getRoom
 exports.makeRoom = makeRoom
 exports.getToken = getToken
+exports.calcNbf = calcNbf
+exports.calcExp = calcExp
 
 /*
  * example: properties = { user_name: 'John' }
@@ -69,4 +71,18 @@ async function makeRoom ({ nbf, exp }) {
     }
   })
   return response
+}
+
+function calcNbf({ startTime, preentry }) {
+  // `preentry`: allow entry sometime before start
+  let startDateTimestamp = Math.floor(new Date(startTime).getTime()/1000)
+  let nbf = startDateTimestamp - preentry*60
+  return nbf
+}
+
+function calcExp({ endTime }) {
+  let endDateTimestamp = Math.floor(new Date(endTime).getTime()/1000)
+  // `exp`: kick everyone out right at the end.
+  let exp = endDateTimestamp
+  return exp
 }
