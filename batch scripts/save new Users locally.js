@@ -6,8 +6,8 @@ const fs = require('fs')
  * Test and run here
  */
 
-let existingUsersFile = './csvs/Users 2021 clean slate.json'
-let newFile =           './csvs/Users 2021-01-23.json'
+let existingUsersFile = './csvs/Users 2021-01-27.json' // './csvs/Users 2021 clean slate.json' // 
+let newFile =           './csvs/Users 2021-01-27.json'
 runGetNewUsers()
 
 async function runGetNewUsers() {
@@ -25,7 +25,7 @@ async function runGetNewUsers() {
     ]
     checks.forEach( ({ name, value }) => {
       console.log(`Checking ${name}...`)
-      let uf = users.filter(u => u?.profile[name]===value)
+      let uf = users.filter(u => u?.profile?.[name]===value)
       if (uf.length===0) console.log(`OK`)
       uf.map(u => console.log(`${u.Email} has ${name}=${value}`))
     })

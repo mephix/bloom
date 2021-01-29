@@ -1,14 +1,13 @@
 /*
 SET THESE PARAMS
 */
-let ROUND_ID = 1
-let DAY = '2021-01-27'
-let HOUR = 17
-let SLOT = 4
+let DAY = '2021-01-28'
+let HOUR = 18
+let SLOT = 0
 let RERUN = false
-// `cutoff` above zero will make the dateEngine more picky.
-// Useful for later rounds.
-let CUTOFF = 0.0
+let CUTOFF = 0.0        // >0 makes the dateEngine more picky.
+let useTestIds = true   // set to `false` for real rounds.
+
 // `avoid503` can be set to true to avoid a 503 error.
 // In this case it will only use the local backup of Users.
 let avoid503 = true
@@ -19,8 +18,8 @@ let seqOrPar = 'parallel' // 'sequential' //
 
 
 // Less frequently changed params:
+let ROUND_ID = 1
 const TIMEZONE_OFFSET = '-08:00'
-// const SLOT_LENGTH = 8
 const SLOT_PREENTRY = 2
 const SLOT_STARTS = {
   0: HOUR + ':02',
@@ -52,7 +51,7 @@ const dateEngine = require('./dateEngine.js')
 const displayPretty = require('./displayPretty.js')
 const addRoom = require('./addRoom.js')
 const postDates = require('./postDates.js')
-const { writeToCsv } = require('../csv.js')
+const { writeToCsv } = require('../utils/csv.js')
 
 // No need to set these params.
 let TODAYS_DATES_FILE = `./csvs/Dates ${DAY}T${HOUR}.csv`
@@ -62,15 +61,16 @@ runDateEngine()
 
 async function runDateEngine() {
 
-  // Get users here in this round.
-  const round = await adaloApi.get('Rounds', ROUND_ID)
-  /*
-   * !! DEBUGGING ONLY !!!! 
-   * WRITE A POSTIT WHEN USING THESE DEBUGGING IDS
-   */
-  // let idsOfUsersHere = [702,727,750,765,760,897] // 
-  // let idsOfUsersHere = [3,4] // [1052,1051,1050,1049, 1081,1080,1076,1075,]
-  let idsOfUsersHere = round.Here || []
+  // Get users here.
+  let idsOfUsersHere
+  if (useTestIds) {
+    // Only use this option for testing.
+    idsOfUsersHere = [3,4] // [1052,1051,1050,1049,1081,1080,1076,1075,]
+  } else {
+    // A real round should always use this option.
+    const round = await adaloApi.get('Rounds', ROUND_ID)
+    idsOfUsersHere = round.Here || []
+  }
   if (idsOfUsersHere) console.log(`${idsOfUsersHere.length} people are Here.`)
 
   // Download Users Here (or load Users and filter to Here).
