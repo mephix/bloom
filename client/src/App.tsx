@@ -65,7 +65,13 @@ export default class App extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    db.collection("Dates").where("ready", "==", true)
+    const urlParams = new URLSearchParams(window.location.search);
+    const uid = urlParams.get('uid');
+
+    if (uid) {
+      // Look user up by uid, then do things
+
+      db.collection("Dates").where("ready", "==", true)
       .onSnapshot((querySnapshot) => {
           var dates: any[] = [];
           querySnapshot.forEach((doc) => {
@@ -73,8 +79,7 @@ export default class App extends React.Component<Props, State> {
           });
           console.log("Dates that are ready ", dates);
       });
-
-      console.log(this.state.app_state)
+    }
   }
 
   render() {
