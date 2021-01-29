@@ -4,16 +4,36 @@ import { db } from './config/firebase';
 
 import './assets/css/App.css';
 
-const APP_STATE = {
-  'waiting': 'Waiting Room',
-  'countdown': 'Countdown',
-  'video': 'Video Chat',
-  'rating': 'Rating Screen'
-}
+type AppState = {
+  'waiting': string,
+  'countdown': string,
+  'video': string,
+  'rating': string
+};
 
 type Props = {};
 
-export default class App extends React.Component<Props> {
+type State = {
+  user: any,
+  date: any,
+  app_state: string
+}
+
+const APP_STATE: AppState = {
+  'waiting': 'waiting',
+  'countdown': 'countdown',
+  'video': 'video',
+  'rating': 'rating'
+}
+
+const VIEW_STATE: any = {
+  'waiting': <div>Waiting room component</div>,
+  'countdown': <div>Countdown component</div>,
+  'video': <div>Video component</div>,
+  'rating': <div>Rating component</div>
+}
+
+export default class App extends React.Component<Props, State> {
   // All application and state logic is controlled and stored here.
   // 
   // Firebase objects:
@@ -53,12 +73,14 @@ export default class App extends React.Component<Props> {
           });
           console.log("Dates that are ready ", dates);
       });
+
+      console.log(this.state.app_state)
   }
 
   render() {
     return (
       <div className="App">
-        ...
+        {VIEW_STATE[this.state.app_state]}
       </div>
     );
   }
