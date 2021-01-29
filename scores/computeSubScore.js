@@ -1,5 +1,5 @@
 const math = require('mathjs')
-const { zipcodeDistance, loadZipLatlons } = require('../zipcodeDistance.js')
+const { zipcodeDistance, loadZipLatlons } = require('./zipcodeDistance.js')
 // Load zipcodes.
 const zipLatLons = loadZipLatlons()
 

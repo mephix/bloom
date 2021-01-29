@@ -1,5 +1,4 @@
-// const { readDatesFile } = require('../dates/readAndWriteDatesFile.js')
-const { readCsv } = require('../csv.js')
+const { readCsv } = require('../utils/csv.js')
 
 module.exports = updateUsersForTodaysDates
 
