@@ -1,6 +1,13 @@
+/*
+ * main params to set
+ */
+const refresh = false
+const today = (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
+const date = '2021-01-29' // today
+
+// Dependencies.
 const getNewUsers = require('../users/getNewUsers.js')
 const fs = require('fs')
-// const fserr = err => {if (err) return console.log(err)}
 const getDatesFromAdalo = require('../dates/getDatesFromAdalo.js')
 const matchEngine = require('../matches/matchEngine.js')
 const subsetScores = require('../scores/subsetScores.js')
@@ -12,33 +19,29 @@ const sortBy = lodash.sortBy
 const { writeToCsv } = require('../utils/csv.js')
 const adaloApi = require('../apis/adaloApi.js')
 
-const refresh = true
-const today = (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
-
 runPosivibesEngine()
 
 async function runPosivibesEngine() {
   console.log(`Starting Posivibes Engine...`)
 
   // Load or download users.
+  let existingUsersFile = `./csvs/Users ${date}.json`
+  let newUsersFile =      `./csvs/Users ${date}.json`
   if (refresh)
-    var { users } = await getNewUsers({ 
-      existingFile: `../csvs/Users ${today}.json`,
-      newFile:      `../csvs/Users ${today}.json`,
-    })
+    var { users } = await getNewUsers(existingUsersFile, newUsersFile)
   else
-    var users = JSON.parse(fs.readFileSync(existingFile, 'utf8'))
+    var users = JSON.parse(fs.readFileSync(existingUsersFile, 'utf8'))
 
   // Load or download dates.
+  let existingDatesFile = `./csvs/Dates ${date}.json`
+  let newDatesFile =      `./csvs/Dates ${date}.json`
   if (refresh)
-    var { dates } = await getDatesFromAdalo({ 
-      existingFile: `../csvs/Dates ${today}.json`,
-      newFile:      `../csvs/Dates ${today}.json`,
-    })
+    var { dates } = await getDatesFromAdalo(existingDatesFile, newDatesFile)
   else
-    var dates = JSON.parse(fs.readFileSync(existingFile, 'utf8'))
-  
+    var dates = JSON.parse(fs.readFileSync(existingDatesFile, 'utf8'))
+
   // Calculate `hearts`.
+  let hearts = {}
   dates.forEach(d => {
     hearts[d.For]
       // If this field is initialized, set the subfield.
@@ -48,21 +51,21 @@ async function runPosivibesEngine() {
   })
 
   // Calculate `matches`.
-  let { compositeScore, subScores } = matchEngine(users)
+  let { score, subScores, peopleById } = matchEngine(users)
   const CUTOFF = 0.01   // Keep only scores above a cutoff, for matrix sparseness.
-  let matches = subsetScores(compositeScore, { above: CUTOFF })
+  let matches = subsetScores(score, { above: CUTOFF })
 
   // Calculate P, the heart probability matrix.
-  const ids = Object.keys(users)
+  const ids = Object.keys(peopleById).map(Number)
   const n = ids.length
   let P = math.zeros(n, n, 'sparse')
-  ids.forEach(i => {
-    ids.forEach(j => {
+  ids.forEach((i,pi) => {
+    ids.forEach((j,pj) => {
       let p = 
         (hearts[i]?.[j] === true) ? 1 :   // Dated and hearted.
         (hearts[i]?.[j] === false) ? 0 :  // Dated but didn't heart.
-        (matches[i]?.[j] || 0)            // Didn't date yet. Use match score.
-      P.subset(math.index(i, j), p)
+        (matches[i]?.[j] || 0)            // Didn't date yet: use match score.
+      P.subset(math.index(pi, pj), p)
     })
   })
 

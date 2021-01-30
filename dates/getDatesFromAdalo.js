@@ -4,7 +4,7 @@ const adaloApi = require('../apis/adaloApi.js')
 
 module.exports = getDatesFromAdalo
 
-async function getDatesFromAdalo({ existingFile, newFile }) {
+async function getDatesFromAdalo(existingFile, newFile) {
   let existingDates
   try {
     existingDates = JSON.parse(fs.readFileSync(existingFile, 'utf8'))

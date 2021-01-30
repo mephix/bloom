@@ -5,7 +5,7 @@ const addProfiles = require('./addProfiles.js')
 
 module.exports = getNewUsers
 
-async function getNewUsers({ existingUsersFile, newFile }) {
+async function getNewUsers(existingUsersFile, newFile) {
   let existingUsers = JSON.parse(fs.readFileSync(existingUsersFile, 'utf8'))
   let offset = existingUsers.length
   console.log(`${offset} existing users found.`)
