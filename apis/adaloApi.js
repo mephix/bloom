@@ -37,8 +37,8 @@ const headers = {
 
 async function augment(collection, offset) {
   if (offset === undefined) throw new Error(`offset should not start off undefined.`)
-  // Adalo pagination limit is 100.
-  // Change it to 10 on the advice of Adalo dev.
+  // Adalo pagination limit is 100, but change it to 10 on the advice of
+  // Adalo dev.
   let limit = 10
   let newRecords = []
   while (offset !== undefined) {
@@ -53,7 +53,6 @@ async function augment(collection, offset) {
     // undefined.
     offset = response.data.offset
   }
-  // let newRecords = responses.reduce((r, ri) => [...r, ...ri.data.records],[])
   return newRecords
 }
 

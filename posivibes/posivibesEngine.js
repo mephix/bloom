@@ -1,6 +1,8 @@
-import math from 'mathjs'
+const math = require('mathjs')
 
-export function posivibesEngine(P, v) {
+module.exports = posivibesEngine
+
+function posivibesEngine(P, v) {
   const [m, n] = P.size()
   if (m !== n) throw new Error(`P must be a square matrix`)
 

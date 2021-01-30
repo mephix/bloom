@@ -15,7 +15,7 @@ function postDateToAdalo (date, params) {
     'Heart': false,
   }
   const for1 = {
-    'Name':	`${date.name1} <- ${date.name2}`,
+    'Name':	`${date.name1} with ${date.name2}`,
     'For': date.id1,
     'For Email': date.email1,
     'With': date.id2,
@@ -23,7 +23,7 @@ function postDateToAdalo (date, params) {
     'Room Token': date.token1,
   }
   const for2 = {
-    'Name':	`${date.name2} <- ${date.name1}`,
+    'Name':	`${date.name2} with ${date.name1}`,
     'For': date.id2,
     'For Email': date.email2,
     'With': date.id1,

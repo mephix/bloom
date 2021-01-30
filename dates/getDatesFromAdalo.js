@@ -5,7 +5,13 @@ const adaloApi = require('../apis/adaloApi.js')
 module.exports = getDatesFromAdalo
 
 async function getDatesFromAdalo({ existingFile, newFile }) {
-  let existingDates = JSON.parse(fs.readFileSync(existingFile, 'utf8'))
+  let existingDates
+  try {
+    existingDates = JSON.parse(fs.readFileSync(existingFile, 'utf8'))
+  } catch (e) {
+    existingDates = []
+    console.warn(`Unable to load any dates from ${existingFile}`)
+  }
   let offset = existingDates.length
   console.log(`${offset} existing dates found.`)
   let datesUpdated = false

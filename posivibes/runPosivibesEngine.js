@@ -1,16 +1,19 @@
-import math from 'mathjs'
-import { zipObject, sortBy } from 'lodash'
+const getNewUsers = require('../users/getNewUsers.js')
 const fs = require('fs')
-const fserr = err => {if (err) return console.log(err)}
+// const fserr = err => {if (err) return console.log(err)}
+const getDatesFromAdalo = require('../dates/getDatesFromAdalo.js')
 const matchEngine = require('../matches/matchEngine.js')
+const subsetScores = require('../scores/subsetScores.js')
+const math = require('mathjs')
 const posivibesEngine = require('./posivibesEngine.js')
+const lodash = require('lodash')
+const zipObject = lodash.zipObject
+const sortBy = lodash.sortBy
 const { writeToCsv } = require('../utils/csv.js')
+const adaloApi = require('../apis/adaloApi.js')
 
 const refresh = true
 const today = (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
-// const existingFile = './csvs/Dates 2021-01-29.json'
-// const newFile =      './csvs/Dates 2021-01-29.json'
-// const posivibesFile = './csvs/Posivibes'
 
 runPosivibesEngine()
 
@@ -19,21 +22,21 @@ async function runPosivibesEngine() {
 
   // Load or download users.
   if (refresh)
-    let { users } = await getNewUsers({ 
-      existingFile: `./csvs/Users ${today}.json`,
-      newFile:      `./csvs/Users ${today}.json`,
+    var { users } = await getNewUsers({ 
+      existingFile: `../csvs/Users ${today}.json`,
+      newFile:      `../csvs/Users ${today}.json`,
     })
   else
-    let users = JSON.parse(fs.readFileSync(existingFile, 'utf8'))
+    var users = JSON.parse(fs.readFileSync(existingFile, 'utf8'))
 
   // Load or download dates.
   if (refresh)
-    let { dates } = await getDatesFromAdalo({ 
-      existingFile: `./csvs/Dates ${today}.json`,
-      newFile:      `./csvs/Dates ${today}.json`,
+    var { dates } = await getDatesFromAdalo({ 
+      existingFile: `../csvs/Dates ${today}.json`,
+      newFile:      `../csvs/Dates ${today}.json`,
     })
   else
-    let dates = JSON.parse(fs.readFileSync(existingFile, 'utf8'))
+    var dates = JSON.parse(fs.readFileSync(existingFile, 'utf8'))
   
   // Calculate `hearts`.
   dates.forEach(d => {
@@ -73,6 +76,19 @@ async function runPosivibesEngine() {
   let posivibesZipped = ids.map((id, i) => ({ 'id': id, 'posivibes': posivibes[i] }))
   let posivibesSorted = sortBy(posivibesZipped, x => -x.posivibes)
   writeToCsv(posivibesSorted, `./csvs/Posivibes ${today}.json`)
+
+  // Post to Adalo.
+  // In reverse order, and one by one to avoid 503 errors.
+  let reverseIds = Object.keys(posivibesById).reverse()
+  let responses = []
+  for (let i=0; i<reverseIds.length; i++) {
+    let id = reverseIds[i]
+    let response = await adaloApi.update('Users', id, { Posivibes: posivibesById[id] })
+    console.log(`[${i}]: ${peopleById[id].Email}: posivibes of ${posivibesById[id]} posted ${response.statusText}`)
+    responses.push(response)
+  }
+  let responseSummary = [...new Set(responses.map(r=>r.statusText))]
+  console.log(`Distinct responses: ${responseSummary}`)  
 
   return { posivibesById, posivibesSorted }
 }
