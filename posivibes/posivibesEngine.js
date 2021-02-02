@@ -1,40 +1,67 @@
 const math = require('mathjs')
+const mlMatrix = require('ml-matrix')
+const markovize = require('../posivibes/markovize.js')
 
 module.exports = posivibesEngine
+
+/*
+ * The value, w, of users to a network, where users both have intrinsic
+ * (self) value, v, and increase the probability of other users staying via
+ * the probability matrix P, is:
+ * w = Pw + v
+ * and therefore:
+ * w = inv(I-P)*v
+ * If someone doesn't increase the marginal probability of anyone else
+ * staying, their value should be their base value, v. The more they
+ * increase the probability of others of value staying, the more their
+ * value should increase.
+ * 
+ * In the special case where self-value v = 0, and the sum of each column
+ * of P = 1 (ie, P is a true probability / stochastic / Markov matrix),
+ * then w becomes the eigvec of P with eigval=1. `lusolve` will fail at
+ * finding this because (I-P) is singular (by the definition of a
+ * stochastic matrix). So we need another way to find w.
+ */
 
 function posivibesEngine(P, v) {
   const [m, n] = P.size()
   if (m !== n) throw new Error(`P must be a square matrix`)
 
-  // The default for self-value v is 0 for everyone. In future versions
-  // (such as with paying customers) a more appropriate default may be 1
-  // for everyone: v = math.zeros(n, 1)
-  if (!v) {
-    // If `v` (a user's intrinsic value) is not supplied, assume it is
-    // zero. This means we want to solve for (I-P)w = 0, and specifically,
-    // for the eigvec with eigval of 1.
-    
-    // !!! DO THIS !!!
+  // Default to an equal self-value for everyone (1).
+  let w
+  if (v === undefined) {
+    console.warn(`posivibesEngine is using eigvec method since v was not supplied.`)
+    console.warn(`Don't forget to make sure P has been markovized.`)
+    const M = new mlMatrix.Matrix(P.valueOf())
+    const e = new mlMatrix.EigenvalueDecomposition(M)
+    // If there are zero columns, these will lead to zero eigenvalues.
+    // The largest eigval will be less than 1.
+    let kk = e.realEigenvalues.findIndex(ei => ei === math.max(e.realEigenvalues))
+    console.log(`Largest eigval found is ${math.max(e.realEigenvalues)}`)
+    // Find the eigenvalue equal to 1.
+    // let kk = e.realEigenvalues.findIndex(ei => math.abs(ei-1)<10**(-7))
+    // if (kk===-1) console.error(`Eigval 1 not found.`)
+    w = e.eigenvectorMatrix.valueOf().data.map(row => row[kk])
   } else {
-    // Equation for the value of users to the network, where users both
-    // have intrinsic value and contribute to retaining other users:
-    // w = inv(I-P) * v
-    // If someone doesn't increase the marginal probability of anyone else
-    // staying, their value will be their base value, v. The more they
-    // increase the probability of others of value staying, the more their
-    // value increases.
+    // `lusolve` solves the linear equation (I-P)*w = v for w. 
     const I = math.identity(n, n, 'sparse')
-    const w = math.lusolve(math.subtract(I,P), v)
+    w = math.lusolve(math.subtract(I,P), v)
   }
 
-  // Normalize w (0-10). As a dense matrix, w gets stored as an array of
-  // arrays. While normalizing, we also convert to a simple array.
-  const MAX = 10
-  const NSIGFIGS = 2
+  // Normalize w.
+  // Calculate both wmax and wmin to flip sign if w comes out negative.
   const wmax = math.max(w)
-  const wn = w.valueOf().map(ww => Number((ww[0]/wmax*MAX).toFixed(NSIGFIGS)))
+  const wmin = math.min(w)
+  // // Scale so that the maximum is 10.
+  // const wdiv = (math.abs(wmin) > math.abs(wmax) ? wmin : wmax) / 10
+  // Scale so that the minimum is 1.
+  const wdiv = (math.abs(wmin) > math.abs(wmax) ? wmax : wmin) / 1
+
+  // Round to NSIGFIGS.
+  const NSIGFIGS = 2
+  const wnorm = w.valueOf().map(wi => Number((wi/wdiv).toFixed(NSIGFIGS)))
   
   // Return the normalized vector of values for each user.
-  return wn
+  return wnorm
 }
 
