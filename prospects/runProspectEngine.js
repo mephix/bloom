@@ -1,7 +1,7 @@
 // File to store prospects
-const PROSPECT_GRAPH_FILE = './csvs/Prospects 2021-01-27.csv'
+const PROSPECT_GRAPH_FILE = './csvs/Prospects 2021-02-01.csv'
 // File to load users from if API fails.
-const loadFromLocalFile = './csvs/Users 2021-01-27.json'
+const loadFromLocalFile = './csvs/Users 2021-02-01.json'
 // // File to store users in if API succeeds.
 // const newBackupFile = './csvs/Prospects - Users 2021-01-12.json'
 
@@ -27,8 +27,6 @@ async function runProspectEngine() {
   let { users } = await getAllUsers({
     refresh: false,
     backupFile: loadFromLocalFile,
-    // newBackupFile,
-    // maxUsers: 370,
   })
   // Filter out users with no profile.
   let uc = users.length
@@ -56,13 +54,16 @@ async function runProspectEngine() {
   // one by one to avoid 503 errors.
   let ids = Object.keys(score).reverse()
   let responses = []
-  for (let i=0; i<3; i++) { // !! CHANGE BACK TO: ids.length
+  for (let i=0; i<ids.length; i++) { // !! CHANGE BACK TO: ids.length
     let id = ids[i]
     const Prospects = Object.keys(score[id]).map(Number)
+    const oldProspects = peopleById[id].Prospects
     if (Prospects.length > 0) {
-      let response = await adaloApi.update('Users', id, { Prospects })
-      console.log(`[${i}]: ${peopleById[id].Email}: ${Prospects.length} prospects posted ${response.statusText}`)
-      responses.push(response)
+      if (oldProspects.length === 0) {
+        let response = await adaloApi.update('Users', id, { Prospects })
+        console.log(`[${i}]: ${peopleById[id].Email}: ${Prospects.length} prospects posted ${response.statusText}`)
+        responses.push(response)
+      }
     } else {
       console.warn(`[${i}]: ${peopleById[id].Email}: no prospects.`)
       responses.push({ statusText: 'no prospects' })
