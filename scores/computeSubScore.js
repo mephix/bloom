@@ -10,6 +10,7 @@ exports.location = location
 exports.liked = liked
 exports.nexted = nexted
 exports.dated = dated
+exports.hearted = hearted
 exports.posivibes = posivibes
 
 function notself(p,q) {
@@ -58,6 +59,10 @@ function nexted(p,q) {
 
 function dated(p,q) {
   return p['Dated']?.includes(q.id) || false
+}
+
+function hearted(p,q) {
+  return p['Hearted']?.includes(q.id) || false
 }
 
 function posivibes(p,q) {
