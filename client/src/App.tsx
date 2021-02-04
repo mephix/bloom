@@ -66,19 +66,17 @@ export default class App extends React.Component<Props, State> {
 
   componentDidMount() {
     const urlParams = new URLSearchParams(window.location.search);
-    const uid = urlParams.get('uid');
+    const email = urlParams.get('email');
 
-    if (uid) {
-      // Look user up by uid, then do things
-
-      db.collection("Dates").where("ready", "==", true)
-      .onSnapshot((querySnapshot) => {
-          var dates: any[] = [];
-          querySnapshot.forEach((doc) => {
-            dates.push(doc.data());
-          });
-          console.log("Dates that are ready ", dates);
+    if (email) {
+      db.collection("Users").doc(email).onSnapshot((doc) => {
+        this.setState({user: doc.data()});
       });
+      
+      db.collection("Dates").where("for", "==", email).limit(1)
+        .onSnapshot((querySnapshot) => {
+          this.setState({date: querySnapshot.docs[0].data()});
+        });
     }
   }
 
