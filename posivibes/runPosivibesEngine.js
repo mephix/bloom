@@ -117,9 +117,9 @@ async function runPosivibesEngine() {
     'hearts': heartsumById[id].toFixed(0),
     'matches': matchsumById[id].toFixed(1),
     'likes': likesumById[id].toFixed(0),
-    'gender': usersById[id].profile['Gender'],
-    'age': usersById[id].profile['Age'],
-    'zip': usersById[id].profile['Zipcode'],
+    'gender': usersById[id]['Gender'],
+    'age': usersById[id]['Age'],
+    'zip': usersById[id]['Zipcode'],
     'posivibes override': usersById[id]['Posivibes'],
     'id': id,
   }))

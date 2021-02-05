@@ -15,8 +15,8 @@ function writeScoresToFile({ people, score, subScores, fileName }) {
 
   let scoreFileContent = Object.keys(score).map(id1 => {
     const printedLineArray = Object.entries(score[id1]).map(([id2,score_id2]) => {
-      const p1 = people[id1].profile
-      const p2 = people[id2].profile
+      const p1 = people[id1] //.profile
+      const p2 = people[id2] //.profile
       return `\
         ${p1['First Name']},${p1['Email']},\
         ${p2['First Name']},${p2['Email']},\

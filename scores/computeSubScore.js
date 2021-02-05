@@ -21,7 +21,7 @@ function notself(p,q) {
 
 function gender(p,q) {
   // Nonbinary people get matched by everyone.
-  return (p.profile['Gender Preference'] + 'X').includes(q.profile['Gender'])
+  return (p['Gender Preference'] + 'X').includes(q['Gender'])
 }
 
 function age(p,q,{T=10}) {
@@ -29,9 +29,9 @@ function age(p,q,{T=10}) {
   // Quadratic function peaking halfway between their lo and hi age prefs.
   // Goes to zero at T below their lo or above their hi pref.
   // To perfectly respect people's preferences, set T=0.
-  let z_age_raw = -(q.profile['Age'] - (p.profile['Age Preference Low']-T))*(q.profile['Age'] - (p.profile['Age Preference High']+T))
-  let z_age_norm = math.square(T + (p.profile['Age Preference High']-p.profile['Age Preference Low'])/2)
-  // q.profile['Age'] <= p.profile['Age Preference High'] && q.profile['Age'] >= p.profile['Age Preference Low']
+  let z_age_raw = -(q['Age'] - (p['Age Preference Low']-T))*(q['Age'] - (p['Age Preference High']+T))
+  let z_age_norm = math.square(T + (p['Age Preference High']-p['Age Preference Low'])/2)
+  // q['Age'] <= p['Age Preference High'] && q['Age'] >= p['Age Preference Low']
   let z_age = math.max(0, z_age_raw / z_age_norm)
   if (z_age < 0 || z_age > 1)
     console.warn(`Age score is ${z_age} but is supposed to be <-[0,1]`)
@@ -41,8 +41,8 @@ function age(p,q,{T=10}) {
 function location(p,q) {
   // Location match.
   // Score is <- [0,1].
-  const d = zipcodeDistance(p.profile['Zipcode'], q.profile['Zipcode'], zipLatLons)
-  const sigs = (d !== -1) ? d/p.profile['Radius'] : 1
+  const d = zipcodeDistance(p['Zipcode'], q['Zipcode'], zipLatLons)
+  const sigs = (d !== -1) ? d/p['Radius'] : 1
   // Choose beta such that at distance=radius (in miles) the score is 0.5.
   const BETA = 0.69314718056
   const z_location = math.exp(-BETA*sigs)

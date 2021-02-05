@@ -1,12 +1,12 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-02-03'
-let HOUR = 17
-let SLOT = 1
-let RERUN = true
+let DAY = '2021-02-05'
+let HOUR = 23
+let SLOT = 0
+let RERUN = false
 let CUTOFF = 0.0        // >0 makes the dateEngine more picky.
-let useTestIds = false   // `false` for real rounds.
+let useTestIds = true   // `false` for real rounds.
 
 // `avoid503` can be set to true to avoid a 503 error.
 // In this case it will only use the local backup of Users.
@@ -41,7 +41,7 @@ const SLOT_ENDS = {
 }
 // Dependencies.
 const adaloApi = require('../apis/adaloApi.js')
-const getSomeUsers = require('../users/getSomeUsers.js')
+const fs = require('fs')
 const setProfileDefaults = require('../users/setProfileDefaults.js')
 const addTodaysDates = require('../users/addTodaysDates.js')
 const sortByPriority = require('../users/sortByPriority.js')
@@ -73,17 +73,13 @@ async function runDateEngine() {
   }
   if (idsOfUsersHere) console.log(`${idsOfUsersHere.length} people are Here.`)
 
-  // Download Users Here (or load Users and filter to Here).
-  let { usersHere, usersUpdated } =
-    await getSomeUsers(idsOfUsersHere, TODAYS_USERS_FILE, avoid503) //, method='sequential')
-    
-  // // Filter out users with no profile.
-  // let uc = usersHere.length
-  // usersHere = usersHere.filter(u => u.profile)
-  // let nUsersRemoved = uc - usersHere.length
-  // if (nUsersRemoved > 0) {
-  //   console.log(`Removed ${nUsersRemoved} users with no profile, reducing total number to ${usersHere.length}`)
-  // }
+  // Load Users, filter for those who are Here, and note that Users were
+  // not updated (ie, downloaded live from Adalo).
+  let usersUpdated = false
+  let users = JSON.parse(fs.readFileSync(TODAYS_USERS_FILE, 'utf8'))
+  let usersHere = users.filter(u => idsOfUsersHere.includes(u.id))
+  // let { usersHere, usersUpdated } =
+  //   await getSomeUsers(idsOfUsersHere, TODAYS_USERS_FILE, avoid503) //, method='sequential')
 
   // Fill in missing profile fields with best guesses.
   usersHere = usersHere.map(setProfileDefaults)

@@ -1,7 +1,7 @@
 /*
  * Key parameters to set
  */
-const loadFromLocalFile = './csvs/Users 2021-02-03.json'
+const loadFromLocalFile = './csvs/Users 2021-02-05.json'
 
 // Less frequently changed parameters.
 // File to store prospects:
@@ -31,11 +31,6 @@ async function runProspectEngine() {
     backupFile: loadFromLocalFile,
   })
   
-  // // Filter out users with no profile.
-  // let uc = users.length
-  // users = users.filter(u => u.profile)
-  // console.log(`Removed ${uc-users.length} users with no profile, reducing total number to ${users.length}`)
-
   // Fill in missing profile fields with sensible defaults.
   users = users.map(setProfileDefaults)
 
