@@ -1,5 +1,5 @@
 const math = require('mathjs')
-const graphToMatrix = require('./graphToMatrix.js')
+const graphToMatrix = require('../scores/graphToMatrix.js')
 
 module.exports = dateEngine
 
@@ -7,7 +7,11 @@ function dateEngine (people, matches) {
   const N = people.length
   let dates = []
   if (N < 2) return dates
-  // People are sorted in the order in which to find them dates.
+  // People are sorted (using `sortByPriority`) in the order in which to
+  // find them dates.
+  // `graphToMatrix` also makes the match scores symmetric, ie it uses
+  // m(i,j)*m(j,i) when deciding whether to match i and j. The point being
+  // that we are trying to maximize the probability of a mutual heart.
   let M = graphToMatrix({ graph: matches, order: people.map(p => p.id) })
   const all = math.range(0,N).valueOf()
   for (let i=0; i<N; i++) {

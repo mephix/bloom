@@ -4,7 +4,7 @@ exports.zipcodeDistance = zipcodeDistance
 exports.loadZipLatlons = loadZipLatlons
 
 function loadZipLatlons() {
-  ZIPCODE_LATLONGS = './csvs/US Zip Codes from 2013 Government Data.csv'
+  ZIPCODE_LATLONGS = './scores/US Zip Codes from 2013 Government Data.csv'
   const contents = fs.readFileSync(ZIPCODE_LATLONGS, 'utf8');
   const rows = contents.split('\n')
   var zipLatLons = {}

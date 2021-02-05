@@ -1,6 +1,3 @@
-const axios = require('axios').default
-const { adaloApiKey } = require('../DO_NOT_COMMIT.js')
-
 exports.augment = augment
 exports.list = list
 exports.get = get
@@ -8,8 +5,10 @@ exports.create = create
 exports.update = update
 exports.delete = remove
 
-// Bloom Reborn
-const collectionIds = {
+const axios = require('axios').default
+
+let { adaloApiKey } = require('../DO_NOT_COMMIT.js')
+let collectionIds = {
   Users:    't_d596551b629041f0accbbe30e2d0798c',
   Profiles: 't_fa9bd35a5fcb41e59f463f46963bb1d5',
   Dates:    't_737e58ba8418441faf1d88dc5a027774',
@@ -17,18 +16,25 @@ const collectionIds = {
   Cities:   't_ce22a13d75d0465b8b59274864cb6214',
   Rooms:    't_dfx71lkr27032sw3haummjqmr',
 }
+let appId = '871b2ce8-e87f-4c42-ba43-3b95add7639d' // Reborn
 
-// const collectionIds = {
-//   Users:    't_16e4bbd16d6b46c59bd1866b587e6932',
-//   People:   't_dqcjvpuuluzz3fy8ezzfkln02',
-//   Dates:    't_ax27z3fv32ihnb0be77hclwyf',
-//   Invites:  't_ah951svi3ghqvexc9buzws0mx',
-//   Rounds:   't_dr4anrwrj0p61z8v49rnuk52v',
-// }
-
-// const appId = 'aca1def6-b11b-45a7-9d7c-4589fbb3c1f8'
-const appId = '871b2ce8-e87f-4c42-ba43-3b95add7639d' // Reborn
-
+/*
+ * USE OLD=true IF DOWNLOADING FROM THE PRE-REBORN DB
+ */
+const OLD = false
+if (OLD) {
+  appId = 'aca1def6-b11b-45a7-9d7c-4589fbb3c1f8' // pre Reborn
+  const { adaloApiKey_before_Reborn } = require('../DO_NOT_COMMIT.js')
+  adaloApiKey = adaloApiKey_before_Reborn
+  collectionIds = {
+    // pre Reborn
+    'Users old':    't_16e4bbd16d6b46c59bd1866b587e6932',
+    'People old':   't_dqcjvpuuluzz3fy8ezzfkln02',
+    'Dates old':    't_ax27z3fv32ihnb0be77hclwyf',
+    'Invites old':  't_ah951svi3ghqvexc9buzws0mx',
+    'Rounds old':   't_dr4anrwrj0p61z8v49rnuk52v',
+  }
+}
 const endpoint = `https://api.adalo.com/v0/apps/${appId}/collections/`
 const headers = {
   'Content-Type': 'application/json',

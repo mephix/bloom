@@ -1,11 +1,13 @@
-// File to store prospects
-const PROSPECT_GRAPH_FILE = './csvs/Prospects 2021-02-01.csv'
-// File to load users from if API fails.
-const loadFromLocalFile = './csvs/Users 2021-02-01.json'
-// // File to store users in if API succeeds.
-// const newBackupFile = './csvs/Prospects - Users 2021-01-12.json'
+/*
+ * Key parameters to set
+ */
+const loadFromLocalFile = './csvs/Users 2021-02-03.json'
 
-// const { msleep } = require('sleep')
+// Less frequently changed parameters.
+// File to store prospects:
+const today = (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
+const PROSPECT_GRAPH_FILE = `./csvs/Prospects ${today}.csv`
+
 const getAllUsers = require('../users/getAllUsers.js')
 const setProfileDefaults = require('../users/setProfileDefaults.js')
 const prospectEngine = require('./prospectEngine.js')
@@ -28,11 +30,13 @@ async function runProspectEngine() {
     refresh: false,
     backupFile: loadFromLocalFile,
   })
-  // Filter out users with no profile.
-  let uc = users.length
-  users = users.filter(u => u.profile)
-  console.log(`Removed ${uc-users.length} users with no profile, reducing total number to ${users.length}`)
-  // Fill in missing profile fields.
+  
+  // // Filter out users with no profile.
+  // let uc = users.length
+  // users = users.filter(u => u.profile)
+  // console.log(`Removed ${uc-users.length} users with no profile, reducing total number to ${users.length}`)
+
+  // Fill in missing profile fields with sensible defaults.
   users = users.map(setProfileDefaults)
 
   // Rank prospects according to people's preferences.

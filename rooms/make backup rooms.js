@@ -1,10 +1,13 @@
-const daily = require('../apis/dailyApi.js')
-const adalo = require('../apis/adaloApi.js')
-module.exports = makeBackupRooms
-
-// DAY, HOUR, TIMEZONE_OFFSET, SLOT_LENGTH, SLOT_PREENTRY, SLOT_STARTS, SLOT_ENDS
-let DAY = '2021-01-27'
+/*
+ * Key parameters to set
+ */
+let DAY = '2021-02-03'
 let HOUR = 17
+let nRooms = 5
+let slots = [0,1,2,3,4,5,6]
+
+// Less frequently changed parameters. 
+// TIMEZONE_OFFSET, SLOT_PREENTRY, SLOT_STARTS, SLOT_ENDS
 const TIMEZONE_OFFSET = '-08:00'
 const SLOT_PREENTRY = 2
 const SLOT_STARTS = {
@@ -26,8 +29,10 @@ const SLOT_ENDS = {
   6: HOUR + ':58',
 }
 
-let nRooms = 5
-let slots = [0,1,2,3,4,5]
+const daily = require('../apis/dailyApi.js')
+const adalo = require('../apis/adaloApi.js')
+module.exports = makeBackupRooms
+
 makeBackupRooms()
 
 async function makeBackupRooms() {

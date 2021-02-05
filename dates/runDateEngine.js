@@ -1,12 +1,12 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-01-28'
-let HOUR = 18
-let SLOT = 0
-let RERUN = false
+let DAY = '2021-02-03'
+let HOUR = 17
+let SLOT = 1
+let RERUN = true
 let CUTOFF = 0.0        // >0 makes the dateEngine more picky.
-let useTestIds = true   // set to `false` for real rounds.
+let useTestIds = false   // `false` for real rounds.
 
 // `avoid503` can be set to true to avoid a 503 error.
 // In this case it will only use the local backup of Users.
@@ -49,7 +49,7 @@ const matchEngine = require('../matches/matchEngine.js')
 const subsetScores = require('../scores/subsetScores.js')
 const dateEngine = require('./dateEngine.js')
 const displayPretty = require('./displayPretty.js')
-const addRoom = require('./addRoom.js')
+const addRoom = require('../rooms/addRoom.js')
 const postDates = require('./postDates.js')
 const { writeToCsv } = require('../utils/csv.js')
 
@@ -77,13 +77,13 @@ async function runDateEngine() {
   let { usersHere, usersUpdated } =
     await getSomeUsers(idsOfUsersHere, TODAYS_USERS_FILE, avoid503) //, method='sequential')
     
-  // Filter out users with no profile.
-  let uc = usersHere.length
-  usersHere = usersHere.filter(u => u.profile)
-  let nUsersRemoved = uc - usersHere.length
-  if (nUsersRemoved > 0) {
-    console.log(`Removed ${nUsersRemoved} users with no profile, reducing total number to ${usersHere.length}`)
-  }
+  // // Filter out users with no profile.
+  // let uc = usersHere.length
+  // usersHere = usersHere.filter(u => u.profile)
+  // let nUsersRemoved = uc - usersHere.length
+  // if (nUsersRemoved > 0) {
+  //   console.log(`Removed ${nUsersRemoved} users with no profile, reducing total number to ${usersHere.length}`)
+  // }
 
   // Fill in missing profile fields with best guesses.
   usersHere = usersHere.map(setProfileDefaults)
@@ -118,7 +118,9 @@ async function runDateEngine() {
   console.log(`Finding dates for people.`)
   let dates = dateEngine(usersHere, matches)
   console.log(`${dates.length} dates created.`)
+  console.log(``)
   displayPretty(dates, usersHere)
+  console.log(``)
 
   if (dates.length > 0) {
 

@@ -1,7 +1,9 @@
 DO_NOT_COMMIT.js
 .env
 csvs/*
+scores/US Zip Codes*
 airtable/*
 .vscode/*
 old/*
+old data files/*
 node_modules/*

@@ -1,18 +1,18 @@
 const getNewUsers = require('../users/getNewUsers.js')
 const getAllUsers = require('../users/getAllUsers.js')
-const csv = require('../csv.js')
 const fs = require('fs')
+const csv = require('../utils/csv.js')
 /* 
  * Test and run here
  */
 
-let existingUsersFile = './csvs/Users 2021-01-27.json' // './csvs/Users 2021 clean slate.json' // 
-let newFile =           './csvs/Users 2021-01-27.json'
+let existingUsersFile = './csvs/Users 2021 clean slate.json' // './csvs/Users 2021-02-02.json' // 
+let newFile =           './csvs/Users 2021-02-03.json'
 runGetNewUsers()
 
 async function runGetNewUsers() {
   console.log(`Starting runGetNewUsers...`)
-  let { users } = await getNewUsers({ existingUsersFile, newFile })
+  let { users } = await getNewUsers(existingUsersFile, newFile)
   if (users) {
     console.log(`Finished getting new users. Now checking them...`)
     // Checks
