@@ -15,7 +15,8 @@ type Props = {};
 
 type State = {
   user: any,
-  date: any,
+  matching_user: any,
+  available_date: any,
   app_state: string
 }
 
@@ -59,7 +60,8 @@ export default class App extends React.Component<Props, State> {
     super(props);
     this.state = {
       user: null,
-      date: null,
+      matching_user: null,
+      available_date: null,
       app_state: APP_STATE.waiting
     };
   }
@@ -70,14 +72,37 @@ export default class App extends React.Component<Props, State> {
 
     if (email) {
       db.collection("Users").doc(email).onSnapshot((doc) => {
-        this.setState({user: doc.data()});
-      });
-      
-      db.collection("Dates").where("for", "==", email).limit(1)
-        .onSnapshot((querySnapshot) => {
-          this.setState({date: querySnapshot.docs[0].data()});
-        });
+        this.setState({user: doc.data()}, () => this.findDate(this.state.user.email));
+      }); 
     }
+  }
+
+  componentDidUpdate() {
+    // This is where we listen for updates.
+    // Handle the app state changes here when user state changes.
+
+    // Important states to check for:
+
+    // User here:boolean, free:boolean, finished:boolean
+
+    // Date is available
+  }
+
+  findDate(email: string): void {
+    db.collection('Dates')
+      .where('for', '==', email)
+      // .where('start', '<', 'now')
+      // .where('end', '>', 'now')
+      .where('active', '==', true)
+      .onSnapshot((querySnapshot) => {
+        this.setState({available_date: querySnapshot.docs[0].data()}, () => this.getMatchingUser(this.state.available_date.with));
+      });
+  }
+
+  getMatchingUser(email: string): void {
+    db.collection("Users").doc(email).onSnapshot((doc) => {
+      this.setState({matching_user: doc.data()});
+    });
   }
 
   render() {
