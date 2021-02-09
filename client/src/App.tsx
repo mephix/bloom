@@ -2,6 +2,7 @@ import React from 'react';
 
 import { db, time } from './config/firebase';
 
+import Video from './Video';
 import './assets/css/App.css';
 
 type AppState = {
@@ -25,13 +26,6 @@ const APP_STATE: AppState = {
   countdown: 'countdown',
   video: 'video',
   rating: 'rating',
-};
-
-const VIEW_STATE: any = {
-  waiting: <div>Waiting room component</div>,
-  countdown: <div>Countdown component</div>,
-  video: <div>Video component</div>,
-  rating: <div>Rating component</div>,
 };
 
 export default class App extends React.Component<Props, State> {
@@ -85,12 +79,12 @@ export default class App extends React.Component<Props, State> {
     // This is where we listen for updates.
     // Handle the app state changes here when user state changes.
 
-    if (this.shouldBeCountingDown()) { 
-      this.setState({ app_state: APP_STATE.countdown }) 
-    } else if (this.shouldBeInVideo()) { 
-      this.setState({ app_state: APP_STATE.video }) 
-    } else if (this.shouldBeRating()) { 
-      this.setState({ app_state: APP_STATE.rating }) 
+    if (this.shouldBeCountingDown()) {
+      this.setState({ app_state: APP_STATE.countdown });
+    } else if (this.shouldBeInVideo()) {
+      this.setState({ app_state: APP_STATE.video });
+    } else if (this.shouldBeRating()) {
+      this.setState({ app_state: APP_STATE.rating });
     }
   }
 
@@ -114,10 +108,6 @@ export default class App extends React.Component<Props, State> {
       .onSnapshot((doc) => {
         this.setState({ matching_user: doc.data() });
       });
-  }
-
-  shouldBeWaiting(): boolean {
-    return this.state.user;
   }
 
   shouldBeCountingDown(): boolean {
@@ -148,7 +138,26 @@ export default class App extends React.Component<Props, State> {
     );
   }
 
+  renderView(): any {
+    const VIEW_STATE: any = {
+      waiting: <div>Waiting room component</div>,
+      countdown: <div>Countdown component</div>,
+      video: (
+        <Video
+          url={`process.env.REACT_APP_FIREBASE_API_KEY${
+            this.state.available_date ? this.state.available_date.room : null
+          }`}
+        >
+          Video component
+        </Video>
+      ),
+      rating: <div>Rating component</div>,
+    };
+
+    return VIEW_STATE[this.state.app_state];
+  }
+
   render() {
-    return <div className="App">{VIEW_STATE[this.state.app_state]}</div>;
+    return <div className="App">{this.renderView()}</div>;
   }
 }
