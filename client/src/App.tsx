@@ -74,9 +74,10 @@ export default class App extends React.Component<Props, State> {
       db.collection('Users')
         .doc(email)
         .onSnapshot((doc) => {
-          this.setState({ user: doc.data() }, () =>
-            this.findDate(this.state.user.email)
-          );
+          this.setState({ user: doc.data() }, () => {
+            this.updateUser(this.state.user.email, { here: true });
+            this.findDate(this.state.user.email);
+          });
         });
     }
   }
@@ -114,6 +115,10 @@ export default class App extends React.Component<Props, State> {
       .onSnapshot((doc) => {
         this.setState({ matching_user: doc.data() });
       });
+  }
+
+  async updateUser(email: string, params: any): Promise<void> {
+    await db.collection('Users').doc(email).update(params);
   }
 
   shouldBeCountingDown(): boolean {
