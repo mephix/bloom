@@ -1,4 +1,7 @@
 import React from 'react';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 
 import { db, time } from './config/firebase';
 
@@ -158,6 +161,16 @@ export default class App extends React.Component<Props, State> {
   }
 
   render() {
-    return <div className="App">{this.renderView()}</div>;
+    return (
+      <div className="app">
+        <AppBar position="static" className="app-bar">
+          <Toolbar>
+            <Typography variant="h6">
+              Bloom
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        {this.renderView()}
+      </div>);
   }
 }
