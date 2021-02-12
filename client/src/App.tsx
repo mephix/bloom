@@ -5,6 +5,9 @@ import Typography from '@material-ui/core/Typography';
 
 import { db, time } from './config/firebase';
 
+import CountDown from './CountDown';
+import Rating from './Rating';
+import WaitingRoom from './WaitingRoom';
 import Video from './Video';
 import './assets/css/App.css';
 
@@ -141,26 +144,22 @@ export default class App extends React.Component<Props, State> {
     );
   }
 
+  startVideo(): void {
+    this.setState({ app_state: APP_STATE.video });
+  }
+
   renderView(): any {
     const VIEW_STATE: any = {
-      waiting: (
-        <Video
-          url={`${process.env.REACT_APP_DAILY_URL}${'/WpMkGlGZjIBLLKDsaxPy'}`}
-        >
-          Video component
-        </Video>
-      ),
-      countdown: <div>Countdown component</div>,
+      waiting: <WaitingRoom />,
+      countdown: <CountDown startVideo={() => this.startVideo()} />,
       video: (
         <Video
           url={`${process.env.REACT_APP_DAILY_URL}${
             this.state.available_date ? this.state.available_date.room : null
           }`}
-        >
-          Video component
-        </Video>
+        />
       ),
-      rating: <div>Rating component</div>,
+      rating: <Rating />,
     };
 
     return VIEW_STATE[this.state.app_state];
@@ -171,12 +170,11 @@ export default class App extends React.Component<Props, State> {
       <div className="app">
         <AppBar position="static" className="app-bar">
           <Toolbar>
-            <Typography variant="h6">
-              Bloom
-            </Typography>
+            <Typography variant="h6">Bloom</Typography>
           </Toolbar>
         </AppBar>
         {this.renderView()}
-      </div>);
+      </div>
+    );
   }
 }
