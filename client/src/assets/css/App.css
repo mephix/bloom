@@ -1,1 +1,7 @@
+.app-bar {
+  background-color: #25D8B2 !important;
+}
 
+.video-frame {
+  height: calc(100vh - 64px);
+}

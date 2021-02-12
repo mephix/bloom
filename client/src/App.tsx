@@ -143,11 +143,17 @@ export default class App extends React.Component<Props, State> {
 
   renderView(): any {
     const VIEW_STATE: any = {
-      waiting: <div>Waiting room component</div>,
+      waiting: (
+        <Video
+          url={`${process.env.REACT_APP_DAILY_URL}${'/WpMkGlGZjIBLLKDsaxPy'}`}
+        >
+          Video component
+        </Video>
+      ),
       countdown: <div>Countdown component</div>,
       video: (
         <Video
-          url={`process.env.REACT_APP_FIREBASE_API_KEY${
+          url={`${process.env.REACT_APP_DAILY_URL}${
             this.state.available_date ? this.state.available_date.room : null
           }`}
         >

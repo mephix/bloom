@@ -1,6 +1,8 @@
 import React from 'react';
 import DailyIframe from '@daily-co/daily-js';
 
+import './assets/css/App.css';
+
 type Props = {
   url: string;
 };
@@ -25,7 +27,11 @@ class VideoCallFrame extends React.Component<Props, State> {
 
     this.setState({ iframeRef: React.createRef() }, () => {
       let daily;
-      daily = DailyIframe.wrap(this.state.iframeRef.current);
+      daily = DailyIframe.wrap(this.state.iframeRef.current, {
+        showLeaveButton: true,
+        showFullscreenButton: true,
+        showParticipantsBar: false
+      });
       daily.join({ url: this.props.url });
     });
     
@@ -38,6 +44,8 @@ class VideoCallFrame extends React.Component<Props, State> {
         title="date-video"
         ref={this.state.iframeRef}
         allow="camera; microphone; fullscreen"
+        height="100%"
+        width="100%"
       ></iframe>
     );
   }
