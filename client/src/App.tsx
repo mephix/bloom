@@ -25,6 +25,7 @@ type State = {
   matching_user: any;
   available_date: any;
   app_state: string;
+  active_video_session: boolean;
 };
 
 const APP_STATE: AppState = {
@@ -63,6 +64,7 @@ export default class App extends React.Component<Props, State> {
       matching_user: null,
       available_date: null,
       app_state: APP_STATE.waiting,
+      active_video_session: false,
     };
   }
 
@@ -86,19 +88,15 @@ export default class App extends React.Component<Props, State> {
     // This is where we listen for updates.
     // Handle the app state changes here when user state changes.
 
-    if (this.shouldBeCountingDown()) {
+    if (this.shouldStartCountdown()) {
       this.setState({ app_state: APP_STATE.countdown });
-    } else if (this.shouldBeInVideo()) {
-      this.setState({ app_state: APP_STATE.video });
-    } else if (this.shouldBeRating()) {
-      this.setState({ app_state: APP_STATE.rating });
     }
   }
 
   findDate(email: string): void {
     db.collection('Dates')
       .where('for', '==', email)
-      .where('end', '>', time.now())
+      // .where('end', '>', time.now())
       .where('active', '==', true)
       .onSnapshot((querySnapshot) => {
         if (querySnapshot.docs.length === 1) {
@@ -121,12 +119,16 @@ export default class App extends React.Component<Props, State> {
     await db.collection('Users').doc(email).update(params);
   }
 
-  shouldBeCountingDown(): boolean {
-    return this.usersAreAvailable(); // && countingDown
+  shouldStartCountdown(): boolean {
+    return (
+      this.usersAreAvailable() &&
+      this.state.app_state !== APP_STATE.countdown &&
+      !this.state.active_video_session
+    );
   }
 
   shouldBeInVideo(): boolean {
-    return this.usersAreAvailable(); // && !countingDown
+    return this.usersAreAvailable() && this.state.active_video_session;
   }
 
   shouldBeRating(): boolean {
@@ -150,7 +152,10 @@ export default class App extends React.Component<Props, State> {
   }
 
   startVideo(): void {
-    this.setState({ app_state: APP_STATE.video });
+    this.setState({
+      app_state: APP_STATE.video,
+      active_video_session: true,
+    });
   }
 
   renderView(): any {
