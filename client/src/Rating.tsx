@@ -2,22 +2,20 @@ import React from 'react';
 
 import './assets/css/App.css';
 
-type Props = {};
+type Props = {
+  rateDate: Function;
+};
 
-type State = {};
-
-class Rating extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {};
-  }
-
-  componentDidMount() {}
+class Rating extends React.Component<Props> {
+  static defaultProps = { rateDate: null }
 
   render() {
     return (
       <div>
         <p>Time’s Up!</p>
+        <p>Rate:</p>
+        <button onClick={() => this.props.rateDate('fun')}>Fun</button>
+        <button onClick={() => this.props.rateDate('heart')}>Heart</button>
       </div>
     );
   }

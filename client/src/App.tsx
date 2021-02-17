@@ -177,11 +177,17 @@ export default class App extends React.Component<Props, State> {
 
   endVideo(): void {
     this.updateDateObject(this.state.available_date.id, { left: true });
-    this.updateUser(this.state.user.email, { free: true }).then(() => {
-      this.setState({
-        app_state: APP_STATE.rating,
-        active_video_session: false,
-      });
+    this.setState({
+      app_state: APP_STATE.rating,
+      active_video_session: false,
+    });
+  }
+
+  rateDate(ratingType: string): void {
+    this.updateDateObject(this.state.available_date.id, { [ratingType]: true }).then(() => {
+      this.updateUser(this.state.user.email, { free: true }).then(() => {
+        this.restart();
+      })
     });
   }
 
@@ -210,7 +216,7 @@ export default class App extends React.Component<Props, State> {
           endVideo={() => this.endVideo()}
         />
       ),
-      rating: <Rating />,
+      rating: <Rating rateDate={this.rateDate.bind(this)} />,
     };
 
     return VIEW_STATE[this.state.app_state];
