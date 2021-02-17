@@ -184,18 +184,16 @@ export default class App extends React.Component<Props, State> {
   }
 
   rateDate(ratingType: string): void {
-    this.updateDateObject(this.state.available_date.id, { [ratingType]: true }).then(() => {
-      this.updateUser(this.state.user.email, { free: true }).then(() => {
-        this.restart();
-      })
-    });
+    this.updateDateObject(this.state.available_date.id, { [ratingType]: true });
   }
 
   restart(): void {
-    this.setState({
-      app_state: APP_STATE.waiting,
-      active_video_session: false,
-    });
+    this.updateUser(this.state.user.email, { free: true }).then(() => {
+      this.setState({
+        app_state: APP_STATE.waiting,
+        active_video_session: false,
+      });
+    })
   }
 
   renderView(): any {
@@ -216,7 +214,9 @@ export default class App extends React.Component<Props, State> {
           endVideo={() => this.endVideo()}
         />
       ),
-      rating: <Rating rateDate={this.rateDate.bind(this)} />,
+      rating: <Rating 
+        rateDate={this.rateDate.bind(this)}
+        restart={() => this.restart()} />,
     };
 
     return VIEW_STATE[this.state.app_state];
