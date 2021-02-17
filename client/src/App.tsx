@@ -101,7 +101,7 @@ export default class App extends React.Component<Props, State> {
   findDate(email: string): void {
     db.collection('Dates')
       .where('for', '==', email)
-      // .where('end', '>', time.now())
+      .where('end', '>', time.now())
       .where('active', '==', true)
       .onSnapshot((querySnapshot) => {
         if (querySnapshot.docs.length === 1) {
@@ -129,15 +129,6 @@ export default class App extends React.Component<Props, State> {
       this.usersAreAvailable() &&
       this.state.app_state !== APP_STATE.countdown &&
       !this.state.active_video_session
-    );
-  }
-
-  shouldBeRating(): boolean {
-    return (
-      this.state.available_date &&
-      this.state.available_date.left &&
-      this.state.user &&
-      this.state.user.finished
     );
   }
 
@@ -188,9 +179,6 @@ export default class App extends React.Component<Props, State> {
           user={this.state.user}
           matching_user={this.state.matching_user}
           available_date={this.state.available_date}
-          url={`${process.env.REACT_APP_DAILY_URL}${
-            this.state.available_date ? this.state.available_date.room : null
-          }`}
           endVideo={() => this.endVideo()}
         />
       ),

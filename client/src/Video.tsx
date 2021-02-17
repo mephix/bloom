@@ -7,7 +7,6 @@ type Props = {
   user: any;
   matching_user: any;
   available_date: any;
-  url: string;
   endVideo: Function;
 };
 
@@ -24,21 +23,24 @@ class VideoCallFrame extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    if (!this.props.url) {
-      console.error('No URL was set for video chat');
+    if (!this.props.available_date) {
+      console.error('No date was available for video chat.');
       return;
     }
 
-    this.setState({ iframeRef: React.createRef() }, () => {
-      let daily;
-      daily = DailyIframe.wrap(this.state.iframeRef.current, {
-        showLeaveButton: true,
-        showFullscreenButton: true,
-        showParticipantsBar: false
+    this.props.available_date.room.get().then((room: any) => {
+      let roomUrl = room.data().url;
+
+      this.setState({ iframeRef: React.createRef() }, () => {
+        let daily;
+        daily = DailyIframe.wrap(this.state.iframeRef.current, {
+          showLeaveButton: true,
+          showFullscreenButton: true,
+          showParticipantsBar: false
+        });
+        daily.join({ url: roomUrl });
       });
-      daily.join({ url: this.props.url });
-    });
-    
+    })
   }
 
   render() {
