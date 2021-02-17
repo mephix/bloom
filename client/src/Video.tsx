@@ -28,7 +28,7 @@ class VideoCallFrame extends React.Component<Props, State> {
       return;
     }
 
-    this.props.available_date.room.get().then((room: any) => {
+    this.props.available_date.data().room.get().then((room: any) => {
       let roomUrl = room.data().url;
 
       this.setState({ iframeRef: React.createRef() }, () => {
@@ -38,6 +38,7 @@ class VideoCallFrame extends React.Component<Props, State> {
           showFullscreenButton: true,
           showParticipantsBar: false
         });
+        daily.on('left-meeting', () => this.props.endVideo());
         daily.join({ url: roomUrl });
       });
     })

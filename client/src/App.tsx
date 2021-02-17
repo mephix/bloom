@@ -98,6 +98,12 @@ export default class App extends React.Component<Props, State> {
     }
   }
 
+  //
+  //
+  // Services
+  //
+  //
+
   findDate(email: string): void {
     db.collection('Dates')
       .where('for', '==', email)
@@ -105,8 +111,8 @@ export default class App extends React.Component<Props, State> {
       .where('active', '==', true)
       .onSnapshot((querySnapshot) => {
         if (querySnapshot.docs.length === 1) {
-          this.setState({ available_date: querySnapshot.docs[0].data() }, () =>
-            this.getMatchingUser(this.state.available_date.with)
+          this.setState({ available_date: querySnapshot.docs[0] }, () =>
+            this.getMatchingUser(this.state.available_date.data().with)
           );
         }
       });
@@ -124,10 +130,21 @@ export default class App extends React.Component<Props, State> {
     await db.collection('Users').doc(email).update(params);
   }
 
+  async updateDateObject(id: string, params: any): Promise<void> {
+    await db.collection('Dates').doc(id).update(params);
+  }
+
+  //
+  //
+  // Checks
+  //
+  //
+
   shouldStartCountdown(): boolean {
     return (
       this.usersAreAvailable() &&
       this.state.app_state !== APP_STATE.countdown &&
+      this.state.app_state !== APP_STATE.rating &&
       !this.state.active_video_session
     );
   }
@@ -143,7 +160,15 @@ export default class App extends React.Component<Props, State> {
     );
   }
 
+  //
+  //
+  // State functions
+  //
+  //
+
   startVideo(): void {
+    this.updateDateObject(this.state.available_date.id, { joined: true });
+    this.updateUser(this.state.user.email, { free: false });
     this.setState({
       app_state: APP_STATE.video,
       active_video_session: true,
@@ -151,9 +176,12 @@ export default class App extends React.Component<Props, State> {
   }
 
   endVideo(): void {
-    this.setState({
-      app_state: APP_STATE.rating,
-      active_video_session: false,
+    this.updateDateObject(this.state.available_date.id, { left: true });
+    this.updateUser(this.state.user.email, { free: true }).then(() => {
+      this.setState({
+        app_state: APP_STATE.rating,
+        active_video_session: false,
+      });
     });
   }
 
