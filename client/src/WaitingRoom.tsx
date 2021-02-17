@@ -2,24 +2,23 @@ import React from 'react';
 
 import './assets/css/App.css';
 
-type Props = {};
+type Props = {
+  user: any;
+};
 
-type State = {};
-
-class WaitingRoom extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {};
-  }
-
-  componentDidMount() {}
+class WaitingRoom extends React.Component<Props> {
+  static defaultProps = { user: null }
 
   render() {
     return (
       <div>
-        <p>We’re setting you up on a date.</p>
-        <p>This usually takes a couple of minutes.</p>
-        <p>In the meantime, feel free to invite people.</p>
+        {this.props.user && (
+          <div>
+            <p>We’re setting you up on a date.</p>
+            <p>This usually takes a couple of minutes.</p>
+            <p>In the meantime, feel free to invite people.</p>
+          </div>
+        )}
       </div>
     );
   }

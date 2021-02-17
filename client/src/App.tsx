@@ -82,6 +82,11 @@ export default class App extends React.Component<Props, State> {
           });
         });
     }
+
+    window.addEventListener('beforeunload', (event: Event) => {
+      event.preventDefault();
+      this.updateUser(this.state.user.email, { here: false });
+    });
   }
 
   componentDidUpdate() {
@@ -127,10 +132,6 @@ export default class App extends React.Component<Props, State> {
     );
   }
 
-  shouldBeInVideo(): boolean {
-    return this.usersAreAvailable() && this.state.active_video_session;
-  }
-
   shouldBeRating(): boolean {
     return (
       this.state.available_date &&
@@ -158,15 +159,39 @@ export default class App extends React.Component<Props, State> {
     });
   }
 
+  endVideo(): void {
+    this.setState({
+      app_state: APP_STATE.rating,
+      active_video_session: false,
+    });
+  }
+
+  restart(): void {
+    this.setState({
+      app_state: APP_STATE.waiting,
+      active_video_session: false,
+    });
+  }
+
   renderView(): any {
     const VIEW_STATE: any = {
-      waiting: <WaitingRoom />,
-      countdown: <CountDown startVideo={() => this.startVideo()} />,
+      waiting: <WaitingRoom user={this.state.user} />,
+      countdown: (
+        <CountDown
+          user={this.state.user}
+          matching_user={this.state.matching_user}
+          startVideo={() => this.startVideo()}
+        />
+      ),
       video: (
         <Video
+          user={this.state.user}
+          matching_user={this.state.matching_user}
+          available_date={this.state.available_date}
           url={`${process.env.REACT_APP_DAILY_URL}${
             this.state.available_date ? this.state.available_date.room : null
           }`}
+          endVideo={() => this.endVideo()}
         />
       ),
       rating: <Rating />,

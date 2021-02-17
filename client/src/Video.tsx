@@ -4,7 +4,11 @@ import DailyIframe from '@daily-co/daily-js';
 import './assets/css/App.css';
 
 type Props = {
+  user: any;
+  matching_user: any;
+  available_date: any;
   url: string;
+  endVideo: Function;
 };
 
 type State = {

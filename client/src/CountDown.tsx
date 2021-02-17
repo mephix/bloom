@@ -3,6 +3,8 @@ import React from 'react';
 import './assets/css/App.css';
 
 type Props = {
+  user: any;
+  matching_user: any;
   startVideo: Function;
 };
 
