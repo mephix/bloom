@@ -215,7 +215,8 @@ export default class App extends React.Component<Props, State> {
           endVideo={() => this.endVideo()}
         />
       ),
-      rating: <Rating 
+      rating: <Rating
+        available_date={this.state.available_date}
         matching_user={this.state.matching_user}
         rateDate={this.rateDate.bind(this)}
         restart={() => this.restart()} />,
