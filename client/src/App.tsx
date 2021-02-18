@@ -1,7 +1,6 @@
 import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 
 import { db, time } from './config/firebase';
 
@@ -9,7 +8,9 @@ import CountDown from './CountDown';
 import Rating from './Rating';
 import WaitingRoom from './WaitingRoom';
 import Video from './Video';
+
 import './assets/css/App.css';
+import logo from './assets/images/bloom.jpeg';
 
 type AppState = {
   waiting: string;
@@ -227,10 +228,12 @@ export default class App extends React.Component<Props, State> {
       <div className="app">
         <AppBar position="static" className="app-bar">
           <Toolbar>
-            <Typography variant="h6">Bloom</Typography>
+            <img src={logo} className="logo" />
           </Toolbar>
         </AppBar>
-        {this.renderView()}
+        <div className="app-content">
+          {this.renderView()}
+        </div>
       </div>
     );
   }

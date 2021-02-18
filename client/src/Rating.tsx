@@ -1,5 +1,10 @@
 import React from 'react';
 
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+
 import './assets/css/App.css';
 
 type Props = {
@@ -23,18 +28,35 @@ class Rating extends React.Component<Props, State> {
     return (
       <React.Fragment>
         {this.state.rated ? (
-          <div>
+          <div className="centered-container">
             <p>Do you want to go on another date?</p>
-            <button>No</button>
-            <button onClick={() => this.props.restart()}>Yes</button>
+            <AppBar position="fixed" color="primary" className="bottom-bar">
+              <Toolbar>
+                <Button variant="contained">No</Button>
+                <Button variant="contained" color="primary" onClick={() => this.props.restart()}>Yes</Button>
+              </Toolbar>
+            </AppBar> 
           </div>
         ) : (
-          <div>
-            <p>Time’s Up!</p>
-            <p>Rate:</p>
-            <button onClick={() => this.props.rateDate('fun')}>Fun</button>
-            <button onClick={() => this.props.rateDate('heart')}>Heart</button>
-            <button onClick={() => this.setState({rated: true})}>Done</button>
+          <div className="centered-container">
+            <p>Time’s up!</p>
+            <div className="feedback">
+              <p>Could you see and hear each other okay?</p>
+              <IconButton color="primary" onClick={() => this.props.rateDate('fun')}>
+                ...
+              </IconButton>
+            </div>
+            <div className="feedback">
+              <p>Do you want to exchange numbers with ?</p>
+              <IconButton color="primary" onClick={() => this.props.rateDate('heart')}>
+                ...
+              </IconButton>
+            </div>
+            <AppBar position="fixed" color="primary" className="bottom-bar">
+              <Toolbar>
+                <Button variant="contained" onClick={() => this.setState({rated: true})}>Done</Button>
+              </Toolbar>
+            </AppBar> 
           </div>
         )}
         

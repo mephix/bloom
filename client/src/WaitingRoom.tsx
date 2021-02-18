@@ -11,12 +11,10 @@ class WaitingRoom extends React.Component<Props> {
 
   render() {
     return (
-      <div>
+      <div className="centered-container">
         {this.props.user && (
           <div>
-            <p>We’re setting you up on a date.</p>
-            <p>This usually takes a couple of minutes.</p>
-            <p>In the meantime, feel free to invite people.</p>
+            <p>We’re setting you up on a date.<br />This usually takes a couple of minutes.</p>
           </div>
         )}
       </div>

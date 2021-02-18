@@ -34,9 +34,13 @@ class CountDown extends React.Component<Props, State> {
 
   render() {
     return (
-      <div>
-        {this.state.timeRemaining}
-        <p>You have a date with:</p>
+      <div className="centered-container">
+        <div className="countdown-box">{this.state.timeRemaining}</div>
+        <div className="countdown-details">
+          <p>You have a date with:</p>
+          <p><strong>{this.props.matching_user.firstName}</strong></p>
+          <p>{this.props.matching_user.bio}</p>
+        </div>
       </div>
     );
   }
