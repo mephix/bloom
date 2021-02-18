@@ -3,10 +3,10 @@ var db = getDb()
 
 exports.list = list
 exports.get = get
-exports.create = create
-exports.update = update
-exports.patch = patch
+exports.set = set
+exports.modify = modify
 exports.delete = remove
+exports.db = db
 
 /*
  * FieldValue: contains useful fields such as
@@ -17,6 +17,9 @@ exports.delete = remove
  *  - delete() to remove a field.
  */
 
+/*
+ * `list` to get all documents in a collection.
+ */
 async function list (collection) {
   let docs = []
   const snapshot = await db.collection(collection).get()
@@ -27,6 +30,9 @@ async function list (collection) {
   return docs
 }
 
+/*
+ * `get` a single document.
+ */
 async function get (collection, id) {
   await db.collection(collection).doc(id).get()
   if (doc.exists) return doc.data()
@@ -35,26 +41,19 @@ async function get (collection, id) {
     return undefined
   }
 }
-/*
- * Use `create` to create a new document with randomly generated id.
- */
-function create (collection, data) {
-  return db.collection(collection).add(data)
-}
 
 /*
- * Use `update` to overwrite an existing document, or create a new document with
- * specified id.
- * 
+ * Use `set` to create a new document, or overwrite an existing
+ * document, with specified id.
  */
-function update (collection, id, data) {
+function set (collection, id, data) {
   return db.collection(collection).doc(id).set(data) 
 }
 
 /*
- * Use `patch` to update only the specified fields of an existing document.
+ * Use `modify` to update only the specified fields of an existing document.
  */
-function patch (collection, id, data) {
+function modify (collection, id, data) {
   return db.collection(collection).doc(id).set(data, { merge: true }) 
 }
 
@@ -72,7 +71,7 @@ function getDb () {
    *
    * First, thanks to the 'dotenv' package, we can write FIREBASE_CONFIG={}
    * in the '.env' file in the working directory (which can be found with
-   * process.cwd(), currently it is 'kal') then we don't need to type it at
+   * process.cwd(), currently it is 'bloom') then we don't need to type it at
    * the terminal (we used to have to type: export FIREBASE_CONFIG={} at the
    * terminal every time).
    *

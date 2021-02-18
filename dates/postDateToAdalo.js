@@ -2,7 +2,7 @@ const adaloApi = require('../apis/adaloApi.js')
 
 module.exports = postDateToAdalo
 
-function postDateToAdalo (date, params) {
+function postDateToAdalo (date) {
 
   // Create a pair of Adalo date objects.
   const commonFields = {

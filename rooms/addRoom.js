@@ -30,5 +30,9 @@ async function addRoom(date, params) {
   date.token1 = token1
   date.token2 = token2
 
+  // Addition for firebase dates
+  date.nbf = nbf
+  date.exp = exp
+
   return date
 }

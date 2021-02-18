@@ -1,32 +1,38 @@
 /*
  * Key parameters to set
  */
-let DAY = '2021-02-03'
-let HOUR = 17
-let nRooms = 5
-let slots = [0,1,2,3,4,5,6]
+let DAY = '2021-02-15'
+let HOUR = 10
+let nRooms = 1
+let slots = [0]
 
 // Less frequently changed parameters. 
 // TIMEZONE_OFFSET, SLOT_PREENTRY, SLOT_STARTS, SLOT_ENDS
 const TIMEZONE_OFFSET = '-08:00'
-const SLOT_PREENTRY = 2
+const SLOT_PREENTRY = 1
 const SLOT_STARTS = {
-  0: HOUR + ':02',
-  1: HOUR + ':10',
-  2: HOUR + ':18',
-  3: HOUR + ':26',
-  4: HOUR + ':34',
-  5: HOUR + ':42',
-  6: HOUR + ':50',
+  0: HOUR + ':00',
+  1: HOUR + ':05',
+  2: HOUR + ':10',
+  3: HOUR + ':16',
+  4: HOUR + ':22',
+  5: HOUR + ':28',
+  6: HOUR + ':34',
+  7: HOUR + ':40',
+  8: HOUR + ':46',
+  9: HOUR + ':50',
 }
 const SLOT_ENDS = {
-  0: HOUR + ':10',
-  1: HOUR + ':18',
-  2: HOUR + ':26',
-  3: HOUR + ':34',
-  4: HOUR + ':42',
-  5: HOUR + ':50',
-  6: HOUR + ':58',
+  0: HOUR + ':05',
+  1: HOUR + ':10',
+  2: HOUR + ':16',
+  3: HOUR + ':22',
+  4: HOUR + ':28',
+  5: HOUR + ':34',
+  6: HOUR + ':40',
+  7: HOUR + ':46',
+  8: HOUR + ':50',
+  9: HOUR + ':58',
 }
 
 const daily = require('../apis/dailyApi.js')
