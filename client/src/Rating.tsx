@@ -9,6 +9,7 @@ import { ThumbUp, Favorite } from '@material-ui/icons';
 import './assets/css/App.css';
 
 type Props = {
+  matching_user: any;
   rateDate: Function;
   restart: Function;
 };
@@ -48,7 +49,7 @@ class Rating extends React.Component<Props, State> {
               </IconButton>
             </div>
             <div className="feedback">
-              <p>Do you want to exchange numbers with ?</p>
+              <p>Do you want to exchange numbers with {this.props.matching_user.firstName}?</p>
               <IconButton color="primary" onClick={() => this.props.rateDate('heart')}>
                 <Favorite />
               </IconButton>

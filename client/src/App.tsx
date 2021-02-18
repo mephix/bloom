@@ -216,6 +216,7 @@ export default class App extends React.Component<Props, State> {
         />
       ),
       rating: <Rating 
+        matching_user={this.state.matching_user}
         rateDate={this.rateDate.bind(this)}
         restart={() => this.restart()} />,
     };
