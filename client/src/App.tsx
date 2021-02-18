@@ -27,6 +27,10 @@ type State = {
   available_date: any;
   app_state: string;
   active_video_session: boolean;
+  video_session_time_remaining: {
+    minutes: number;
+    seconds: number;
+  };
 };
 
 const APP_STATE: AppState = {
@@ -66,6 +70,10 @@ export default class App extends React.Component<Props, State> {
       available_date: null,
       app_state: APP_STATE.waiting,
       active_video_session: false,
+      video_session_time_remaining: {
+        minutes: 999,
+        seconds: 999,
+      },
     };
   }
 
@@ -174,6 +182,29 @@ export default class App extends React.Component<Props, State> {
       app_state: APP_STATE.video,
       active_video_session: true,
     });
+
+    // Start timer
+    let timerState = setInterval(() => {
+      if (
+        this.state.video_session_time_remaining.minutes <= 0 &&
+        this.state.video_session_time_remaining.seconds <= 1
+      ) {
+        clearInterval(timerState);
+        this.endVideo();
+      }
+
+      let total_seconds_remaining =
+        this.state.available_date.data().end.seconds - time.now().seconds;
+      let minutes = Math.floor(total_seconds_remaining / 60);
+      let seconds = total_seconds_remaining - minutes * 60;
+
+      this.setState({
+        video_session_time_remaining: {
+          minutes,
+          seconds,
+        },
+      });
+    }, 1000);
   }
 
   endVideo(): void {
@@ -181,7 +212,13 @@ export default class App extends React.Component<Props, State> {
     this.setState({
       app_state: APP_STATE.rating,
       active_video_session: false,
+      video_session_time_remaining: {
+        minutes: 999,
+        seconds: 999,
+      },
     });
+
+    // Clear timer
   }
 
   rateDate(ratingType: string): void {
@@ -194,7 +231,7 @@ export default class App extends React.Component<Props, State> {
         app_state: APP_STATE.waiting,
         active_video_session: false,
       });
-    })
+    });
   }
 
   renderView(): any {
@@ -215,11 +252,14 @@ export default class App extends React.Component<Props, State> {
           endVideo={() => this.endVideo()}
         />
       ),
-      rating: <Rating
-        available_date={this.state.available_date}
-        matching_user={this.state.matching_user}
-        rateDate={this.rateDate.bind(this)}
-        restart={() => this.restart()} />,
+      rating: (
+        <Rating
+          available_date={this.state.available_date}
+          matching_user={this.state.matching_user}
+          rateDate={this.rateDate.bind(this)}
+          restart={() => this.restart()}
+        />
+      ),
     };
 
     return VIEW_STATE[this.state.app_state];
@@ -230,12 +270,30 @@ export default class App extends React.Component<Props, State> {
       <div className="app">
         <AppBar position="static" className="app-bar">
           <Toolbar>
-            <img src={logo} className="logo" alt="Bloom" />
+            {this.state.app_state === APP_STATE.video ? (
+              <React.Fragment>
+                <div>{this.state.matching_user.firstName}</div>
+                <div
+                  className={
+                    this.state.video_session_time_remaining.minutes < 1
+                      ? 'video-timer ending'
+                      : 'video-timer'
+                  }
+                >
+                  <div className="video-timer-panel">
+                    {this.state.video_session_time_remaining.minutes}
+                  </div>
+                  <div className="video-timer-panel">
+                    {this.state.video_session_time_remaining.seconds}
+                  </div>
+                </div>
+              </React.Fragment>
+            ) : (
+              <img src={logo} className="logo" alt="Bloom" />
+            )}
           </Toolbar>
         </AppBar>
-        <div className="app-content">
-          {this.renderView()}
-        </div>
+        <div className="app-content">{this.renderView()}</div>
       </div>
     );
   }
