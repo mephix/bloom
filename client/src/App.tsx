@@ -230,7 +230,7 @@ export default class App extends React.Component<Props, State> {
       <div className="app">
         <AppBar position="static" className="app-bar">
           <Toolbar>
-            <img src={logo} className="logo" />
+            <img src={logo} className="logo" alt="Bloom" />
           </Toolbar>
         </AppBar>
         <div className="app-content">
