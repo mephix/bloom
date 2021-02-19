@@ -86,7 +86,11 @@ export default class App extends React.Component<Props, State> {
         .doc(email)
         .onSnapshot((doc) => {
           this.setState({ user: doc.data() }, () => {
-            this.updateUser(this.state.user.email, { here: true, free: true });
+            this.updateUser(this.state.user.email, {
+              here: true,
+              free: true,
+              waitStartTime: time.now()
+            });
             this.findDate(this.state.user.email);
           });
         });
