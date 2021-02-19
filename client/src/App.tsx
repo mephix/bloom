@@ -37,7 +37,7 @@ const APP_STATE: AppState = {
   waiting: 'waiting',
   countdown: 'countdown',
   video: 'video',
-  rating: 'rating',
+  rating: 'rating'
 };
 
 export default class App extends React.Component<Props, State> {
@@ -72,8 +72,8 @@ export default class App extends React.Component<Props, State> {
       active_video_session: false,
       video_session_time_remaining: {
         minutes: 999,
-        seconds: 999,
-      },
+        seconds: 999
+      }
     };
   }
 
@@ -95,6 +95,10 @@ export default class App extends React.Component<Props, State> {
     window.addEventListener('beforeunload', (event: Event) => {
       event.preventDefault();
       this.updateUser(this.state.user.email, { here: false });
+
+      if (this.state.active_video_session) {
+        this.endVideo();
+      }
     });
   }
 
@@ -180,7 +184,7 @@ export default class App extends React.Component<Props, State> {
     this.updateUser(this.state.user.email, { free: false });
     this.setState({
       app_state: APP_STATE.video,
-      active_video_session: true,
+      active_video_session: true
     });
 
     // Start timer
@@ -201,21 +205,25 @@ export default class App extends React.Component<Props, State> {
       this.setState({
         video_session_time_remaining: {
           minutes,
-          seconds,
-        },
+          seconds
+        }
       });
     }, 1000);
   }
 
   endVideo(): void {
-    this.updateDateObject(this.state.available_date.id, { left: true });
+    this.updateDateObject(this.state.available_date.id, {
+      left: true,
+      active: false
+    });
+    this.updateUser(this.state.user.email, { free: true });
     this.setState({
       app_state: APP_STATE.rating,
       active_video_session: false,
       video_session_time_remaining: {
         minutes: 999,
-        seconds: 999,
-      },
+        seconds: 999
+      }
     });
 
     // Clear timer
@@ -229,7 +237,7 @@ export default class App extends React.Component<Props, State> {
     this.updateUser(this.state.user.email, { free: true }).then(() => {
       this.setState({
         app_state: APP_STATE.waiting,
-        active_video_session: false,
+        active_video_session: false
       });
     });
   }
@@ -259,7 +267,7 @@ export default class App extends React.Component<Props, State> {
           rateDate={this.rateDate.bind(this)}
           restart={() => this.restart()}
         />
-      ),
+      )
     };
 
     return VIEW_STATE[this.state.app_state];
