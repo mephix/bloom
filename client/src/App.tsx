@@ -112,6 +112,7 @@ export default class App extends React.Component<Props, State> {
 
     if (this.shouldStartCountdown()) {
       this.setState({ app_state: APP_STATE.countdown });
+      this.updateUser(this.state.user.email, { free: false });
     }
   }
 
@@ -185,7 +186,6 @@ export default class App extends React.Component<Props, State> {
 
   startVideo(): void {
     this.updateDateObject(this.state.available_date.id, { joined: true });
-    this.updateUser(this.state.user.email, { free: false });
     this.setState({
       app_state: APP_STATE.video,
       active_video_session: true
