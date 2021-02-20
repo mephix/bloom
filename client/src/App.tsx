@@ -89,13 +89,13 @@ export default class App extends React.Component<Props, State> {
             this.updateUser(this.state.user.email, {
               here: true,
               free: true,
-              waitStartTime: time.now()
             });
             this.findDate(this.state.user.email);
           });
         });
     }
 
+    // If user closes browser tab
     window.addEventListener('beforeunload', (event: Event) => {
       event.preventDefault();
       this.updateUser(this.state.user.email, { here: false });
@@ -104,6 +104,15 @@ export default class App extends React.Component<Props, State> {
         this.endVideo();
       }
     });
+
+    // On back/forward buttons
+    window.onhashchange = () => {
+      this.updateUser(this.state.user.email, { here: false });
+
+      if (this.state.active_video_session) {
+        this.endVideo();
+      }
+    };
   }
 
   componentDidUpdate() {
