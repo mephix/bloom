@@ -107,9 +107,8 @@ export default class App extends React.Component<Props, State> {
 
     // On back/forward buttons
     window.onhashchange = () => {
-      this.updateUser(this.state.user.email, { here: false });
-
       if (this.state.active_video_session) {
+        this.updateUser(this.state.user.email, { here: false });
         this.endVideo();
       }
     };
