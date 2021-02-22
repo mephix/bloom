@@ -196,7 +196,10 @@ export default class App extends React.Component<Props, State> {
   //
 
   startVideo(): void {
-    this.updateDateObject(this.state.available_date.id, { joined: true });
+    const now = time.now();
+
+    this.updateDateObject(this.state.available_date.id, { joined: now });
+    
     this.setState({
       app_state: APP_STATE.video,
       active_video_session: true
@@ -232,15 +235,17 @@ export default class App extends React.Component<Props, State> {
     this.updateDateObject(this.state.available_date.id, {
       left: now,
       active: false
-    });
-    this.updateUser(this.state.user.email, { free: true });
-    this.setState({
-      app_state: APP_STATE.rating,
-      active_video_session: false,
-      video_session_time_remaining: {
-        minutes: 999,
-        seconds: 999
-      }
+    }).then(() => {
+      this.updateUser(this.state.user.email, { free: true }).then(() => {
+        this.setState({
+          app_state: APP_STATE.rating,
+          active_video_session: false,
+          video_session_time_remaining: {
+            minutes: 999,
+            seconds: 999
+          }
+        });
+      });
     });
   }
 
