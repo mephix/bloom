@@ -13,6 +13,7 @@ type Props = {
   matching_user: any;
   rateDate: Function;
   restart: Function;
+  redirectToApp: Function;
 };
 
 type State = {
@@ -33,7 +34,7 @@ class Rating extends React.Component<Props, State> {
             <p>Do you want to go on another date?</p>
             <AppBar position="fixed" color="primary" className="bottom-bar">
               <Toolbar>
-                <Button variant="contained">No</Button>
+                <Button variant="contained" onClick={() => this.props.redirectToApp()}>No</Button>
                 <Button variant="contained" color="primary" onClick={() => this.props.restart()}>Yes</Button>
               </Toolbar>
             </AppBar> 

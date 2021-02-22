@@ -112,6 +112,7 @@ export default class App extends React.Component<Props, State> {
       if (this.state.active_video_session) {
         this.updateUser(this.state.user.email, { here: false });
         this.endVideo();
+        this.redirectToApp();
       }
     };
   }
@@ -241,8 +242,6 @@ export default class App extends React.Component<Props, State> {
         seconds: 999
       }
     });
-
-    // Clear timer
   }
 
   rateDate(ratingType: string): void {
@@ -256,6 +255,10 @@ export default class App extends React.Component<Props, State> {
         active_video_session: false
       });
     });
+  }
+
+  redirectToApp() {
+    window.location.replace('https://live.bloomdating.app/');
   }
 
   renderView(): any {
@@ -282,6 +285,7 @@ export default class App extends React.Component<Props, State> {
           matching_user={this.state.matching_user}
           rateDate={this.rateDate.bind(this)}
           restart={() => this.restart()}
+          redirectToApp={() => this.redirectToApp()}
         />
       )
     };
