@@ -80,6 +80,7 @@ export default class App extends React.Component<Props, State> {
   componentDidMount() {
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get('email');
+    const now = time.now();
 
     if (email) {
       db.collection('Users')
@@ -89,6 +90,7 @@ export default class App extends React.Component<Props, State> {
             this.updateUser(this.state.user.email, {
               here: true,
               free: true,
+              waitStartTime: now
             });
             this.findDate(this.state.user.email);
           });
@@ -224,8 +226,10 @@ export default class App extends React.Component<Props, State> {
   }
 
   endVideo(): void {
+    const now = time.now();
+
     this.updateDateObject(this.state.available_date.id, {
-      left: true,
+      left: now,
       active: false
     });
     this.updateUser(this.state.user.email, { free: true });
