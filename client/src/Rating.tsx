@@ -44,7 +44,7 @@ class Rating extends React.Component<Props, State> {
             <p>Time’s up!</p>
             <div className="feedback">
               <p>Could you see and hear each other okay?</p>
-              <IconButton color="primary" onClick={() => this.props.rateDate('fun')}>
+              <IconButton color="primary" onClick={() => this.props.rateDate('fun', !this.props.available_date.data().fun)}>
                 {this.props.available_date.data().fun ? (
                   <ThumbUp />
                 ) : (
@@ -54,7 +54,7 @@ class Rating extends React.Component<Props, State> {
             </div>
             <div className="feedback">
               <p>Do you want to exchange numbers with {this.props.matching_user.firstName}?</p>
-              <IconButton color="primary" onClick={() => this.props.rateDate('heart')}>
+              <IconButton color="primary" onClick={() => this.props.rateDate('heart', !this.props.available_date.data().heart)}>
                 {this.props.available_date.data().heart ? (
                   <Favorite />
                 ) : (

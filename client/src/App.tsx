@@ -89,15 +89,16 @@ export default class App extends React.Component<Props, State> {
     const now = time.now();
 
     if (email) {
+      this.updateUser(email, {
+        here: true,
+        free: true,
+        waitStartTime: now
+      });
+
       db.collection('Users')
         .doc(email)
         .onSnapshot((doc) => {
           this.setState({ user: doc.data() }, () => {
-            this.updateUser(this.state.user.email, {
-              here: true,
-              free: true,
-              waitStartTime: now
-            });
             this.findDate(this.state.user.email);
           });
         });
@@ -128,10 +129,9 @@ export default class App extends React.Component<Props, State> {
     // Handle the app state changes here when user state changes.
 
     if (this.shouldStartCountdown()) {
-      this.setState(
-        { app_state: APP_STATE.countdown },
-        () => this.updateUser(this.state.user.email, { free: false })
-      );
+      this.updateUser(this.state.user.email, { free: false }).then(() => {
+        this.setState({ app_state: APP_STATE.countdown });
+      });
     }
   }
 
@@ -183,7 +183,8 @@ export default class App extends React.Component<Props, State> {
       this.state.app_state !== APP_STATE.countdown &&
       this.state.app_state !== APP_STATE.rating &&
       !this.state.active_video_session &&
-      (this.state.available_date && this.state.available_date.data().active)
+      this.state.available_date &&
+      this.state.available_date.data().active
     );
   }
 
@@ -242,8 +243,7 @@ export default class App extends React.Component<Props, State> {
     const now = time.now();
 
     this.updateDateObject(this.state.available_date.id, {
-      left: now,
-      active: false
+      left: now
     }).then(() => {
       this.updateUser(this.state.user.email, { free: true }).then(() => {
         this.setState({
@@ -258,11 +258,14 @@ export default class App extends React.Component<Props, State> {
     });
   }
 
-  rateDate(ratingType: string): void {
-    this.updateDateObject(this.state.available_date.id, { [ratingType]: true });
+  rateDate(ratingType: string, value: boolean): void {
+    this.updateDateObject(this.state.available_date.id, {
+      [ratingType]: value
+    });
   }
 
   restart(): void {
+    this.updateDateObject(this.state.available_date.id, { active: false });
     this.updateUser(this.state.user.email, { free: true }).then(() => {
       this.setState({
         app_state: APP_STATE.waiting,
