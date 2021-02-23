@@ -265,11 +265,12 @@ export default class App extends React.Component<Props, State> {
   }
 
   restart(): void {
-    this.updateDateObject(this.state.available_date.id, { active: false });
-    this.updateUser(this.state.user.email, { free: true }).then(() => {
-      this.setState({
-        app_state: APP_STATE.waiting,
-        active_video_session: false
+    this.updateDateObject(this.state.available_date.id, { active: false }).then(() => {
+      this.updateUser(this.state.user.email, { free: true }).then(() => {
+        this.setState({
+          app_state: APP_STATE.waiting,
+          active_video_session: false
+        });
       });
     });
   }
