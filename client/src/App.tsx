@@ -245,15 +245,13 @@ export default class App extends React.Component<Props, State> {
     this.updateDateObject(this.state.available_date.id, {
       left: now
     }).then(() => {
-      this.updateUser(this.state.user.email, { free: true }).then(() => {
-        this.setState({
-          app_state: APP_STATE.rating,
-          active_video_session: false,
-          video_session_time_remaining: {
-            minutes: 999,
-            seconds: 999
-          }
-        });
+      this.setState({
+        app_state: APP_STATE.rating,
+        active_video_session: false,
+        video_session_time_remaining: {
+          minutes: 999,
+          seconds: 999
+        }
       });
     });
   }
