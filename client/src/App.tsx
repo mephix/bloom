@@ -148,9 +148,11 @@ export default class App extends React.Component<Props, State> {
       .where('active', '==', true)
       .onSnapshot((querySnapshot) => {
         if (querySnapshot.docs.length === 1) {
-          this.setState({ available_date: querySnapshot.docs[0] }, () =>
-            this.getMatchingUser(this.state.available_date.data().with)
-          );
+          if (querySnapshot.docs[0].data().start < time.now()) {
+            this.setState({ available_date: querySnapshot.docs[0] }, () =>
+              this.getMatchingUser(this.state.available_date.data().with)
+            );
+          }
         }
       });
   }
@@ -263,14 +265,16 @@ export default class App extends React.Component<Props, State> {
   }
 
   restart(): void {
-    this.updateDateObject(this.state.available_date.id, { active: false }).then(() => {
-      this.updateUser(this.state.user.email, { free: true }).then(() => {
-        this.setState({
-          app_state: APP_STATE.waiting,
-          active_video_session: false
+    this.updateDateObject(this.state.available_date.id, { active: false }).then(
+      () => {
+        this.updateUser(this.state.user.email, { free: true }).then(() => {
+          this.setState({
+            app_state: APP_STATE.waiting,
+            active_video_session: false
+          });
         });
-      });
-    });
+      }
+    );
   }
 
   redirectToApp() {
