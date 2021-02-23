@@ -147,12 +147,10 @@ export default class App extends React.Component<Props, State> {
       .where('end', '>', time.now())
       .where('active', '==', true)
       .onSnapshot((querySnapshot) => {
-        if (querySnapshot.docs.length === 1) {
-          if (querySnapshot.docs[0].data().start.seconds < time.now().seconds) {
-            this.setState({ available_date: querySnapshot.docs[0] }, () =>
-              this.getMatchingUser(this.state.available_date.data().with)
-            );
-          }
+        if (querySnapshot.docs[0].data().start.seconds < time.now().seconds) {
+          this.setState({ available_date: querySnapshot.docs[0] }, () =>
+            this.getMatchingUser(this.state.available_date.data().with)
+          );
         }
       });
   }
