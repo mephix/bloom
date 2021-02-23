@@ -145,8 +145,9 @@ export default class App extends React.Component<Props, State> {
     db.collection('Dates')
       .where('for', '==', email)
       .where('end', '>', time.now())
-      .where('active', '==', true)
       .onSnapshot((querySnapshot) => {
+        // Firebase returns the latest Date object that was created as [0]
+        // This could be improved, but it works with the current backend script logic.
         if (querySnapshot.docs[0].data().start.seconds < time.now().seconds) {
           this.setState({ available_date: querySnapshot.docs[0] }, () =>
             this.getMatchingUser(this.state.available_date.data().with)
@@ -243,7 +244,8 @@ export default class App extends React.Component<Props, State> {
     const now = time.now();
 
     this.updateDateObject(this.state.available_date.id, {
-      left: now
+      left: now,
+      active: false
     }).then(() => {
       this.setState({
         app_state: APP_STATE.rating,
@@ -263,16 +265,12 @@ export default class App extends React.Component<Props, State> {
   }
 
   restart(): void {
-    this.updateDateObject(this.state.available_date.id, { active: false }).then(
-      () => {
-        this.updateUser(this.state.user.email, { free: true }).then(() => {
-          this.setState({
-            app_state: APP_STATE.waiting,
-            active_video_session: false
-          });
-        });
-      }
-    );
+    this.updateUser(this.state.user.email, { free: true }).then(() => {
+      this.setState({
+        app_state: APP_STATE.waiting,
+        active_video_session: false
+      });
+    });
   }
 
   redirectToApp() {
