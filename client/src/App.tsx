@@ -148,7 +148,7 @@ export default class App extends React.Component<Props, State> {
       .where('active', '==', true)
       .onSnapshot((querySnapshot) => {
         if (querySnapshot.docs.length === 1) {
-          if (querySnapshot.docs[0].data().start < time.now()) {
+          if (querySnapshot.docs[0].data().start.seconds < time.now().seconds) {
             this.setState({ available_date: querySnapshot.docs[0] }, () =>
               this.getMatchingUser(this.state.available_date.data().with)
             );
