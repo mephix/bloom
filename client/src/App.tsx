@@ -75,6 +75,12 @@ export default class App extends React.Component<Props, State> {
         seconds: 999
       }
     };
+
+    this.startVideo = this.startVideo.bind(this);
+    this.endVideo = this.endVideo.bind(this);
+    this.rateDate = this.rateDate.bind(this);
+    this.redirectToApp = this.redirectToApp.bind(this);
+    this.restart = this.restart.bind(this);
   }
 
   componentDidMount() {
@@ -122,8 +128,10 @@ export default class App extends React.Component<Props, State> {
     // Handle the app state changes here when user state changes.
 
     if (this.shouldStartCountdown()) {
-      this.setState({ app_state: APP_STATE.countdown });
-      this.updateUser(this.state.user.email, { free: false });
+      this.setState(
+        { app_state: APP_STATE.countdown },
+        () => this.updateUser(this.state.user.email, { free: false })
+      );
     }
   }
 
@@ -174,7 +182,8 @@ export default class App extends React.Component<Props, State> {
       this.usersAreAvailable() &&
       this.state.app_state !== APP_STATE.countdown &&
       this.state.app_state !== APP_STATE.rating &&
-      !this.state.active_video_session
+      !this.state.active_video_session &&
+      (this.state.available_date && this.state.available_date.data().active)
     );
   }
 
@@ -199,7 +208,7 @@ export default class App extends React.Component<Props, State> {
     const now = time.now();
 
     this.updateDateObject(this.state.available_date.id, { joined: now });
-    
+
     this.setState({
       app_state: APP_STATE.video,
       active_video_session: true
@@ -273,7 +282,7 @@ export default class App extends React.Component<Props, State> {
         <CountDown
           user={this.state.user}
           matching_user={this.state.matching_user}
-          startVideo={() => this.startVideo()}
+          startVideo={this.startVideo}
         />
       ),
       video: (
@@ -281,16 +290,16 @@ export default class App extends React.Component<Props, State> {
           user={this.state.user}
           matching_user={this.state.matching_user}
           available_date={this.state.available_date}
-          endVideo={() => this.endVideo()}
+          endVideo={this.endVideo}
         />
       ),
       rating: (
         <Rating
           available_date={this.state.available_date}
           matching_user={this.state.matching_user}
-          rateDate={this.rateDate.bind(this)}
-          restart={() => this.restart()}
-          redirectToApp={() => this.redirectToApp()}
+          rateDate={this.rateDate}
+          restart={this.restart}
+          redirectToApp={this.redirectToApp}
         />
       )
     };
