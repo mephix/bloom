@@ -107,7 +107,7 @@ export default class App extends React.Component<Props, State> {
     // If user closes browser tab
     window.addEventListener('beforeunload', (event: Event) => {
       event.preventDefault();
-      this.updateUser(this.state.user.email, { here: false });
+      this.updateUser(this.state.user.email, { here: false, free: true });
 
       if (this.state.active_video_session) {
         this.endVideo();
@@ -117,7 +117,7 @@ export default class App extends React.Component<Props, State> {
     // On back/forward buttons
     window.onhashchange = () => {
       if (this.state.active_video_session) {
-        this.updateUser(this.state.user.email, { here: false });
+        this.updateUser(this.state.user.email, { here: false, free: true });
         this.endVideo();
         this.redirectToApp();
       }
@@ -265,7 +265,12 @@ export default class App extends React.Component<Props, State> {
   }
 
   restart(): void {
-    this.updateUser(this.state.user.email, { free: true }).then(() => {
+    const now = time.now();
+
+    this.updateUser(this.state.user.email, {
+      free: true,
+      waitStartTime: now
+    }).then(() => {
       this.setState({
         app_state: APP_STATE.waiting,
         active_video_session: false
