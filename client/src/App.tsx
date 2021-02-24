@@ -148,7 +148,7 @@ export default class App extends React.Component<Props, State> {
       .onSnapshot((querySnapshot) => {
         // Firebase returns the latest Date object that was created as [0]
         // This could be improved, but it works with the current backend script logic.
-        if (querySnapshot.docs[0].data().start.seconds < time.now().seconds) {
+        if (querySnapshot.docs[0] && querySnapshot.docs[0].data().start.seconds < time.now().seconds) {
           this.setState({ available_date: querySnapshot.docs[0] }, () =>
             this.getMatchingUser(this.state.available_date.data().with)
           );
