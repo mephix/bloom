@@ -127,6 +127,13 @@ export default class App extends React.Component<Props, State> {
     // This is where we listen for updates.
     // Handle the app state changes here when user state changes.
 
+    // If users get marked 'finished' by the backend
+    if (this.state.user && this.state.user.finished) {
+      this.updateUser(this.state.user.email, { here: false }).then(() => {
+        this.redirectToApp();
+      });
+    }
+
     if (this.shouldStartCountdown()) {
       this.updateUser(this.state.user.email, { free: false }).then(() => {
         this.setState({ app_state: APP_STATE.countdown });
