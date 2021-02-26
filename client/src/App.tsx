@@ -138,6 +138,15 @@ export default class App extends React.Component<Props, State> {
       });
     }
 
+    // If for some reason users become unavailable during the countdown,
+    // we want to send them back to the waiting room
+    if (
+      this.state.app_state === APP_STATE.countdown &&
+      !this.usersAreAvailable()
+    ) {
+      this.restart();
+    }
+
     // If all criteria is met to start a date, send user to countdown
     if (this.shouldStartCountdown()) {
       this.updateUser(this.state.user.email, { free: false }).then(() => {
