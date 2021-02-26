@@ -102,3 +102,9 @@ p {
   margin: 0 auto;
   display: block;
 }
+
+.close {
+  fill: white !important;
+  position: fixed;
+  left: 1rem;
+}

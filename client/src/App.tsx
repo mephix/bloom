@@ -1,6 +1,8 @@
 import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 import { db, time } from './config/firebase';
 
@@ -116,9 +118,8 @@ export default class App extends React.Component<Props, State> {
     // On back/forward buttons
     window.onhashchange = () => {
       if (this.state.active_video_session) {
-        this.updateUser(this.state.user.email, { here: false, free: true });
-        this.endVideo();
         this.redirectToApp();
+        this.endVideo();
       }
     };
   }
@@ -133,9 +134,7 @@ export default class App extends React.Component<Props, State> {
       this.state.user.finished &&
       this.state.app_state === APP_STATE.waiting
     ) {
-      this.updateUser(this.state.user.email, { here: false }).then(() => {
-        this.redirectToApp();
-      });
+      this.redirectToApp();
     }
 
     // If for some reason users become unavailable during the countdown,
@@ -302,6 +301,9 @@ export default class App extends React.Component<Props, State> {
   }
 
   redirectToApp() {
+    if (this.state.user)
+      this.updateUser(this.state.user.email, { here: false });
+      
     window.location.replace('https://live.bloomdating.app/');
   }
 
@@ -361,7 +363,17 @@ export default class App extends React.Component<Props, State> {
                 </div>
               </React.Fragment>
             ) : (
-              <img src={logo} className="logo" alt="Bloom" />
+              <React.Fragment>
+                {this.state.app_state === APP_STATE.waiting && (
+                  <IconButton
+                    onClick={() => this.redirectToApp()}
+                    aria-label="delete"
+                  >
+                    <CloseIcon className="close" />
+                  </IconButton>
+                )}
+                <img src={logo} className="logo" alt="Bloom" />
+              </React.Fragment>
             )}
           </Toolbar>
         </AppBar>
