@@ -215,10 +215,8 @@ export default class App extends React.Component<Props, State> {
     return (
       this.state.user &&
       this.state.user.here &&
-      this.state.user.free &&
       this.state.matching_user &&
-      this.state.matching_user.here &&
-      this.state.matching_user.free
+      this.state.matching_user.here
     );
   }
 
