@@ -33,6 +33,7 @@ type State = {
     minutes: number;
     seconds: number;
   };
+  redirecting: boolean;
 };
 
 const APP_STATE: AppState = {
@@ -75,7 +76,8 @@ export default class App extends React.Component<Props, State> {
       video_session_time_remaining: {
         minutes: 999,
         seconds: 999
-      }
+      },
+      redirecting: false
     };
 
     this.startVideo = this.startVideo.bind(this);
@@ -108,6 +110,11 @@ export default class App extends React.Component<Props, State> {
 
     // If user closes browser tab
     window.addEventListener('beforeunload', () => {
+
+      // Beforeunload fires when we redirect the user. In this case,
+      // we want to prevent the rest of this function from running.
+      if (this.state.redirecting) return;
+
       this.updateUser(this.state.user.email, { here: false, free: true }).then(
         () => {
           this.endVideo();
@@ -299,6 +306,8 @@ export default class App extends React.Component<Props, State> {
   }
 
   redirectToApp() {
+    this.setState({ redirecting: true });
+
     if (this.state.user)
       this.updateUser(this.state.user.email, { here: false });
       
