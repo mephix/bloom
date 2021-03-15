@@ -85,6 +85,7 @@ export default class App extends React.Component<Props, State> {
     this.rateDate = this.rateDate.bind(this);
     this.redirectToApp = this.redirectToApp.bind(this);
     this.restart = this.restart.bind(this);
+    this.browserTabActive = this.browserTabActive.bind(this);
   }
 
   componentDidMount() {
@@ -110,7 +111,6 @@ export default class App extends React.Component<Props, State> {
 
     // If user closes browser tab
     window.addEventListener('beforeunload', () => {
-
       // Beforeunload fires when we redirect the user. In this case,
       // we want to prevent the rest of this function from running.
       if (this.state.redirecting) return;
@@ -129,6 +129,9 @@ export default class App extends React.Component<Props, State> {
         this.endVideo();
       }
     };
+
+    // When user navigates in/out of browser tab
+    document.addEventListener('visibilitychange', this.browserTabActive, false);
   }
 
   componentDidUpdate() {
@@ -227,6 +230,16 @@ export default class App extends React.Component<Props, State> {
     );
   }
 
+  browserTabActive(): void {
+    if (!this.state.user) return;
+
+    if (document.hidden) {
+      this.updateUser(this.state.user.email, { here: false });
+    } else {
+      this.updateUser(this.state.user.email, { here: true });
+    }
+  }
+
   //
   //
   // State functions
@@ -310,7 +323,7 @@ export default class App extends React.Component<Props, State> {
 
     if (this.state.user)
       this.updateUser(this.state.user.email, { here: false });
-      
+
     window.location.replace('https://live.bloomdating.app/');
   }
 
