@@ -29,7 +29,7 @@ class VideoCallFrame extends React.Component<Props, State> {
     }
 
     this.props.available_date.data().room.get().then((room: any) => {
-      let roomUrl = `${room.data().url}?t=${room.data().token}`;
+      let roomUrl = `${room.data().url}?t=${this.props.available_date.data().token}`;
 
       this.setState({ iframeRef: React.createRef() }, () => {
         let daily;
