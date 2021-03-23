@@ -1,0 +1,110 @@
+.app-bar {
+  background-color: black !important;
+  text-align: center;
+  border-bottom: 1px solid white;
+}
+
+.logo {
+  margin: 0 auto;
+  height: 3rem;
+}
+
+.video-frame {
+  height: calc(100vh - 64px);
+}
+
+p {
+  font-size: 26px;
+  text-align: center;
+  margin-top: 0;
+}
+
+.centered-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 64px);
+}
+
+.countdown-details {
+  margin-top: 3rem;
+  font-size: 1rem;
+}
+
+.countdown-details p {
+  font-size: 1rem;
+}
+
+.countdown-details strong {
+  font-size: 2rem;
+}
+
+.countdown-box {
+  width: 6rem;
+  height: 6rem;
+  border: 1px solid grey;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
+.video-timer {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.video-timer-panel {
+  display: inline-flex;
+  background: rgb(37, 216, 178);
+  width: auto;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem;
+  border-radius: 4px;
+  margin: 0 0.1rem;
+  min-width: 2rem;
+}
+
+.video-timer.ending .video-timer-panel {
+  background: rgb(251, 85, 84);
+}
+
+.bottom-bar {
+  background-color: black !important;
+  text-align: center;
+  top: auto !important;
+  bottom: 0;
+  border-top: 1px solid #222222;
+}
+
+.bottom-bar button {
+  flex: 1;
+  margin: 0 0.2rem;
+}
+
+.feedback {
+  background: #111111;
+  width: 80%;
+  padding: 2rem;
+  border-radius: 4px;
+  border: 1px solid #222222;
+  margin-bottom: 2rem;
+}
+
+.feedback button {
+  border: 1px solid;
+  margin: 0 auto;
+  display: block;
+}
+
+.close {
+  fill: white !important;
+  position: fixed;
+  left: 1rem;
+}
