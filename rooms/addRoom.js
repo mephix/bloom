@@ -1,4 +1,5 @@
 const daily = require('../apis/dailyApi.js')
+const consoleColorLog = require('../utils/consoleColorLog.js')
 
 module.exports = addRoom
 
@@ -12,7 +13,16 @@ async function addRoom(date, params) {
   date.slot = SLOT
   const nbf = daily.calcNbf({ startTime: date.startTime, preentry: SLOT_PREENTRY })
   const exp = daily.calcExp({ endTime: date.endTime })
-  const dailyResponse = await daily.makeRoom({ nbf, exp })
+  // Avoid Daily error when room expiry time is in the past.
+  const expDate = new Date(exp*1000)
+  if (expDate < (new Date())) {
+    // consoleColorLog: white, red, yellow, green, cyan, blue, magenta
+    consoleColorLog(`The expiry time for this Room:`, 'magenta')
+    consoleColorLog(`${expDate}`, 'blue')
+    consoleColorLog(`is in the past. This will cause a Daily 400 error. Exiting.`, 'magenta')
+    process.exit()
+  }
+  let dailyResponse = await daily.makeRoom({ nbf, exp })
   date.dailyRoomURL = dailyResponse.data.url
   date.dailyRoomName = dailyResponse.data.name
 

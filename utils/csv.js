@@ -5,7 +5,8 @@ exports.writeToCsv = writeToCsv
 
 function readCsv(fileName) {
   let rows = []
-  try { rows = fs.readFileSync(fileName, 'utf8').split('\n') } catch (e) { console.warn(e) }
+  try { rows = fs.readFileSync(fileName, 'utf8').split('\n') }
+  catch (e) { console.warn(`${fileName} does not exist.`) }
   let arr = []
   if (rows.length > 0) {
     const fields = rows[0].split(',')

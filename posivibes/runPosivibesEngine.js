@@ -1,15 +1,14 @@
 /*
  * main params to set
  */
-const refresh = false
+const existingDate = '2021-02-22'
+const today = '2021-02-22' // (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
 const postToAdalo = false
-const existingDate = '2021-02-02'
-const today = (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
 
 // Dependencies.
 const fs = require('fs')
-const getNewUsers = require('../users/getNewUsers.js')
-const downloadNewRecords = require('../dates/downloadNewRecords.js')
+// const getNewUsers = require('../users/getNewUsers.js')
+const downloadNewRecords = require('../db/downloadNewRecords.js')
 const addOldDates = require('./addOldDates.js')
 const addHearted = require('./addHearted.js')
 const computeScore = require('../scores/computeScore.js')
@@ -27,20 +26,20 @@ runPosivibesEngine()
 async function runPosivibesEngine() {
   console.log(`Running Posivibes Engine...`)
 
-  // Load or download users.
+  // Load users.
   let existingUsersFile = `./csvs/Users ${existingDate}.json`
-  let newUsersFile =      `./csvs/Users ${today}.json`
-  if (refresh)
-    var { users } = await getNewUsers(existingUsersFile, newUsersFile)
-  else
+  // let newUsersFile =      `./csvs/Users ${today}.json`
+  // if (refresh)
+  //   var { users } = await getNewUsers(existingUsersFile, newUsersFile)
+  // else
     var users = JSON.parse(fs.readFileSync(existingUsersFile, 'utf8'))
 
   // Load or download dates.
   let existingDatesFile = `./csvs/Dates ${existingDate}.json`
-  let newDatesFile =      `./csvs/Dates ${today}.json`
-  if (refresh)
-    var { dates } = await downloadNewRecords('Dates', newDatesFile, existingDatesFile)
-  else
+  // let newDatesFile =      `./csvs/Dates ${today}.json`
+  // if (refreshDates)
+  //   var { records: dates } = await downloadNewRecords('Dates', newDatesFile, existingDatesFile)
+  // else
     var dates = JSON.parse(fs.readFileSync(existingDatesFile, 'utf8'))
 
   // Add dates from old database (and output for checking).

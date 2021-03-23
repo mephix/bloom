@@ -17,22 +17,25 @@ function postDateToFirebase(date) {
   const refDate1 = firestoreApi.db.collection('Dates').doc(idDate1)
   const refDate2 = firestoreApi.db.collection('Dates').doc(idDate2)
   const refRoom =  firestoreApi.db.collection('Rooms').doc(date.dailyRoomName)
+  // const refUser1 = firestoreApi.db.collection('Users').doc(date.id1)
+  // const refUser2 = firestoreApi.db.collection('Users').doc(date.id2)
 
   // Create the pair of Firebase date objects.
   const commonFields = {
-    'active': true,
-    'start': date.startTime,
-    'end': date.endTime,
+    'start': new Date(date.startTime),
+    'end':   new Date(date.endTime),
     'room': refRoom,
+    'active': true,
   }
+  // Firebase uses emails, not Adalo IDs.
   const for1 = {
-    'for':  firestoreApi.db.collection('Users').doc(date.id1),
-    'with': firestoreApi.db.collection('Users').doc(date.id2),
+    'for':  date.email1,
+    'with': date.email2,
     'token': date.token1,
   }
   const for2 = {
-    'for':  firestoreApi.db.collection('Users').doc(date.id2),
-    'with': firestoreApi.db.collection('Users').doc(date.id1),
+    'for':  date.email2,
+    'with': date.email1,
     'token': date.token2,
   }
   const date1 = { ...commonFields, ...for1, }
@@ -59,4 +62,12 @@ function dateIdsForFirebase (date) {
   let idDate1 = `${date.startTime}_${date.name1}_${date.name2}_${nanoid.nanoid()}`
   let idDate2 = `${date.startTime}_${date.name2}_${date.name1}_${nanoid.nanoid()}`
   return { idDate1, idDate2 }
+}
+
+function isoToDate (iso) {
+  // Converts an ISO date string like '2021-02-18T17:34:11.395Z' to a js
+  // Date object.
+  const [y, m, d] = iso.slice(0,10).split('-').map(s => Number(s)) 
+  const [hh, mm, ss] = iso.slice(11,19).split(':').map(s => Number(s))
+  return new Date(y, m, d, hh, mm, ss)
 }

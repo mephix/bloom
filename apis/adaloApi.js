@@ -45,7 +45,7 @@ async function augment(collection, offset) {
   if (offset === undefined) throw new Error(`offset should not start off undefined.`)
   // Adalo pagination limit is 100, but change it to 10 on the advice of
   // Adalo dev.
-  let limit = 15
+  let limit = 20
   let newRecords = []
   while (offset !== undefined) {
     const params = 
@@ -106,7 +106,12 @@ async function remove(collection, id) {
 
 async function create(collection, data) {
   const url = endpoint + collectionIds[collection]
-  const adaloResponse = await axios({ url, method: 'post', headers, data })
+  let adaloResponse = []
+  try {
+    adaloResponse = await axios({ url, method: 'post', headers, data })
+  } catch (e) {
+    console.log(e)
+  }
   return adaloResponse
 }
 

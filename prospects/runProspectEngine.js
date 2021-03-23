@@ -1,11 +1,10 @@
 /*
  * Key parameters to set
  */
-const loadFromLocalFile = './csvs/Users 2021-02-05.json'
+const today = '2021-03-22' // (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
 
-// Less frequently changed parameters.
-// File to store prospects:
-const today = (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
+// File to load users from and store prospects:
+const loadFromLocalFile = `./csvs/Users ${today}.json`
 const PROSPECT_GRAPH_FILE = `./csvs/Prospects ${today}.csv`
 
 const getAllUsers = require('../users/getAllUsers.js')
@@ -55,13 +54,15 @@ async function runProspectEngine() {
   let responses = []
   for (let i=0; i<ids.length; i++) { // !! CHANGE BACK TO: ids.length
     let id = ids[i]
-    const Prospects = Object.keys(score[id]).map(Number)
+    // Limit to 100 prospects per night
+    const Prospects = Object.keys(score[id]).map(Number).slice(0,100)
     const oldProspects = peopleById[id].Prospects
     if (Prospects.length > 0) {
       if (oldProspects.length === 0) {
         let response = await adaloApi.update('Users', id, { Prospects })
         console.log(`[${i}]: ${peopleById[id].Email}: ${Prospects.length} prospects posted ${response.statusText}`)
-        responses.push(response)
+        responses.
+        push(response)
       }
     } else {
       console.warn(`[${i}]: ${peopleById[id].Email}: no prospects.`)

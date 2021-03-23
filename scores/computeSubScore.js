@@ -42,6 +42,8 @@ function location(p,q) {
   // Location match.
   // Score is <- [0,1].
   const d = zipcodeDistance(p['Zipcode'], q['Zipcode'], zipLatLons)
+  // Defaulting sigs=1 means someone with a nonexistent zipcode gets a
+  // z_location default of 0.5
   const sigs = (d !== -1) ? d/p['Radius'] : 1
   // Choose beta such that at distance=radius (in miles) the score is 0.5.
   const BETA = 0.69314718056

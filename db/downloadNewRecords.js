@@ -1,6 +1,7 @@
 const fs = require('fs')
 const fserr = err => {if (err) return console.log(err)}
 const adaloApi = require('../apis/adaloApi.js')
+const consoleColorLog = require('../utils/consoleColorLog.js')
 
 module.exports = downloadNewRecords
 
@@ -19,7 +20,7 @@ async function downloadNewRecords(collectionName, newFile, existingFile) {
   let records
   try {
     let newRecords = await adaloApi.augment(collectionName, offset)
-    console.log(`Downloading new Records SUCCEEDED.`)
+    consoleColorLog(`Downloading new Records SUCCEEDED.`, 'green', emphasis='bold')
     recordsUpdated = true
     // Combine with existing records.
     records = [...existingRecords, ...newRecords]
@@ -30,7 +31,7 @@ and ${existingRecords.length} existing records to ${newFile}`)
     }
   } catch (e) {
     console.warn(e)
-    console.log(`Downloading new Records FAILED.`)
+    consoleColorLog(`Downloading new Records FAILED.`, 'red', emphasis='none')
   }
   return { records, recordsUpdated }
 }

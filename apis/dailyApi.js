@@ -2,11 +2,42 @@ const fetch = require('node-fetch')
 const axios = require('axios').default
 const { daily_api_key } = require('../DO_NOT_COMMIT.js')
 
+exports.whosInTheir = whosInTheir
 exports.getRoom = getRoom
 exports.makeRoom = makeRoom
 exports.getToken = getToken
 exports.calcNbf = calcNbf
 exports.calcExp = calcExp
+
+async function whosInTheir(dates) {
+  // `response` is { roomName: [ participants ]}
+  let response = await axios({
+    url: `https://api.daily.co/v1/presence`,
+    method: 'get',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + daily_api_key,
+    },
+  })
+
+/*
+{
+  "cool-room": [
+    {
+      "id": "4c8dee53-fd51-445c-92d4-917701401d14",
+      "userId": "309cf686-64ba-4afa-9e6b-05fe13c56fbf",
+      "userName": "sean",
+      "joinTime": "2020-11-01T23:46:38.000Z",
+      "duration": 543,
+      "room": "cool-room"
+    },
+    ... more participants ...
+  ]
+}
+*/
+
+  // !! THIS FUNCTION HASNT BEEN COMPLETED !!
+}
 
 /*
  * example: properties = { user_name: 'John' }

@@ -1,20 +1,17 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-03-22'
-let HOUR = 17
-let SLOT = 10
-let RERUN = false
+let DAY = '2021-03-18'
+let HOUR = '16'
+let SLOT = 1
+let RERUN = false        // Only do reruns after the slot starts.
 let CUTOFF = 0.00       // >0 makes the dateEngine more picky.
 let useTestIds = true   // `false` for real rounds.
 
-// `seqOrPar` should be "parallel" unless there is a dire 503 error when
-// posting dates to Adalo. In that case, change it to to "sequential".
-let seqOrPar = 'parallel' // 'sequential' // 
-
-// Less frequently changed params:
-let ROUND_ID = 1
+// Less frequently changed params.
+// Timezone offset switches between 07:00 and 08:00 with daylight saving.
 const TIMEZONE_OFFSET = '-07:00'
+// let ROUND_ID = 1
 const SLOT_PREENTRY = 1
 const SLOT_STARTS = {
   0:  HOUR + ':00',
@@ -45,8 +42,10 @@ const SLOT_ENDS = {
   11: HOUR + ':59',
 }
 // Dependencies.
-const adaloApi = require('../apis/adaloApi.js')
+const firestoreApi = require('../apis/firestoreApi.js')
+const db = firestoreApi.db
 const fs = require('fs')
+const addAdaloProfile = require('../users/addAdaloProfile.js')
 const setProfileDefaults = require('../users/setProfileDefaults.js')
 const addTodaysDates = require('../users/addTodaysDates.js')
 const sortByPriority = require('../users/sortByPriority.js')
@@ -55,37 +54,46 @@ const subsetScores = require('../scores/subsetScores.js')
 const dateEngine = require('./dateEngine.js')
 const displayPretty = require('./displayPretty.js')
 const addRoom = require('../rooms/addRoom.js')
-const postDates = require('./postDates.js')
 const { writeToCsv } = require('../utils/csv.js')
+const postDateToFirebase = require('./postDateToFirebase.js')
+const consoleColorLog = require('../utils/consoleColorLog.js')
 
 // No need to set these params.
 let TODAYS_DATES_FILE = `./csvs/Dates ${DAY}T${HOUR}.csv`
 let TODAYS_USERS_FILE = `./csvs/Users ${DAY}.json`
 
-runDateEngine()
+runFireDateEngine()
 
-async function runDateEngine() {
+async function runFireDateEngine() {
 
   // Get users here.
-  let idsOfUsersHere
+  let querySnapshot
+  let docs
   if (useTestIds) {
     // Only use this option for testing.
-    idsOfUsersHere = [3,4] // [1052,1051,1050,1049,1081,1080,1076,1075,]
+    const emails = [
+      'john.prins@gmail.com',
+      'amel.assioua@gmail.com',
+    ] 
     // "id":4,"Email":"amel.assioua@gmail.com","First Name":"Amel"
     // "id":836,"Email":"female_straight_25_SF@bloom.com","First Name":"Anastasia"
     // "id":837,"Email":"female_straight_33_LA@bloom.com","First Name":"Christine"
+    docs = await Promise.all(emails.map(e => db.collection('Users').doc(e).get()))
   } else {
     // A real round should always use this option.
-    const round = await adaloApi.get('Rounds', ROUND_ID)
-    idsOfUsersHere = round.Here || []
+    querySnapshot = await db.collection('Users').where('here', '==', true).get()
+    docs = querySnapshot.docs
   }
-  if (idsOfUsersHere) console.log(`${idsOfUsersHere.length} people are Here.`)
+  let usersHere = docs.map(doc => {
+    return { id: doc.id, ...doc.data() }
+  })
+  if (usersHere) console.log(`${usersHere.length} people are Here.`)
 
-  // Load Users, filter for those who are Here, and note that Users were
-  // not updated (ie, downloaded live from Adalo).
-  let usersUpdated = false
-  let users = JSON.parse(fs.readFileSync(TODAYS_USERS_FILE, 'utf8'))
-  let usersHere = users.filter(u => idsOfUsersHere.includes(u.id))
+  // Connect people to their Adalo profiles.
+  let usersInAdalo = JSON.parse(fs.readFileSync(TODAYS_USERS_FILE, 'utf8'))
+  let idsOfUsersHere = usersHere.map(u => u.id)
+  let usersInAdaloHere = usersInAdalo.filter(u => idsOfUsersHere.includes(u.Email))
+  usersHere = usersHere.map(u => addAdaloProfile(u, usersInAdaloHere.filter(v => v.Email === u.id)))
 
   // Fill in missing profile fields with best guesses.
   usersHere = usersHere.map(setProfileDefaults)
@@ -93,15 +101,18 @@ async function runDateEngine() {
   // Load today's dates in case Users were loaded locally.
   // Today's dates file saved locally will avoid double-dates.
   // Updates Start Time of users who had a date.
-  // If we don't have fresh data on who's free, set people who have a date
-  // already in this slot to Not-Free.
-  let notFreeSlot = usersUpdated ? -1 : SLOT
+  // Set people who have a date already in this slot to Not-Free
+  // (regardless of whether they left it early and became free again).
+  let notFreeSlot = SLOT // usersUpdated ? -1 : SLOT
   let todaysDates
-  [ usersHere, todaysDates] = addTodaysDates(usersHere, TODAYS_DATES_FILE, notFreeSlot)
+  [usersHere, todaysDates] = addTodaysDates(usersHere, TODAYS_DATES_FILE, notFreeSlot)
 
   // During reruns, filter out people who aren't free.
-  // Make sure, when we haven't got fresh data on users, we already set
-  // people who have a date in this slot to not be free above.
+  // This will be people who are actually in a date, plus anyone who was in
+  // a date during this slot already. So they can't get a second date in
+  // the slot.
+  // This means we *dont* want to do a rerun before the slot starts (as
+  // people will be not free due to their date in the current slot).
  if (RERUN) {
     console.log(`Out of ${usersHere.length} people Here,`)
     usersHere = usersHere.filter(u => u['Free'])
@@ -110,6 +121,7 @@ async function runDateEngine() {
 
   // Prioritize Users Here in some way (wait start time, posivibes...)
   usersHere = sortByPriority(usersHere)
+  
   // Match Users in real time.
   // Keep subScores so we can inspect them.
   console.log(`Matching people in real-time.`)
@@ -134,9 +146,12 @@ async function runDateEngine() {
     // Save the Dates locally
     writeToCsv([...todaysDates, ...dates], TODAYS_DATES_FILE)
 
-    // Post the Dates to Adalo.
-    postDates(dates, seqOrPar, params)
-
+    // Post the Dates to Firebase.
+    const rs = await Promise.all(dates.map(date => postDateToFirebase(date)))
+    const wts = rs[rs.length-1].map(r => r.writeTime.toDate())
+    const wt = `${wts[0].getHours()}:${wts[0].getMinutes()}`
+    consoleColorLog(`${rs.length} dates posted to Firebase at ${wt}`, 'green', 'bold')
+    
   } else {
     console.log(`No dates created. Exiting`)
   }
