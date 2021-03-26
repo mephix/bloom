@@ -178,6 +178,7 @@ export default class App extends React.Component<Props, State> {
       .where('for', '==', email)
       .where('end', '>', time.now())
       .where('accepted', '==', true)
+      .where('active', '==', true)
       .onSnapshot((querySnapshot) => {
         // Firebase returns the latest Date object that was created as [0]
         // This could be improved, but it works with the current backend script logic.
@@ -195,6 +196,7 @@ export default class App extends React.Component<Props, State> {
       .where('with', '==', email)
       .where('end', '>', time.now())
       .where('accepted', '==', true)
+      .where('active', '==', true)
       .onSnapshot((querySnapshot) => {
         if (
           querySnapshot.docs[0] &&
@@ -235,8 +237,7 @@ export default class App extends React.Component<Props, State> {
       this.state.app_state !== APP_STATE.countdown &&
       this.state.app_state !== APP_STATE.rating &&
       !this.state.active_video_session &&
-      this.state.available_date &&
-      this.state.available_date.data().active
+      this.state.available_date
     );
   }
 
