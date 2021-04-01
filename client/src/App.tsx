@@ -237,7 +237,8 @@ export default class App extends React.Component<Props, State> {
       this.state.app_state !== APP_STATE.countdown &&
       this.state.app_state !== APP_STATE.rating &&
       !this.state.active_video_session &&
-      this.state.available_date
+      this.state.available_date &&
+      this.state.available_date.data().active
     );
   }
 
