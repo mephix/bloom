@@ -5,6 +5,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { db, time } from './config/firebase';
+import * as service from './services/service';
 
 import CountDown from './CountDown';
 import Rating from './Rating';
@@ -89,6 +90,8 @@ export default class App extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    service.getProspect();
+
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get('email');
     const now = time.now();

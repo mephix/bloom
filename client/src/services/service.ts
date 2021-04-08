@@ -1,9 +1,8 @@
-// Services for interacting with Firebase
-import { db, time } from '../config/firebase';
+// Functions for interacting with Firebase.
+// Mostly functions that can be called async and don't involve
+// setting state in React.
 
-async function getUser(email: string): Promise<any> {
-  return await db.collection('Users').doc(email);
-}
+import { db, time } from '../config/firebase';
 
 async function updateUser(email: string, params: any): Promise<void> {
   await db.collection('Users').doc(email).update(params);
@@ -13,40 +12,50 @@ async function updateDateObject(id: string, params: any): Promise<void> {
   await db.collection('Dates').doc(id).update(params);
 }
 
-function getCards(email: string): any[] {
-  let cards = [];
-
-  cards.push(getActiveDates(email));
-  cards.push(getActiveProspects(email));
-
-  return cards;
+async function getProspect() {
+  let prospect = await db.collection('Prospects').doc('john.prins@gmail.com').get();
+  console.log(prospect.data());
 }
 
-function getActiveDates(email: string): any {
-  return db
-    .collection('Dates')
-    .where('for', '==', email)
-    .where('active', '==', true)
-    .where('end', '>', time.now())
-    .onSnapshot((querySnapshot) => {
-      return querySnapshot.docs.filter((result) => {
-        result.data().start.seconds < time.now().seconds;
-      });
-    });
+async function nextProspect(email: string): Promise<void> {
+  let prospect = (await db.collection('Prospects').doc(email).get()).data();
+  db.collection('Nexts').doc(email).set({prospect});
+  db.collection('Prospects').doc(email).delete();
 }
 
-function getActiveProspects(email: string): any {
-  return db
-    .collection('Prospects')
-    .where('for', '==', email)
-    .onSnapshot((querySnapshot) => {
-      return querySnapshot.docs;
-    });
+async function heartProspect(email: string): Promise<void> {
+  let prospect = (await db.collection('Prospects').doc(email).get()).data();
+  db.collection('Likes').doc(email).set({prospect});
+  db.collection('Prospects').doc(email).delete();
 }
 
-export default {
-  getUser,
+async function inviteProspect(email: string): Promise<void> {
+  let prospect = (await db.collection('Prospects').doc(email).get()).data();
+  db.collection('Likes').doc(email).set({prospect});
+  db.collection('Dates').doc().set({
+    for: email,
+    with: ''
+  });
+  db.collection('Prospects').doc(email).delete();
+}
+
+async function nextDate(email: string): Promise<void> {
+  let prospect = (await db.collection('Prospects').doc(email).get()).data();
+  db.collection('Nexts').doc(email).set({prospect});
+  db.collection('Dates').doc().set({
+    for: email,
+    with: '',
+    accepted: false
+  });
+  db.collection('Prospects').doc(email).delete();
+}
+
+export {
   updateUser,
   updateDateObject,
-  getCards
+  nextProspect,
+  heartProspect,
+  inviteProspect,
+  nextDate,
+  getProspect
 };
