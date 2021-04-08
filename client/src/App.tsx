@@ -277,6 +277,8 @@ export default class App extends React.Component<Props, State> {
 
     // Start timer
     let timerState = setInterval(() => {
+      if (!this.state.available_date) return;
+
       if (
         this.state.video_session_time_remaining.minutes <= 0 &&
         this.state.video_session_time_remaining.seconds <= 1
@@ -332,6 +334,8 @@ export default class App extends React.Component<Props, State> {
     }).then(() => {
       this.setState({
         app_state: APP_STATE.waiting,
+        available_date: null,
+        matching_user: null,
         active_video_session: false
       });
     });
