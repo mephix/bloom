@@ -59,20 +59,12 @@ async function nextDate(email: string, prospect_email: string, date_id: string):
   });
 }
 
-async function inviteProspect(email: string, prospect_email: string, date_id: string): Promise<void> {
+async function joinDate(email: string, prospect_email: string, date_id: string): Promise<void> {
   let prospects_ref = await db.collection('Prospects').doc(email);
   let likes_ref = await db.collection('Likes').doc(email);
   let user_ref = await db.collection('Users').doc(email);
   let prospect_user_ref = await db.collection('Users').doc(prospect_email);
   let batch = db.batch();
-
-  likes_ref.update({
-    likes: firebase.firestore.FieldValue.arrayUnion(prospect_user_ref)
-  });
-
-  prospects_ref.update({
-    prospects: firebase.firestore.FieldValue.arrayRemove(prospect_user_ref)
-  });
 
   await db.collection('Dates').doc(date_id).set({
     accepted: true,
@@ -85,13 +77,32 @@ async function inviteProspect(email: string, prospect_email: string, date_id: st
     .onSnapshot((querySnapshot) => {
       querySnapshot.docs.forEach(date_ref => {
         batch.update(date_ref.ref, {
-          active: false,
-          accepted: false
+          active: false
         });
       })
 
-      batch.commit();
+      batch.commit().then(() => {
+        querySnapshot.docs.forEach(date_ref => {
+          batch.update(date_ref.ref, {
+            accepted: false
+          });
+        })
+
+        batch.commit();
+
+        user_ref.set({free: false});
+        prospect_user_ref.set({free: false});
+      });
     });
+
+  
+  likes_ref.update({
+    likes: firebase.firestore.FieldValue.arrayUnion(prospect_user_ref)
+  });
+
+  prospects_ref.update({
+    prospects: firebase.firestore.FieldValue.arrayRemove(prospect_user_ref)
+  });
 }
 
 export {
@@ -99,6 +110,6 @@ export {
   updateDateObject,
   nextProspect,
   heartProspect,
-  inviteProspect,
+  joinDate,
   nextDate
 };
