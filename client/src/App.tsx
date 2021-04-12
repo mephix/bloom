@@ -90,8 +90,6 @@ export default class App extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    service.getProspect();
-
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get('email');
     const now = time.now();
