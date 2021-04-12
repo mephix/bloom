@@ -40,10 +40,10 @@ async function heartProspect(email: string, prospect_email: string): Promise<voi
   });
 }
 
-async function nextDate(email: string, prospect_email: string, date_ref: string): Promise<void> {
+async function nextDate(email: string, prospect_email: string, date_id: string): Promise<void> {
   let prospects_ref = await db.collection('Prospects').doc(email);
   let nexts_ref = await db.collection('Nexts').doc(email);
-  let prospect_user_ref = db.collection('Users').doc(prospect_email);
+  let prospect_user_ref = await db.collection('Users').doc(prospect_email);
 
   nexts_ref.update({
     nexts: firebase.firestore.FieldValue.arrayUnion(prospect_user_ref)
@@ -53,16 +53,18 @@ async function nextDate(email: string, prospect_email: string, date_ref: string)
     prospects: firebase.firestore.FieldValue.arrayRemove(prospect_user_ref)
   });
 
-  db.collection('Dates').doc(date_ref).set({
+  db.collection('Dates').doc(date_id).set({
     accepted: false,
     timeReplied: time.now()
   });
 }
 
-async function inviteProspect(email: string, prospect_email: string, date_ref: string): Promise<void> {
+async function inviteProspect(email: string, prospect_email: string, date_id: string): Promise<void> {
   let prospects_ref = await db.collection('Prospects').doc(email);
   let likes_ref = await db.collection('Likes').doc(email);
-  let prospect_user_ref = db.collection('Users').doc(prospect_email);
+  let user_ref = await db.collection('Users').doc(email);
+  let prospect_user_ref = await db.collection('Users').doc(prospect_email);
+  let batch = db.batch();
 
   likes_ref.update({
     likes: firebase.firestore.FieldValue.arrayUnion(prospect_user_ref)
@@ -72,10 +74,24 @@ async function inviteProspect(email: string, prospect_email: string, date_ref: s
     prospects: firebase.firestore.FieldValue.arrayRemove(prospect_user_ref)
   });
 
-  db.collection('Dates').doc(date_ref).set({
+  await db.collection('Dates').doc(date_id).set({
     accepted: true,
     timeReplied: time.now()
   });
+
+  await db.collection('Dates')
+    .where('for', '==', user_ref || prospect_user_ref)
+    .where('id', '!=', date_id)
+    .onSnapshot((querySnapshot) => {
+      querySnapshot.docs.forEach(date_ref => {
+        batch.update(date_ref.ref, {
+          active: false,
+          accepted: false
+        });
+      })
+
+      batch.commit();
+    });
 }
 
 export {
