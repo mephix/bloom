@@ -2,8 +2,8 @@
 // Mostly functions that can be called async and don't involve
 // setting state in React.
 
-import firebase from "firebase/app";
-import "firebase/firestore";
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 import { db, time } from '../config/firebase';
 
 async function updateUser(email: string, params: any): Promise<void> {
@@ -14,33 +14,51 @@ async function updateDateObject(id: string, params: any): Promise<void> {
   await db.collection('Dates').doc(id).update(params);
 }
 
-async function nextProspect(email: string, prospect_email: string): Promise<void> {
+async function nextProspect(
+  email: string,
+  prospect_email: string
+): Promise<void> {
   let prospects_ref = await db.collection('Prospects').doc(email);
   let nexts_ref = await db.collection('Nexts').doc(email);
 
   nexts_ref.update({
-    nexts: firebase.firestore.FieldValue.arrayUnion(db.collection('Users').doc(prospect_email))
+    nexts: firebase.firestore.FieldValue.arrayUnion(
+      db.collection('Users').doc(prospect_email)
+    )
   });
 
   prospects_ref.update({
-    prospects: firebase.firestore.FieldValue.arrayRemove(db.collection('Users').doc(prospect_email))
+    prospects: firebase.firestore.FieldValue.arrayRemove(
+      db.collection('Users').doc(prospect_email)
+    )
   });
 }
 
-async function heartProspect(email: string, prospect_email: string): Promise<void> {
+async function heartProspect(
+  email: string,
+  prospect_email: string
+): Promise<void> {
   let prospects_ref = await db.collection('Prospects').doc(email);
   let likes_ref = await db.collection('Likes').doc(email);
 
   likes_ref.update({
-    likes: firebase.firestore.FieldValue.arrayUnion(db.collection('Users').doc(prospect_email))
+    likes: firebase.firestore.FieldValue.arrayUnion(
+      db.collection('Users').doc(prospect_email)
+    )
   });
 
   prospects_ref.update({
-    prospects: firebase.firestore.FieldValue.arrayRemove(db.collection('Users').doc(prospect_email))
+    prospects: firebase.firestore.FieldValue.arrayRemove(
+      db.collection('Users').doc(prospect_email)
+    )
   });
 }
 
-async function nextDate(email: string, prospect_email: string, date_id: string): Promise<void> {
+async function nextDate(
+  email: string,
+  prospect_email: string,
+  date_id: string
+): Promise<void> {
   let prospects_ref = await db.collection('Prospects').doc(email);
   let nexts_ref = await db.collection('Nexts').doc(email);
   let prospect_user_ref = await db.collection('Users').doc(prospect_email);
@@ -59,7 +77,11 @@ async function nextDate(email: string, prospect_email: string, date_id: string):
   });
 }
 
-async function joinDate(email: string, prospect_email: string, date_id: string): Promise<void> {
+async function joinDate(
+  email: string,
+  prospect_email: string,
+  date_id: string
+): Promise<void> {
   let prospects_ref = await db.collection('Prospects').doc(email);
   let likes_ref = await db.collection('Likes').doc(email);
   let user_ref = await db.collection('Users').doc(email);
@@ -71,38 +93,31 @@ async function joinDate(email: string, prospect_email: string, date_id: string):
     timeReplied: time.now()
   });
 
-  await db.collection('Dates')
-    .where('for', '==', user_ref || prospect_user_ref)
-    .where('id', '!=', date_id)
+  await db
+    .collection('Dates')
+    .where('for', '==', email || prospect_email)
+    .where(firebase.firestore.FieldPath.documentId(), '!=', date_id)
     .onSnapshot((querySnapshot) => {
-      querySnapshot.docs.forEach(date_ref => {
+      querySnapshot.docs.forEach((date_ref) => {
         batch.update(date_ref.ref, {
-          active: false
+          active: false,
+          accepted: false
         });
-      })
-
-      batch.commit().then(() => {
-        querySnapshot.docs.forEach(date_ref => {
-          batch.update(date_ref.ref, {
-            accepted: false
-          });
-        })
-
-        batch.commit();
-
-        user_ref.set({free: false});
-        prospect_user_ref.set({free: false});
       });
     });
 
-  
-  likes_ref.update({
-    likes: firebase.firestore.FieldValue.arrayUnion(prospect_user_ref)
-  });
+    user_ref.set({ free: false });
+    prospect_user_ref.set({ free: false });
 
-  prospects_ref.update({
-    prospects: firebase.firestore.FieldValue.arrayRemove(prospect_user_ref)
-  });
+    likes_ref.update({
+      likes: firebase.firestore.FieldValue.arrayUnion(prospect_user_ref)
+    });
+
+    prospects_ref.update({
+      prospects: firebase.firestore.FieldValue.arrayRemove(
+        prospect_user_ref
+      )
+    });
 }
 
 export {
