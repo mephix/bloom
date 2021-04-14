@@ -1,7 +1,7 @@
 /*
  * Key parameters to set
  */
-const today = '2021-03-22' // (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
+const today = '2021-04-13' // (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
 
 // File to load users from and store prospects:
 const loadFromLocalFile = `./csvs/Users ${today}.json`

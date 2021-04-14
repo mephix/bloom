@@ -1,12 +1,12 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-03-22'
-let HOUR = 17
-let SLOT = 10
+let DAY = '2021-04-13'
+let HOUR = 16
+let SLOT = 7
 let RERUN = false
 let CUTOFF = 0.00       // >0 makes the dateEngine more picky.
-let useTestIds = true   // `false` for real rounds.
+let useTestIds = false   // `false` for real rounds.
 
 // `seqOrPar` should be "parallel" unless there is a dire 503 error when
 // posting dates to Adalo. In that case, change it to to "sequential".

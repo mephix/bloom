@@ -10,7 +10,7 @@ function sortByPriority(peopleWaiting) {
     if (!p['Wait Start Time']) console.warn(`${p['First Name']} is Here and Free but has no wait start time.`)
     const milliseconds = p['Wait Start Time']
       ? timeNow - new Date(p['Wait Start Time'])
-      : 0
+      : 1000*60
     const minutes = milliseconds/1000/60
     // Cap wait times <- [0,30] minutes for later conversion to score.
     p.waitTime = math.max(0, math.min(30, minutes))
