@@ -114,6 +114,9 @@ function calcNbf({ startTime, preentry }) {
 function calcExp({ endTime }) {
   let endDateTimestamp = Math.floor(new Date(endTime).getTime()/1000)
   // `exp`: kick everyone out right at the end.
-  let exp = endDateTimestamp
+  // Add a BUFFER of 3 seconds.
+  // !! parameterize this later? !!
+  let BUFFER = 3
+  let exp = endDateTimestamp + BUFFER
   return exp
 }
