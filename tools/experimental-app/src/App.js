@@ -13,11 +13,13 @@ function App() {
   // const [isFree, setIsFree] = useState(false);
 
   useEffect(() => {
-    db.collection("Users")
-      .doc(emailFromUrl)
-      .onSnapshot((doc) => {
-        setUser(doc.data());
-      });
+    if (emailFromUrl) {
+      db.collection("Users")
+        .doc(emailFromUrl)
+        .onSnapshot((doc) => {
+          setUser(doc.data());
+        });
+    }
   }, [emailFromUrl]);
 
   useEffect(() => {
