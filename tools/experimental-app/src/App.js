@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import components from "./components";
 import { db } from "./firebase";
 import "./styles.css";
+import matchmaker from './matchmaker/matchmaker.js'
+import dateClock from './matchmaker/dateClock.js'
+import matchmakerParams from './matchmaker/params.js'
 
 const { CodeBlock } = components;
 
@@ -33,8 +36,8 @@ function App() {
 
   return (
     <div className="app">
-      <CodeBlock value={user} />
-      <CodeBlock value={isFree} />
+      <CodeBlock value={"user.free in Firebase: " + user.free} />
+      <CodeBlock value={"isFree: " + isFree} />
       <button onClick={() => setIsFree((prev) => !prev)}>
         {isFree ? "free" : "notFree"}
       </button>
