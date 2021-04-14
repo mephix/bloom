@@ -1,23 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import components from "./components";
+import { db } from "./firebase";
+import "./styles.css";
+
+const { CodeBlock } = components;
 
 function App() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const [user, setUser] = useState();
+  const [isFree, setIsFree] = useState();
+  const [emailFromUrl] = useState(urlParams.get("email"));
+  // const [isFree, setIsFree] = useState(false);
+
+  useEffect(() => {
+    db.collection("Users")
+      .doc(emailFromUrl)
+      .onSnapshot((doc) => {
+        setUser(doc.data());
+      });
+  }, [emailFromUrl]);
+
+  useEffect(() => {
+    if (user) setIsFree(user.free);
+  }, [user]);
+
+  useEffect(() => {
+    if (isFree !== undefined)
+      db.collection("Users").doc(emailFromUrl).update({ free: isFree });
+  }, [emailFromUrl, isFree]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <CodeBlock value={user} />
+      <CodeBlock value={isFree} />
+      <button onClick={() => setIsFree((prev) => !prev)}>
+        {isFree ? "free" : "notFree"}
+      </button>
     </div>
   );
 }
