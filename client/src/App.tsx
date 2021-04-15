@@ -16,6 +16,7 @@ import './assets/css/App.css';
 import logo from './assets/images/bloom.jpeg';
 
 type AppState = {
+  default: string;
   waiting: string;
   countdown: string;
   video: string;
@@ -38,6 +39,7 @@ type State = {
 };
 
 const APP_STATE: AppState = {
+  default: 'default',
   waiting: 'waiting',
   countdown: 'countdown',
   video: 'video',
@@ -72,7 +74,7 @@ export default class App extends React.Component<Props, State> {
       user: null,
       matching_user: null,
       available_date: null,
-      app_state: APP_STATE.waiting,
+      app_state: APP_STATE.default,
       active_video_session: false,
       video_session_time_remaining: {
         minutes: 999,
@@ -105,6 +107,7 @@ export default class App extends React.Component<Props, State> {
         .doc(email)
         .onSnapshot((doc) => {
           this.setState({ user: doc.data() }, () => {
+            this.setState({ app_state: APP_STATE.waiting });
             this.findDate(this.state.user.email);
           });
         });
@@ -345,6 +348,7 @@ export default class App extends React.Component<Props, State> {
 
   renderView(): any {
     const VIEW_STATE: any = {
+      default: <div></div>,
       waiting: <WaitingRoom user={this.state.user} />,
       countdown: (
         <CountDown
