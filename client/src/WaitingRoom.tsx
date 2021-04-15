@@ -23,27 +23,32 @@ class WaitingRoom extends React.Component<Props, State> {
     }
   }
 
-  componentDidMount() {
+  componentDidMount() {    
     // Construct cards of different types and push to cards state
-      db.collection('Dates')
-      .where('for', '==', this.props.user.email)
-      .where('active', '==', true)
-      .onSnapshot((querySnapshot) => {
-        let cards = this.state.cards;
-        cards.push(querySnapshot.docs);
-
-        this.setState({cards}, () => console.log(this.state.cards));
-      });
-    
     db.collection('Dates')
-      .where('with', '==', this.props.user.email)
-      .where('active', '==', true)
-      .onSnapshot((querySnapshot) => {
-        let cards = this.state.cards;
-        cards.push(querySnapshot.docs);
+    .where('for', '==', this.props.user.email)
+    .where('active', '==', true)
+    .onSnapshot((querySnapshot) => {
+      this.setCards(querySnapshot.docs);
+    });
+  
+  db.collection('Dates')
+    .where('with', '==', this.props.user.email)
+    .where('active', '==', true)
+    .onSnapshot((querySnapshot) => {
+      this.setCards(querySnapshot.docs);
+    });
 
-        this.setState({cards}, () => console.log(this.state.cards));
-      });    
+  db.collection('Prospects')
+    .doc(this.props.user.email)
+    .onSnapshot((doc) => {
+      this.setCards(doc.get('prospects'));
+    });
+  }
+
+  setCards(new_cards: any[]): void {
+    let cards = [this.state.cards, new_cards].flat();
+    this.setState({cards}, () => console.log(this.state.cards))
   }
 
   render() {
