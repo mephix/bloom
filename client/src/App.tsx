@@ -172,9 +172,13 @@ export default class App extends React.Component<Props, State> {
   //
 
   findDate(email: string): void {
+    // Firebase doesn't currently support OR queries so unfortunately we
+    // need to create two listeners here for for/with
+
     db.collection('Dates')
       .where('for', '==', email)
       .where('end', '>', time.now())
+      .where('accepted', '==', true)
       .onSnapshot((querySnapshot) => {
         // Firebase returns the latest Date object that was created as [0]
         // This could be improved, but it works with the current backend script logic.
@@ -184,6 +188,21 @@ export default class App extends React.Component<Props, State> {
         ) {
           this.setState({ available_date: querySnapshot.docs[0] }, () =>
             this.getMatchingUser(this.state.available_date.data().with)
+          );
+        }
+      });
+    
+    db.collection('Dates')
+      .where('with', '==', email)
+      .where('end', '>', time.now())
+      .where('accepted', '==', true)
+      .onSnapshot((querySnapshot) => {
+        if (
+          querySnapshot.docs[0] &&
+          querySnapshot.docs[0].data().start.seconds < time.now().seconds
+        ) {
+          this.setState({ available_date: querySnapshot.docs[0] }, () =>
+            this.getMatchingUser(this.state.available_date.data().for)
           );
         }
       });
@@ -242,7 +261,7 @@ export default class App extends React.Component<Props, State> {
   startVideo(): void {
     const now = time.now();
 
-    service.updateDateObject(this.state.available_date.id, { joined: now });
+    service.updateDateObject(this.state.available_date.id, { timeJoined: now });
 
     this.setState({
       app_state: APP_STATE.video,
@@ -251,6 +270,8 @@ export default class App extends React.Component<Props, State> {
 
     // Start timer
     let timerState = setInterval(() => {
+      if (!this.state.available_date) return;
+
       if (
         this.state.video_session_time_remaining.minutes <= 0 &&
         this.state.video_session_time_remaining.seconds <= 1
@@ -277,7 +298,7 @@ export default class App extends React.Component<Props, State> {
     const now = time.now();
 
     service.updateDateObject(this.state.available_date.id, {
-      left: now,
+      timeLeft: now,
       active: false
     }).then(() => {
       this.setState({
@@ -306,6 +327,8 @@ export default class App extends React.Component<Props, State> {
     }).then(() => {
       this.setState({
         app_state: APP_STATE.waiting,
+        available_date: null,
+        matching_user: null,
         active_video_session: false
       });
     });
