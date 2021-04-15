@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
-import components from "./components";
 import { db } from "./firebase";
 import "./styles.css";
 import matchmaker from './matchmaker/matchmaker.js'
-import dateClock from './matchmaker/dateClock.js'
-import matchmakerParams from './matchmaker/params.js'
 
-const { CodeBlock } = components;
+// import components from "./components";
+// const { CodeBlock } = components;
 
 function App() {
   const urlParams = new URLSearchParams(window.location.search);
   const [user, setUser] = useState();
-  const [isFree, setIsFree] = useState();
+  const [isHereAndFree, setIsHereAndFree] = useState();
   const [emailFromUrl] = useState(urlParams.get("email"));
-  // const [isFree, setIsFree] = useState(false);
+  const [timer, setTimer] = useState();
 
   useEffect(() => {
     if (emailFromUrl) {
@@ -26,20 +24,33 @@ function App() {
   }, [emailFromUrl]);
 
   useEffect(() => {
-    if (user) setIsFree(user.free);
+    if (user) setIsHereAndFree(user.here && user.free);
   }, [user]);
 
   useEffect(() => {
-    if (isFree !== undefined)
-      db.collection("Users").doc(emailFromUrl).update({ free: isFree });
-  }, [emailFromUrl, isFree]);
+    if (isHereAndFree !== undefined) {
+      db.collection("Users").doc(emailFromUrl).update({
+        // setting them both with their common value
+        here: isHereAndFree,
+        free: isHereAndFree
+      });
+    }
+    if (isHereAndFree === true) {
+      console.log('Starting matchmaker')
+      matchmaker(setTimer)
+    }
+    if (isHereAndFree === false) {
+      console.warn('Stopping matchmaker')
+      clearTimeout(timer)
+    }
+  }, [emailFromUrl, isHereAndFree, timer]);
 
   return (
     <div className="app">
-      <CodeBlock value={"user.free in Firebase: " + user.free} />
-      <CodeBlock value={"isFree: " + isFree} />
-      <button onClick={() => setIsFree((prev) => !prev)}>
-        {isFree ? "free" : "notFree"}
+      <div>{`user.here and user.free in Firebase: ${user?.here && user?.free}`}</div>
+      <div>{`isHereAndFree: ${isHereAndFree}`}</div>
+      <button onClick={() => setIsHereAndFree((prev) => !prev)}>
+        {isHereAndFree ? "free" : "notFree"}
       </button>
     </div>
   );
