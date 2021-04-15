@@ -95,7 +95,7 @@ export default class App extends React.Component<Props, State> {
     const now = time.now();
 
     if (email) {
-      this.updateUser(email, {
+      service.updateUser(email, {
         here: true,
         free: true,
         waitStartTime: now
@@ -116,7 +116,7 @@ export default class App extends React.Component<Props, State> {
       // we want to prevent the rest of this function from running.
       if (this.state.redirecting) return;
 
-      this.updateUser(this.state.user.email, { here: false, free: true }).then(
+      service.updateUser(this.state.user.email, { here: false, free: true }).then(
         () => {
           this.endVideo();
         }
@@ -159,7 +159,7 @@ export default class App extends React.Component<Props, State> {
 
     // If all criteria is met to start a date, send user to countdown
     if (this.shouldStartCountdown()) {
-      this.updateUser(this.state.user.email, { free: false }).then(() => {
+      service.updateUser(this.state.user.email, { free: false }).then(() => {
         this.setState({ app_state: APP_STATE.countdown });
       });
     }
@@ -197,14 +197,6 @@ export default class App extends React.Component<Props, State> {
       });
   }
 
-  async updateUser(email: string, params: any): Promise<void> {
-    await db.collection('Users').doc(email).update(params);
-  }
-
-  async updateDateObject(id: string, params: any): Promise<void> {
-    await db.collection('Dates').doc(id).update(params);
-  }
-
   //
   //
   // Checks
@@ -235,9 +227,9 @@ export default class App extends React.Component<Props, State> {
     if (!this.state.user) return;
 
     if (document.hidden) {
-      this.updateUser(this.state.user.email, { here: false });
+      service.updateUser(this.state.user.email, { here: false });
     } else {
-      this.updateUser(this.state.user.email, { here: true });
+      service.updateUser(this.state.user.email, { here: true });
     }
   }
 
@@ -250,7 +242,7 @@ export default class App extends React.Component<Props, State> {
   startVideo(): void {
     const now = time.now();
 
-    this.updateDateObject(this.state.available_date.id, { joined: now });
+    service.updateDateObject(this.state.available_date.id, { joined: now });
 
     this.setState({
       app_state: APP_STATE.video,
@@ -284,7 +276,7 @@ export default class App extends React.Component<Props, State> {
   endVideo(): void {
     const now = time.now();
 
-    this.updateDateObject(this.state.available_date.id, {
+    service.updateDateObject(this.state.available_date.id, {
       left: now,
       active: false
     }).then(() => {
@@ -300,7 +292,7 @@ export default class App extends React.Component<Props, State> {
   }
 
   rateDate(ratingType: string, value: boolean): void {
-    this.updateDateObject(this.state.available_date.id, {
+    service.updateDateObject(this.state.available_date.id, {
       [ratingType]: value
     });
   }
@@ -308,7 +300,7 @@ export default class App extends React.Component<Props, State> {
   restart(): void {
     const now = time.now();
 
-    this.updateUser(this.state.user.email, {
+    service.updateUser(this.state.user.email, {
       free: true,
       waitStartTime: now
     }).then(() => {
@@ -323,7 +315,7 @@ export default class App extends React.Component<Props, State> {
     this.setState({ redirecting: true });
 
     if (this.state.user)
-      this.updateUser(this.state.user.email, { here: false });
+      service.updateUser(this.state.user.email, { here: false });
 
     window.location.replace('https://live.bloomdating.app/');
   }
