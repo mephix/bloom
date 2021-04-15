@@ -324,12 +324,14 @@ export default class App extends React.Component<Props, State> {
     if (this.state.user)
       this.updateUser(this.state.user.email, { here: false });
 
-    window.location.replace('https://live.bloomdating.app/');
-  }
+      window.location.replace('https://live.bloomdating.app/');
+    }
 
   renderView(): any {
     const VIEW_STATE: any = {
-      waiting: <WaitingRoom user={this.state.user} />,
+      waiting: (
+        <WaitingRoom user={this.state.user} updateUser={this.updateUser}  />
+      ),
       countdown: (
         <CountDown
           user={this.state.user}

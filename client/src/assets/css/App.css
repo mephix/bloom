@@ -2,6 +2,7 @@
   background-color: black !important;
   text-align: center;
   border-bottom: 1px solid white;
+  height: 64px;
 }
 
 .logo {
@@ -17,6 +18,12 @@ p {
   font-size: 26px;
   text-align: center;
   margin-top: 0;
+}
+
+.toggle {
+  padding: 1rem;
+  justify-content: center;
+  display: flex;
 }
 
 .centered-container {
