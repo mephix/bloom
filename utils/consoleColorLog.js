@@ -3,7 +3,7 @@ module.exports = consoleColorLog
 /*
  * `consoleColorLog`: prints to Node debug console in different colors and emphases.
  */
-function consoleColorLog(message, color, emphasis='none') {
+function consoleColorLog(message, color='blue', emphasis='none') {
   // `color`: white, red, yellow, green, cyan, blue, magenta.
   if (colors[color] === undefined) throw new Error(`consoleColorLog does not support the color ${color}`)
   // `emphasis`: none, bright, bold, underline, reversed.

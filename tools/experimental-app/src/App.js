@@ -50,7 +50,7 @@ function App() {
       <div>{`user.here and user.free in Firebase: ${user?.here && user?.free}`}</div>
       <div>{`isHereAndFree: ${isHereAndFree}`}</div>
       <button onClick={() => setIsHereAndFree((prev) => !prev)}>
-        {isHereAndFree ? "free" : "notFree"}
+        {"change"}
       </button>
     </div>
   );
