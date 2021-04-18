@@ -4,6 +4,7 @@ var db = getDb()
 exports.list = list
 exports.get = get
 exports.set = set
+exports.add = add
 exports.modify = modify
 exports.delete = remove
 exports.db = db
@@ -51,6 +52,13 @@ function set (collection, id, data) {
 }
 
 /*
+ * Use `add` to create a new document without specifying the id.
+ */
+function add (collection, data) {
+  return db.collection(collection).add(data) 
+}
+
+/*
  * Use `modify` to update only the specified fields of an existing document.
  */
 function modify (collection, id, data) {
@@ -94,5 +102,6 @@ function getDb () {
   db.settings({ timestampsInSnapshots: true })
   // Attach 'FieldValue'.
   db.FieldValue = admin.firestore.FieldValue
+  db.Timestamp  = admin.firestore.Timestamp
   return db
 }

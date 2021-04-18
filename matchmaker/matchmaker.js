@@ -1,11 +1,10 @@
 const dateClock = require('./dateClock.js')
-const { addScore, tryToJoinDates, createDates } = require('./stubs.js')
+const { getDates, addScore, tryToJoinDates, createDates } = require('./stubs.js')
 const consoleColorLog = require('../utils/consoleColorLog.js')
 
 module.exports = matchmaker
 
 async function matchmaker(setTimer) {
-  consoleColorLog('')
 
   // When it finishes running, the matchMaker puts itself to sleep for a
   // certain amount of time. Write a wrapper around `setTimeout` to do
@@ -13,6 +12,7 @@ async function matchmaker(setTimer) {
   // setTimeout returns a timer id which can be terminated with
   // clearTimeout(timer).
   const sleepMatchMakerFor = time => {return setTimeout(matchmaker, time*1000, setTimer)}
+  consoleColorLog('\nStarting matchmaker...', 'white')
   let timer
 
   // Check whether there is a date night happening currently.
@@ -53,8 +53,16 @@ consoleColorLog(`sleeping for timeTilNextRound ${timeTilNextRound}`, 'cyan')
     return
   }
 
+  // For the meantime in dev: if its a new round, set 'invited' back to
+  // ffor all matches
+  consoleColorLog(`currentInterval: ${currentInterval}`, 'white')
+  if (currentInterval === 1) {
+    Object.keys(matches).map(id => matches[id].invited = false)
+  }
+
   // Attach to each current, active Date For the User,
   // the match score of the person the Date is With.
+  let dates = await getDates(userId)
   let datesWithScore = addScore(dates, matches)
 
   // Try to join each of these dates, in descending order of score.
@@ -75,7 +83,7 @@ consoleColorLog(`sleeping for timeTilNextRound ${timeTilNextRound}`, 'cyan')
     // If a date is not successfully joined, create a bunch of dates for
     // the person's matches above a certain score threshold, then set the
     // matchMaker to run again next interval.
-    let nInvites = await createDates(matches, threshold)
+    await createDates(matches, threshold)
     let timeTilNextInterval = dateClock.timeTilNextInterval(Date.now())
     timer = sleepMatchMakerFor(timeTilNextInterval)
     setTimer(timer)
