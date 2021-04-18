@@ -33,6 +33,7 @@ const colors = {
 }
 
 const emphases = {
+  bright: -1,
   none: 0,
   bold: 1,
   underline: 4,
