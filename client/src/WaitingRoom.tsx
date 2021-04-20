@@ -74,6 +74,7 @@ class WaitingRoom extends React.Component<Props, State> {
     // TODO: Move this into a cloud function because it's more backendy.
     // This really belongs on the "backend".
     let current_card_ref = this.state.cards[0];
+    if (!current_card_ref) return;
 
     let current_card_data = current_card_ref.data();
     let active_card: any = {};
