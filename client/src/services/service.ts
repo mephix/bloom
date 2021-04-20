@@ -2,6 +2,10 @@
 // Mostly functions that can be called async and don't involve
 // setting state in React.
 
+// NOTE: I think it makes much more sense to eventually move a lot
+// of these functions into cloud functions. They are more backendy
+// and don't really belong on the frontend.
+
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { db, time } from '../config/firebase';
