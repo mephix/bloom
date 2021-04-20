@@ -79,7 +79,7 @@ class WaitingRoom extends React.Component<Props, State> {
     let current_card_data = current_card_ref.data();
     let active_card: any = {};
 
-    if (current_card_data.prospects) {
+    if (current_card_data.prospects && current_card_data.prospects.length > 0) {
       db.doc(`/Users/${current_card_data.prospects[0].id}`)
         .onSnapshot((doc) => {
           active_card.user = doc.data();
