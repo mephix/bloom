@@ -75,9 +75,23 @@ async function nextDate(
     prospects: firebase.firestore.FieldValue.arrayRemove(prospect_user_ref)
   });
 
-  db.collection('Dates').doc(date_id).set({
+  db.collection('Dates').doc(date_id).update({
     accepted: false,
     timeReplied: time.now()
+  });
+}
+
+async function inviteProspect(
+  email: string,
+  prospect_email: string,
+): Promise<void> {
+  await heartProspect(email, prospect_email);
+
+  await db.collection('Dates').doc().set({
+    for: email,
+    with: prospect_email,
+    active: true,
+    timeSent: time.now()
   });
 }
 
@@ -92,7 +106,7 @@ async function joinDate(
   let prospect_user_ref = await db.collection('Users').doc(prospect_email);
   let batch = db.batch();
 
-  await db.collection('Dates').doc(date_id).set({
+  await db.collection('Dates').doc(date_id).update({
     accepted: true,
     timeReplied: time.now()
   });
@@ -110,8 +124,8 @@ async function joinDate(
       });
     });
 
-    user_ref.set({ free: false });
-    prospect_user_ref.set({ free: false });
+    user_ref.update({ free: false });
+    prospect_user_ref.update({ free: false });
 
     likes_ref.update({
       likes: firebase.firestore.FieldValue.arrayUnion(prospect_user_ref)
@@ -130,5 +144,6 @@ export {
   nextProspect,
   heartProspect,
   joinDate,
-  nextDate
+  nextDate,
+  inviteProspect
 };

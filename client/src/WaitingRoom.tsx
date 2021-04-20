@@ -1,6 +1,14 @@
 import React from 'react';
 
-import { db } from './config/firebase';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+
+import { db, time } from './config/firebase';
+import * as  service from './services/service';
 
 import './assets/css/App.css';
 
@@ -32,9 +40,12 @@ class WaitingRoom extends React.Component<Props, State> {
 
     // TODO: Move this into a cloud function because it's more backendy.
     // This really belongs on the "backend"
+    let now = time.now();
+
     db.collection('Dates')
       .where('for', '==', this.props.user.email)
       .where('active', '==', true)
+      .where('end', '>', now)
       .onSnapshot((querySnapshot) => {
         this.setCards(querySnapshot.docs);
       });
@@ -42,6 +53,7 @@ class WaitingRoom extends React.Component<Props, State> {
     db.collection('Dates')
       .where('with', '==', this.props.user.email)
       .where('active', '==', true)
+      .where('end', '>', now)
       .onSnapshot((querySnapshot) => {
         this.setCards(querySnapshot.docs);
       });
@@ -49,7 +61,7 @@ class WaitingRoom extends React.Component<Props, State> {
     db.collection('Prospects')
       .doc(this.props.user.email)
       .onSnapshot((doc) => {
-        this.setCards(doc.get('prospects'));
+        this.setCards([doc]);
       });
   }
 
@@ -62,16 +74,17 @@ class WaitingRoom extends React.Component<Props, State> {
     // TODO: Move this into a cloud function because it's more backendy.
     // This really belongs on the "backend".
     let current_card_ref = this.state.cards[0];
+
     let current_card_data = current_card_ref.data();
     let active_card: any = {};
 
     if (current_card_data.prospects) {
-      db.collection('Users').doc(current_card_data.prospects[0])
+      db.doc(`/Users/${current_card_data.prospects[0].id}`)
         .onSnapshot((doc) => {
           active_card.user = doc.data();
           this.setState({ active_card });
       });;
-    } else if (current_card_data.with) {
+    } else if (current_card_data.with !== this.props.user.email) {
       db.collection('Users')
         .doc(current_card_data.with)
         .onSnapshot((doc) => {
@@ -91,8 +104,71 @@ class WaitingRoom extends React.Component<Props, State> {
   }
 
   renderCard(): any {
-    console.log(this.state.active_card)
-    return <div>Test</div>;
+    if (this.state.active_card.date_id) {
+      return (
+        <Card>
+          <CardActionArea>
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="h2">
+                {this.state.active_card.user.firstName}
+              </Typography>
+              <Typography variant="body2" color="textSecondary" component="p">
+                {this.state.active_card.user.bio}
+              </Typography>
+            </CardContent>
+          </CardActionArea>
+          <CardActions>
+            <Button 
+              onClick={() => service.nextDate(
+                this.props.user.email, 
+                this.state.active_card.user.email, 
+                this.state.active_card.date_id)}
+              color="primary">
+              Next
+            </Button>
+            <Button
+              onClick={() => service.joinDate(
+                this.props.user.email, 
+                this.state.active_card.user.email, 
+                this.state.active_card.date_id)} 
+              color="primary">
+              Join Date
+            </Button>
+          </CardActions>
+        </Card>
+      );
+    }
+
+    return (
+      <Card>
+        <CardActionArea>
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              {this.state.active_card.user.email}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              {this.state.active_card.user.bio}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+        <CardActions>
+          <Button 
+            onClick={() => service.nextProspect(
+              this.props.user.email, 
+              this.state.active_card.user.email)}
+            color="primary">
+            Next
+          </Button>
+          <Button
+            onClick={() => service.heartProspect(
+              this.props.user.email, 
+              this.state.active_card.user.email)} 
+            color="primary">
+            Like
+          </Button>
+        </CardActions>
+      </Card>
+    );
   }
 
   render() {
@@ -104,7 +180,7 @@ class WaitingRoom extends React.Component<Props, State> {
           </div>
         )}
         {(this.props.user && this.state.cards.length > 0 && this.state.active_card) && (
-          <div>
+          <div style={{width: '90%'}}>
             {this.renderCard()}
           </div>
         )}
