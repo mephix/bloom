@@ -104,7 +104,14 @@ class WaitingRoom extends React.Component<Props, State> {
     }
   }
 
+  clear(): void {
+    this.setState({ active_card: null }, () => this.forceUpdate());
+  }
+
   renderCard(): any {
+    console.log(this.state.active_card)
+    if (!this.state.active_card || !this.state.active_card.user) return;
+
     if (this.state.active_card.date_id) {
       return (
         <Card>
@@ -123,7 +130,7 @@ class WaitingRoom extends React.Component<Props, State> {
               onClick={() => service.nextDate(
                 this.props.user.email, 
                 this.state.active_card.user.email, 
-                this.state.active_card.date_id)}
+                this.state.active_card.date_id).then(() => this.clear())}
               color="primary">
               Next
             </Button>
@@ -131,7 +138,7 @@ class WaitingRoom extends React.Component<Props, State> {
               onClick={() => service.joinDate(
                 this.props.user.email, 
                 this.state.active_card.user.email, 
-                this.state.active_card.date_id)} 
+                this.state.active_card.date_id).then(() => this.clear())} 
               color="primary">
               Join Date
             </Button>
@@ -145,7 +152,7 @@ class WaitingRoom extends React.Component<Props, State> {
         <CardActionArea>
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
-              {this.state.active_card.user.email}
+              {this.state.active_card.user.firstName}
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
               {this.state.active_card.user.bio}
@@ -156,14 +163,14 @@ class WaitingRoom extends React.Component<Props, State> {
           <Button 
             onClick={() => service.nextProspect(
               this.props.user.email, 
-              this.state.active_card.user.email)}
+              this.state.active_card.user.email).then(() => this.clear())}
             color="primary">
             Next
           </Button>
           <Button
             onClick={() => service.heartProspect(
               this.props.user.email, 
-              this.state.active_card.user.email)} 
+              this.state.active_card.user.email).then(() => this.clear())} 
             color="primary">
             Like
           </Button>
@@ -180,7 +187,7 @@ class WaitingRoom extends React.Component<Props, State> {
             <p>We’re setting you up on a date.<br />This usually takes a couple of minutes.</p>
           </div>
         )}
-        {(this.props.user && this.state.cards.length > 0 && this.state.active_card) && (
+        {(this.props.user && this.state.cards.length > 0) && (
           <div style={{width: '90%'}}>
             {this.renderCard()}
           </div>
