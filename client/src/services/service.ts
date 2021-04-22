@@ -24,16 +24,17 @@ async function nextProspect(
 ): Promise<void> {
   let prospects_ref = await db.collection('Prospects').doc(email);
   let nexts_ref = await db.collection('Nexts').doc(email);
+  let prospect_user_ref = await db.collection('Users').doc(prospect_email);
 
   nexts_ref.update({
     nexts: firebase.firestore.FieldValue.arrayUnion(
-      db.collection('Users').doc(prospect_email)
+      prospect_user_ref
     )
   });
 
   prospects_ref.update({
     prospects: firebase.firestore.FieldValue.arrayRemove(
-      db.collection('Users').doc(prospect_email)
+      prospect_user_ref
     )
   });
 }
@@ -44,16 +45,17 @@ async function heartProspect(
 ): Promise<void> {
   let prospects_ref = await db.collection('Prospects').doc(email);
   let likes_ref = await db.collection('Likes').doc(email);
+  let prospect_user_ref = await db.collection('Users').doc(prospect_email);
 
   likes_ref.update({
     likes: firebase.firestore.FieldValue.arrayUnion(
-      db.collection('Users').doc(prospect_email)
+      prospect_user_ref
     )
   });
 
   prospects_ref.update({
     prospects: firebase.firestore.FieldValue.arrayRemove(
-      db.collection('Users').doc(prospect_email)
+      prospect_user_ref
     )
   });
 }

@@ -66,7 +66,7 @@ class WaitingRoom extends React.Component<Props, State> {
   }
 
   setCards(new_cards: any[]): void {
-    let cards = [this.state.cards, new_cards].flat();
+    let cards = new_cards;
     this.setState({cards}, () => this.constructActiveCard());
   }
 
@@ -104,12 +104,7 @@ class WaitingRoom extends React.Component<Props, State> {
     }
   }
 
-  clear(): void {
-    this.setState({ active_card: null }, () => this.forceUpdate());
-  }
-
   renderCard(): any {
-    console.log(this.state.active_card)
     if (!this.state.active_card || !this.state.active_card.user) return;
 
     if (this.state.active_card.date_id) {
@@ -130,7 +125,7 @@ class WaitingRoom extends React.Component<Props, State> {
               onClick={() => service.nextDate(
                 this.props.user.email, 
                 this.state.active_card.user.email, 
-                this.state.active_card.date_id).then(() => this.clear())}
+                this.state.active_card.date_id)}
               color="primary">
               Next
             </Button>
@@ -138,7 +133,7 @@ class WaitingRoom extends React.Component<Props, State> {
               onClick={() => service.joinDate(
                 this.props.user.email, 
                 this.state.active_card.user.email, 
-                this.state.active_card.date_id).then(() => this.clear())} 
+                this.state.active_card.date_id)} 
               color="primary">
               Join Date
             </Button>
@@ -163,14 +158,14 @@ class WaitingRoom extends React.Component<Props, State> {
           <Button 
             onClick={() => service.nextProspect(
               this.props.user.email, 
-              this.state.active_card.user.email).then(() => this.clear())}
+              this.state.active_card.user.email)}
             color="primary">
             Next
           </Button>
           <Button
             onClick={() => service.heartProspect(
               this.props.user.email, 
-              this.state.active_card.user.email).then(() => this.clear())} 
+              this.state.active_card.user.email)} 
             color="primary">
             Like
           </Button>
