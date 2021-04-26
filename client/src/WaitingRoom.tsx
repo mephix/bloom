@@ -162,13 +162,23 @@ class WaitingRoom extends React.Component<Props, State> {
             color="primary">
             Next
           </Button>
-          <Button
-            onClick={() => service.heartProspect(
-              this.props.user.email, 
-              this.state.active_card.user.email)} 
-            color="primary">
-            Like
-          </Button>
+          {this.state.active_card.user.here ? (
+            <Button
+              onClick={() => service.inviteProspect(
+                this.props.user.email, 
+                this.state.active_card.user.email)} 
+              color="primary">
+              Invite
+            </Button>
+          ) : (
+            <Button
+              onClick={() => service.heartProspect(
+                this.props.user.email, 
+                this.state.active_card.user.email)} 
+              color="primary">
+              Like
+            </Button>
+          )}
         </CardActions>
       </Card>
     );
