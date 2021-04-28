@@ -1,22 +1,13 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, FC } from 'react'
+import { ToggleProps } from './Toggle.type'
+import { noop } from '../utils'
 import stylesModule from './Toggle.module.scss'
 
-const noop = () => {}
-
-export type ToggleProps = {
-  toggled: boolean
-  toggleMessages: {
-    on: string
-    off: string
-  }
-  onToggle: (state: boolean) => void
-}
-
-export const Toggle = ({
+export const Toggle: FC<ToggleProps> = ({
   toggled = false,
   toggleMessages = { on: 'on', off: 'off' },
   onToggle = noop
-}: ToggleProps) => {
+}) => {
   const [state, setState] = useState(toggled)
 
   useEffect(() => {
