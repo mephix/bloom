@@ -1,11 +1,14 @@
 import React from 'react';
 
 import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
+import CloseIcon from '@material-ui/icons/Close';
+import VideocamIcon from '@material-ui/icons/Videocam';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 
 import { db, time } from './config/firebase';
 import * as  service from './services/service';
@@ -109,75 +112,73 @@ class WaitingRoom extends React.Component<Props, State> {
 
     if (this.state.active_card.date_id) {
       return (
-        <Card>
-          <CardActionArea>
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="h2">
-                {this.state.active_card.user.firstName}
-              </Typography>
-              <Typography variant="body2" color="textSecondary" component="p">
-                {this.state.active_card.user.bio}
-              </Typography>
-            </CardContent>
-          </CardActionArea>
-          <CardActions>
-            <Button 
+        <Card className="prospect-card" variant="outlined">
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2" className="card-title">
+              {this.state.active_card.user.firstName}
+            </Typography>
+            <Typography className="card-details" component="p">
+              {this.state.active_card.user.bio}
+            </Typography>
+          </CardContent>
+          <CardActions className="card-actions">
+            <IconButton 
               onClick={() => service.nextDate(
                 this.props.user.email, 
                 this.state.active_card.user.email, 
                 this.state.active_card.date_id)}
               color="primary">
-              Next
-            </Button>
-            <Button
+              <CloseIcon />
+            </IconButton>
+            <IconButton 
               onClick={() => service.joinDate(
                 this.props.user.email, 
                 this.state.active_card.user.email, 
                 this.state.active_card.date_id)} 
               color="primary">
-              Join Date
-            </Button>
+              <VideocamIcon />
+            </IconButton>
           </CardActions>
         </Card>
       );
     }
 
     return (
-      <Card>
-        <CardActionArea>
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              {this.state.active_card.user.firstName}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              {this.state.active_card.user.bio}
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-        <CardActions>
-          <Button 
+      <Card className="prospect-card" variant="outlined">
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="h2" className="card-title">
+            {this.state.active_card.user.firstName}
+          </Typography>
+          <Typography className="card-details" component="p">
+            {this.state.active_card.user.bio}
+          </Typography>
+        </CardContent>
+        <CardActions className="card-actions">
+          <IconButton 
             onClick={() => service.nextProspect(
               this.props.user.email, 
               this.state.active_card.user.email)}
             color="primary">
-            Next
-          </Button>
+            <CloseIcon />
+          </IconButton>
           {this.state.active_card.user.here ? (
             <Button
               onClick={() => service.inviteProspect(
                 this.props.user.email, 
                 this.state.active_card.user.email)} 
-              color="primary">
+              variant="contained" 
+              color="primary"
+              className="primary-button">
               Invite
             </Button>
           ) : (
-            <Button
+            <IconButton 
               onClick={() => service.heartProspect(
                 this.props.user.email, 
                 this.state.active_card.user.email)} 
               color="primary">
-              Like
-            </Button>
+              <FavoriteIcon />
+            </IconButton>
           )}
         </CardActions>
       </Card>
@@ -193,7 +194,7 @@ class WaitingRoom extends React.Component<Props, State> {
           </div>
         )}
         {(this.props.user && this.state.cards.length > 0) && (
-          <div style={{width: '90%'}}>
+          <div className="card-container">
             {this.renderCard()}
           </div>
         )}

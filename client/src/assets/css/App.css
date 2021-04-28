@@ -108,3 +108,39 @@ p {
   position: fixed;
   left: 1rem;
 }
+
+.card-container {
+  display: flex;
+  flex: 1;
+  padding: 4rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-container .prospect-card .card-title {
+  text-align: center;
+  font-size: 3rem;
+  margin-top: 0.35rem;
+}
+
+.card-container .prospect-card .card-details {
+  text-align: left;
+  font-size: 1.8rem;
+  line-height: 2.2rem;
+  padding: 2rem;
+  color: #777;
+}
+
+.card-container .prospect-card .card-actions {
+  justify-content: space-between;
+  padding: 2rem;
+}
+
+.card-container .prospect-card button:not(.MuiButton-containedPrimary) {
+  background-color: rgba(63, 81, 181, 0.1);
+  padding: 1rem;
+}
+
+.card-container .prospect-card .primary-button {
+  padding: 0.8rem 2rem;
+}
