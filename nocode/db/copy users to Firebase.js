@@ -8,7 +8,7 @@ const firestoreApi = require('../apis/firestoreApi.js')
  * and update them in Firebase in a batch.
  */
 const today = '2021-03-16'
-const existingFile = `./csvs/Users ${today}.json`
+const existingFile = `./output/Users ${today}.json`
 
 const firebaseFields = {
   'id': 'adaloId',

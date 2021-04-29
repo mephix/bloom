@@ -28,7 +28,7 @@ async function testAirtableApi() {
 }
 
 async function testUserOrdering() {
-  let users = JSON.parse(fs.readFileSync('./csvs/Users (ids added).json', 'utf8'))
+  let users = JSON.parse(fs.readFileSync('./output/Users (ids added).json', 'utf8'))
   let Here = users.map(u=>u.id).reverse().slice(0,20) // [2, 1, 20, 26, 19, 27]
   console.log(`POST: ${Here}`)
   await adaloApi.update('Rounds', 10, { Here })
@@ -40,7 +40,7 @@ async function testUserOrdering() {
   }
   // users.filter(u => round.Here.includes(u.id))
   let orderedUsersCsv = jsonToCsv(orderedUsers)
-  fs.writeFile('./csvs/ordered Users.csv', orderedUsersCsv, errf)
+  fs.writeFile('./output/ordered Users.csv', orderedUsersCsv, errf)
 }
 
 function jsonToCsv(items) {

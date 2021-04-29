@@ -1,10 +1,5 @@
-tools/experimental-app/src/DO_NOT_COMMIT.js
-DO_NOT_COMMIT.js
-.env
-csvs/*
-scores/US Zip Codes*
-airtable/*
-.vscode/*
-old/*
-old data files/*
-node_modules/*
+client/*
+nocode/.env
+nocode/output/*
+nocode/scores/US Zip Codes*
+nocode/node_modules/*

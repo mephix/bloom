@@ -9,8 +9,8 @@ const today = '2021-04-13'
 // const today = (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
 
 // Other parameters.
-let newFile = `./csvs/${collectionName} ${today}.json`
-let existingFile = cleanSlate ? `` : `./csvs/${collectionName} ${existingFileDate}.json`
+let newFile = `./output/${collectionName} ${today}.json`
+let existingFile = cleanSlate ? `` : `./output/${collectionName} ${existingFileDate}.json`
 const downloadNewRecords = require('./downloadNewRecords.js')
 const consoleColorLog = require('../utils/consoleColorLog.js')
 

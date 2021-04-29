@@ -4,8 +4,8 @@
 const today = '2021-04-13' // (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
 
 // File to load users from and store prospects:
-const loadFromLocalFile = `./csvs/Users ${today}.json`
-const PROSPECT_GRAPH_FILE = `./csvs/Prospects ${today}.csv`
+const loadFromLocalFile = `./output/Users ${today}.json`
+const PROSPECT_GRAPH_FILE = `./output/Prospects ${today}.csv`
 
 const getAllUsers = require('../users/getAllUsers.js')
 const setProfileDefaults = require('../users/setProfileDefaults.js')
