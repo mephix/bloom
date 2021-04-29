@@ -14,4 +14,6 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 export const db = firebase.firestore();
+db.settings({ experimentalForceLongPolling: true });
+
 export const time = firebase.firestore.Timestamp;
