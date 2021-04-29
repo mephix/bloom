@@ -3,7 +3,7 @@ import { Toggle } from './Toggle'
 import { ToggleProps } from './Toggle.type'
 
 export default {
-  title: 'Docs/Toggle',
+  title: 'Components/Toggle',
   component: Toggle
 } as Meta
 

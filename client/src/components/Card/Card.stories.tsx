@@ -1,16 +1,32 @@
 import { Story, Meta } from '@storybook/react'
+import { FC } from 'react'
 import { Card } from './Card'
 import { CardProps } from './Card.type'
 
 export default {
-  title: 'Docs/Card',
-  component: Card,
-  argTypes: {
-    background: { control: 'color' }
-  }
+  title: 'Components/Card',
+  component: Card
 } as Meta
 
-const Template: Story<CardProps> = args => <Card {...args} />
+const Wrapper: FC = ({ children }) => (
+  <div
+    style={{
+      width: '300px',
+      height: '545px',
+      backgroundColor: 'black',
+      paddingTop: '30px',
+      boxSizing: 'border-box'
+    }}
+  >
+    {children}
+  </div>
+)
+
+const Template: Story<CardProps> = args => (
+  <Wrapper>
+    <Card {...args} />
+  </Wrapper>
+)
 
 export const CardJoin = Template.bind({})
 CardJoin.args = {

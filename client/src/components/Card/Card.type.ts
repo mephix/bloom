@@ -1,8 +1,5 @@
-export type User = {
-  avatar: string
-  name: string
-  bio: string
-}
+import { User } from '../../screens/WaitingRoom/WaitingRoom.type'
+
 export type CardType = 'join' | 'invite' | 'like'
 
 export interface CardProps {

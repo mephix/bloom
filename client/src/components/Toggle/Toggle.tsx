@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, FC } from 'react'
 import { ToggleProps } from './Toggle.type'
-import { noop } from '../utils'
+import { classes, noop } from '../utils'
 import stylesModule from './Toggle.module.scss'
 
 export const Toggle: FC<ToggleProps> = ({
   toggled = false,
   toggleMessages = { on: 'on', off: 'off' },
-  onToggle = noop
+  onToggle = noop,
+  className = ''
 }) => {
   const [state, setState] = useState(toggled)
 
@@ -23,7 +24,7 @@ export const Toggle: FC<ToggleProps> = ({
   )
 
   return (
-    <div className={stylesModule.toggleWrapper}>
+    <div className={classes(stylesModule.toggleWrapper, className)}>
       <label className={stylesModule.switch}>
         <input
           value={state.toString()}

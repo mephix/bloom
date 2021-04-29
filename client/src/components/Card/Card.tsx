@@ -1,7 +1,7 @@
 import { FC, useCallback } from 'react'
 import { ActionButton } from './ActionButton'
 import stylesModule from './Card.module.scss'
-import { noop, px } from '../utils'
+import { noop } from '../utils'
 import { CardProps } from './Card.type'
 
 const initialUser = {
@@ -14,10 +14,7 @@ export const Card: FC<CardProps> = ({
   user = initialUser,
   type = 'join',
   onResolve = noop,
-  onReject = noop,
-  background = '#000',
-  width = 300,
-  height = 545
+  onReject = noop
 }) => {
   const actionHandler = useCallback(
     type => {
@@ -28,14 +25,7 @@ export const Card: FC<CardProps> = ({
   )
 
   return (
-    <div
-      className={stylesModule.card}
-      style={{
-        width: px(width),
-        height: px(height),
-        background
-      }}
-    >
+    <div className={stylesModule.card}>
       <div className={stylesModule.userInfo}>
         <img
           className={stylesModule.avatar}
