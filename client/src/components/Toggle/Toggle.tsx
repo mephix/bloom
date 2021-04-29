@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, FC } from 'react'
 import { ToggleProps } from './Toggle.type'
-import { classes, noop } from '../utils'
+import { classes, noop } from '../../utils'
 import stylesModule from './Toggle.module.scss'
 
 export const Toggle: FC<ToggleProps> = ({
