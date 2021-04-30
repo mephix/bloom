@@ -15,7 +15,7 @@ saveOldCollection('Dates old')
 
 async function saveOldCollection(collectionName) {
   let oldCollection = await adaloApi.augment(collectionName, 0)
-  let fileName = `./csvs/pre-Reborn ${collectionName} ${date}.json`
+  let fileName = `./output/pre-Reborn ${collectionName} ${date}.json`
   fs.writeFile(fileName, JSON.stringify(oldCollection), fserr)  
   console.log(`SUCCESS: ${fileName} written.`)
 }

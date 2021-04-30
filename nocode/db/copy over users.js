@@ -1,22 +1,37 @@
-/*
- * Key parameters to set
- */
-const usersFile = './csvs/Users 2021-02-04.json'
-
 const fs = require('fs')
-const adaloApi = require('../apis/adaloApi.js')
+const USERS_BACKUP = './output/Users and Profiles for upload - to Bloom Reborn.json'
+const adaloApi = require('../adaloApi.js')
 
-copyProfileFieldsToUsers()
+copyUsers()
 
-async function copyProfileFieldsToUsers() {
-  let users = JSON.parse(fs.readFileSync(usersFile, 'utf8'))
+async function copyUsers() {
+  let profiles= JSON.parse(fs.readFileSync(USERS_BACKUP, 'utf8'))
+  // const rows = fs.readFileSync(USERS_BACKUP, 'utf8').split('\n')
+  // let profiles = []
+  // const FIELDS = [
+  //   'Email', 'First Name', 'Gender', 'Gender Preference', 
+  //   'Age', 'Age Preference Low', 'Age Preference High', 
+  //   'Phone Number', 'Bio', 'Bio Overflow',
+  //   'City', 'Zipcode', 'Radius',
+  // ]
 
-  // Get { name: id } map for collections such as Cities, Genders etc
+  // // Extract profiles from csv.
+  // const fields = rows[0].split(',')
+  // for (let i=1; i<HOW_MANY; i++) {
+  //   let data = rows[i].split(',')
+  //   FIELDS.map(FIELD =>
+  //     profiles[i-1][FIELD] = data[fields.findIndex(FIELD)]
+  //   )  
+  // }
+
+  const genderMap = { 'F': 1, 'M': 2, 'X': 3 }
+  const gprefMap  = { 'F': 1, 'M': 2, 'X': 3 }
+
+  // Turn Cities into a map of names to ids.
   const cities = await adaloApi.list('Cities', 30)
   const cityMap = []
   cities.map(({ Name, id, ...rest }) => cityMap[Name.trim()] = id)
-  const genderMap = { 'F': 1, 'M': 2, 'X': 3 }
-  const gprefMap  = { 'F': 1, 'M': 2, 'X': 3 }
+  // const cityMap  = { 'Bay Area': 1, 'Los Angeles': 2, 'Miami': 3, }
 
   // Create user corresponding to profile.
   let users = []

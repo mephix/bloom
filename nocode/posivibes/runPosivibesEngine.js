@@ -27,16 +27,16 @@ async function runPosivibesEngine() {
   console.log(`Running Posivibes Engine...`)
 
   // Load users.
-  let existingUsersFile = `./csvs/Users ${existingDate}.json`
-  // let newUsersFile =      `./csvs/Users ${today}.json`
+  let existingUsersFile = `./output/Users ${existingDate}.json`
+  // let newUsersFile =      `./output/Users ${today}.json`
   // if (refresh)
   //   var { users } = await getNewUsers(existingUsersFile, newUsersFile)
   // else
     var users = JSON.parse(fs.readFileSync(existingUsersFile, 'utf8'))
 
   // Load or download dates.
-  let existingDatesFile = `./csvs/Dates ${existingDate}.json`
-  // let newDatesFile =      `./csvs/Dates ${today}.json`
+  let existingDatesFile = `./output/Dates ${existingDate}.json`
+  // let newDatesFile =      `./output/Dates ${today}.json`
   // if (refreshDates)
   //   var { records: dates } = await downloadNewRecords('Dates', newDatesFile, existingDatesFile)
   // else
@@ -45,7 +45,7 @@ async function runPosivibesEngine() {
   // Add dates from old database (and output for checking).
   let allDates = [...dates, ...addOldDates(users)]
   // let reducedDates = allDates.map({ })
-  writeToCsv(allDates, `./csvs/Dates for checking.csv`)
+  writeToCsv(allDates, `./output/Dates for checking.csv`)
 
   // Add `hearted` field to Users.
   users = addHearted(users, allDates)
@@ -127,7 +127,7 @@ async function runPosivibesEngine() {
   let posivibesSorted = sortBy(posivibesZipped, x => -x.posivibes)
 
   // Write people and their posivibes to csv.
-  writeToCsv(posivibesSorted, `./csvs/Posivibes ${today}.csv`, '\t')
+  writeToCsv(posivibesSorted, `./output/Posivibes ${today}.csv`, '\t')
 
   // Post to Adalo.
   // In reverse order, and one by one to avoid 503 errors.

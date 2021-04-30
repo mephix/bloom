@@ -1,6 +1,6 @@
 const fs = require('fs')
-const USERS_FILE_IN = './csvs/for upload to Bloom Reborn - Users.json'
-const USERS_FILE_OUT = './csvs/for upload to Bloom Reborn - Users - Edited.csv'
+const USERS_FILE_IN = './output/for upload to Bloom Reborn - Users.json'
+const USERS_FILE_OUT = './output/for upload to Bloom Reborn - Users - Edited.csv'
 const adaloApi = require('../adaloApi.js')
 const { readCsv, writeToCsv } = require('../csv.js')
 

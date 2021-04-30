@@ -6,8 +6,8 @@ const csv = require('../utils/csv.js')
  * Test and run here
  */
 
-let existingUsersFile = './csvs/Users 2021 clean slate.json' // './csvs/Users 2021-02-02.json' // 
-let newFile =           './csvs/Users 2021-02-03.json'
+let existingUsersFile = './output/Users 2021 clean slate.json' // './output/Users 2021-02-02.json' // 
+let newFile =           './output/Users 2021-02-03.json'
 runGetNewUsers()
 
 async function runGetNewUsers() {
@@ -34,14 +34,14 @@ async function runGetNewUsers() {
   }
 }
 
-// let csvOutputFile = './csvs/Users 2021-01-12.csv'
+// let csvOutputFile = './output/Users 2021-01-12.csv'
 // Don't also write in csv format because fields like Prospects are comma
 // separated.
 // csv.writeToCsv(users, csvOutputFile)
 
 // let maxUsers = 350
-// let backupFile =    './csvs/Users 2021-01-11.json'
-// let newBackupFile = './csvs/Users 2021-01-11.json'
+// let backupFile =    './output/Users 2021-01-11.json'
+// let newBackupFile = './output/Users 2021-01-11.json'
 // runGetAllUsers()
 // alsoWriteAsCsv()
 

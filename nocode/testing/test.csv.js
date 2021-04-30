@@ -1,6 +1,6 @@
 const { readCsv, writeToCsv } = require('../csv.js')
 
-const testFile = './csvs/testData.csv'
+const testFile = './output/testData.csv'
 let testData = [
   { 'name': 'Amel', 'posivibes': 4 },
   { 'name': 'John', 'posivibes': 3 },

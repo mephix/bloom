@@ -3,8 +3,8 @@ const fs = require('fs')
 // const fserr = err => {if (err) return console.log(err)}
 
 const date = '2021-02-03'
-const oldDatesFile = `./csvs/pre-Reborn Dates ${date}.json`
-const oldUsersFile = `./csvs/pre-Reborn Users ${date}.json`
+const oldDatesFile = `./output/pre-Reborn Dates ${date}.json`
+const oldUsersFile = `./output/pre-Reborn Users ${date}.json`
 
 module.exports = addOldDates
 

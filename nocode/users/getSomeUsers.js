@@ -29,7 +29,7 @@ async function getSomeUsers(ids, backupFile, throwError, method='parallel') {
     }
     console.log(`Downloading Users here SUCCEEDED.`)
     usersUpdated = true
-    // fs.writeFile(`./csvs/Users (${DAY}).json`, JSON.stringify(usersHere), errf)
+    // fs.writeFile(`./output/Users (${DAY}).json`, JSON.stringify(usersHere), errf)
 
   } catch (e) {
     console.warn(e)

@@ -3,8 +3,8 @@ const adaloApi = require('../adaloApi.js')
 const getInviteGraph = require('../getInviteGraph.js')
 const getDateGraph = require('../getDateGraph.js')
 // Path relative to bloom root.
-INVITES_FILE = './csvs/Invites.csv'
-DATES_FILE = './csvs/Dates.csv'
+INVITES_FILE = './output/Invites.csv'
+DATES_FILE = './output/Dates.csv'
 
 // testGetRelationships(getDateGraph, DATES_FILE)
 testGetRelationships(getInviteGraph, INVITES_FILE)
