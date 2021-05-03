@@ -3,7 +3,3 @@ export interface User {
   name: string
   bio: string
 }
-
-export interface WaitingRoomProps {
-  user: User
-}

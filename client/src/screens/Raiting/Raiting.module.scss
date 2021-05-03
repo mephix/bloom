@@ -1,0 +1,38 @@
+.container {
+  justify-content: space-around;
+  font-size: 1.4rem;
+  > div {
+    text-align: center;
+    padding: 0 5px;
+  }
+}
+
+.modal {
+  justify-content: flex-start !important;
+  margin-top: 50px;
+  font-size: 2rem;
+}
+
+.buttons {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  margin-top: 30px;
+  button {
+    width: 40%;
+  }
+}
+
+.done {
+  background: white;
+  border-radius: 4px;
+  width: 80%;
+  border: none;
+  text-transform: uppercase;
+  font-weight: bold;
+  padding: 10px;
+  transition: 0.3s;
+  &:active {
+    opacity: 0.6;
+  }
+}

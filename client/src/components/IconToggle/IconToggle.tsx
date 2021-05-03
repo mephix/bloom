@@ -4,13 +4,12 @@ import { classes, noop } from '../../utils'
 import stylesModule from './IconToggle.module.scss'
 import { HeartIcon } from './icons/HeartIcon'
 import { DislikeIcon } from './icons/DislikeIcon'
-import { Heart } from './IconToggle.stories'
 
 export const IconToggle: FC<IconToggleProps> = ({
   toggled = false,
   onToggle = noop,
   type,
-  className = ''
+  className = '',
 }) => {
   const [state, setState] = useState(toggled)
 
@@ -27,9 +26,9 @@ export const IconToggle: FC<IconToggleProps> = ({
   )
   const Icon =
     type === 'heart' ? (
-      <HeartIcon size={30} filled={state} />
+      <HeartIcon size={45} filled={state} />
     ) : (
-      <DislikeIcon size={34} filled={state} />
+      <DislikeIcon size={49} filled={state} />
     )
 
   return (

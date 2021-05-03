@@ -3,10 +3,10 @@ interface UserWithoutAvatar {
   bio: string
 }
 
-export interface CountDownProps {
-  user: UserWithoutAvatar
-  onComplete?: () => void
-}
+// export interface CountDownProps {
+//   user: UserWithoutAvatar
+//   onComplete?: () => void
+// }
 
 export interface CountDownBoxProps {
   seconds?: number
