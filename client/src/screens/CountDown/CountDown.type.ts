@@ -1,7 +1,7 @@
-interface UserWithoutAvatar {
-  name: string
-  bio: string
-}
+// interface UserWithoutAvatar {
+//   name: string
+//   bio: string
+// }
 
 // export interface CountDownProps {
 //   user: UserWithoutAvatar
