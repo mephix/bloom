@@ -4,18 +4,19 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Countdown from 'react-countdown'
 import moduleStyles from './Video.module.scss'
 import app from '../../store/app'
-import user from '../../store/user'
+import date from '../../store/date'
 
 export const Video = () => {
   const videoFrameRef = useRef<HTMLIFrameElement>(null)
   const [dailyObj, setDailyObj] = useState<DailyCall | null>(null)
   const endDate = useCallback(() => {
     if (!dailyObj) return app.setRaitingState()
+    date.setLeftTime()
     dailyObj.leave()
   }, [dailyObj])
 
   const startDate = useCallback(async () => {
-    const room = await user.getDateRoom()
+    const room = await date.getRoom()
     if (!room) {
       console.error('No date was available for video chat.')
       app.setWaitingRoomState()
@@ -26,16 +27,11 @@ export const Video = () => {
       showLeaveButton: false,
       showFullscreenButton: false,
       showParticipantsBar: false,
-      // customLayout: true,
     })
     daily.on('left-meeting', () => {
       app.setRaitingState()
     })
-    // daily.on('participant-left', () => {
-    //   setTimeout(() => {
-    //     endDate()
-    //   }, 5000)
-    // })
+    date.setJoinTime()
     daily.join({ url: roomUrl })
     setDailyObj(daily)
   }, [videoFrameRef])
@@ -50,7 +46,7 @@ export const Video = () => {
     <>
       <AppBar position="static" className="app-bar">
         <Toolbar>
-          <div>{user.matchingUser?.firstName}</div>
+          <div>{date.matchingUser?.firstName}</div>
           <Countdown
             date={fixedTime}
             onComplete={endDate}

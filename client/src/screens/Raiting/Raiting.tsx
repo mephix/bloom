@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { IconToggle } from '../../components/IconToggle'
 import app from '../../store/app'
+import date from '../../store/date'
 import user from '../../store/user'
 import { classes } from '../../utils'
 import commonStyles from '../Common.module.scss'
@@ -8,20 +9,20 @@ import moduleStyles from './Raiting.module.scss'
 
 export const Raiting = () => {
   const [rate, setRate] = useState({
-    quality: false,
-    exchange: false,
+    fun: false,
+    heart: false,
   })
   const [modal, setModal] = useState(false)
 
   const doneRaitingHandler = useCallback(() => {
-    console.log(rate)
+    date.setRaiting(rate.fun, rate.heart)
     setModal(true)
   }, [rate, setModal])
 
   const modalHandler = useCallback(state => {
     user.setHere(state)
     user.setFree(true)
-    user.resetMatchingUser()
+    date.resetMatchingUser()
     app.setWaitingRoomState()
   }, [])
 
@@ -56,20 +57,20 @@ export const Raiting = () => {
     <div className={classes(commonStyles.container, moduleStyles.container)}>
       <div>Time's up!</div>
       <div>
-        Could you and {user.matchingUser?.firstName} see and hear each other ok?
+        Could you and {date.matchingUser?.firstName} see and hear each other ok?
       </div>
       <div>
         <IconToggle
-          onToggle={state => setRate({ ...rate, quality: state })}
+          onToggle={state => setRate({ ...rate, fun: state })}
           type="dislike"
         />
       </div>
       <div>
-        Do you want to exchange numbers with {user.matchingUser?.firstName}?
+        Do you want to exchange numbers with {date.matchingUser?.firstName}?
       </div>
       <div>
         <IconToggle
-          onToggle={state => setRate({ ...rate, exchange: state })}
+          onToggle={state => setRate({ ...rate, heart: state })}
           type="heart"
         />
       </div>

@@ -1,8 +1,10 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
+import app from '../store/app'
 import user from '../store/user'
 
 export const useInit = () => {
-  useEffect(() => {
+  const init = useCallback(async () => {
+    await app.initParams()
     const email = getEmail()
     if (!email) return console.error('No email provided')
     user.setEmail(email)
@@ -17,6 +19,10 @@ export const useInit = () => {
       window.removeEventListener('focus', focusHandler)
     }
   }, [])
+
+  useEffect(() => {
+    init()
+  }, [init])
 }
 
 function getEmail(): string | null {

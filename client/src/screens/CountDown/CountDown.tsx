@@ -6,10 +6,11 @@ import moduleStyles from './CountDown.module.scss'
 import { classes } from '../../utils'
 import user from '../../store/user'
 import app from '../../store/app'
+import date from '../../store/date'
 
 export const CountDown: FC = () => {
   const onComplete = useCallback(() => {
-    if (!user.matchingUser?.here) app.setWaitingRoomState()
+    if (!date.matchingUser?.here) app.setWaitingRoomState()
     else {
       user.setFree(false)
       app.setVideoState()
@@ -21,9 +22,9 @@ export const CountDown: FC = () => {
       <CountDownBox onComplete={onComplete} />
       <div className={moduleStyles.info}>you have a date with...</div>
       <div className={moduleStyles.userInfo}>
-        <div className={moduleStyles.name}>{user.matchingUser?.firstName}</div>
+        <div className={moduleStyles.name}>{date.matchingUser?.firstName}</div>
         <div className={classes(moduleStyles.bio, moduleStyles.info)}>
-          {user.matchingUser?.bio}
+          {date.matchingUser?.bio}
         </div>
       </div>
     </div>

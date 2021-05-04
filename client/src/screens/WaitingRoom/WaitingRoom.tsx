@@ -6,18 +6,15 @@ import moduleStyles from './WaitingRoom.module.scss'
 import { AppBarHeader } from '../../components/AppBarHeader'
 import { classes } from '../../utils'
 import { observer } from 'mobx-react-lite'
-// import app from '../../store/app'
 import user from '../../store/user'
-
-const toggleMessages = {
-  on: 'I want to go on dates',
-  off: "I don't want to go on dates"
-}
+import date from '../../store/date'
+import app from '../../store/app'
+import { PARAMS } from '../../store/constants'
 
 const mockUser = {
   avatar: '/docs/placeholder.jpg',
   name: 'Name',
-  bio: 'this is a bio \n can have multiple lines'
+  bio: 'this is a bio \n can have multiple lines',
 }
 
 export const WaitingRoom = observer(() => {
@@ -25,10 +22,29 @@ export const WaitingRoom = observer(() => {
 
   const resolveHandler = useCallback(() => {
     console.log('resolve user')
+    date.unshiftProspects()
   }, [])
   const rejectHandler = useCallback(() => {
+    date.unshiftProspects(true)
     console.log('reject user')
   }, [])
+
+  const topUser = date.prospects.length > 0 && date.prospects[0]
+
+  const card = topUser ? (
+    <Card
+      type={user.here ? 'invite' : 'like'}
+      user={{
+        avatar: mockUser.avatar,
+        name: topUser.firstName,
+        bio: topUser.bio,
+      }}
+      onResolve={resolveHandler}
+      onReject={rejectHandler}
+    />
+  ) : (
+    <div>{app.params[PARAMS.SETTING_YOU_UP]}</div>
+  )
 
   return (
     <>
@@ -36,16 +52,14 @@ export const WaitingRoom = observer(() => {
       <div className={classes(commonStyles.container, moduleStyles.container)}>
         <Toggle
           className={moduleStyles.toggle}
-          toggleMessages={toggleMessages}
+          toggleMessages={{
+            on: app.params[PARAMS.WANT_TO_GO_ON_DATES],
+            off: app.params[PARAMS.DONT_WANT_TO_GO_ON_DATES],
+          }}
           toggled={user.here}
           onToggle={toggleHandler}
         />
-        <Card
-          type={user.here ? 'join' : 'invite'}
-          user={mockUser}
-          onResolve={resolveHandler}
-          onReject={rejectHandler}
-        />
+        {card}
       </div>
     </>
   )

@@ -4,4 +4,9 @@
 
 .container {
   height: calc(100% - 64px) !important;
+
+  > div {
+    text-align: center;
+    padding: 0 10px;
+  }
 }
