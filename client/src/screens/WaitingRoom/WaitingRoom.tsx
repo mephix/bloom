@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { Card } from '../../components/Card'
 import { Toggle } from '../../components/Toggle'
 import commonStyles from '../Common.module.scss'
@@ -7,37 +7,56 @@ import { AppBarHeader } from '../../components/AppBarHeader'
 import { classes } from '../../utils'
 import { observer } from 'mobx-react-lite'
 import user from '../../store/user'
-import date from '../../store/date'
+import date from '../../store/meetup'
 import app from '../../store/app'
-import { PARAMS } from '../../store/constants'
+import { PARAMS } from '../../store/utils/constants'
+import { UserCard } from '../../store/utils/types'
 
 const mockUser = {
   avatar: '/docs/placeholder.jpg',
   name: 'Name',
-  bio: 'this is a bio \n can have multiple lines',
+  bio: 'this is a bio \n can have multiple lines'
 }
 
 export const WaitingRoom = observer(() => {
   const toggleHandler = useCallback(state => user.setHere(state), [])
+  const [disabled, setDisabled] = useState<boolean>(false)
 
-  const resolveHandler = useCallback(() => {
-    console.log('resolve user')
-    date.unshiftProspects()
-  }, [])
-  const rejectHandler = useCallback(() => {
-    date.unshiftProspects(true)
-    console.log('reject user')
-  }, [])
+  const resolveHandler = useCallback(async () => {
+    if (disabled) return console.log('action button disabled')
+    try {
+      setDisabled(true)
+      await date.shiftCards()
+      setDisabled(false)
+    } catch {
+      setDisabled(false)
+    }
+  }, [disabled])
+  const rejectHandler = useCallback(async () => {
+    if (disabled) return console.log('action button disabled')
+    try {
+      setDisabled(true)
+      await date.shiftCards(true)
+      setDisabled(false)
+    } catch {
+      setDisabled(false)
+    }
+  }, [disabled, setDisabled])
 
-  const topUser = date.prospects.length > 0 && date.prospects[0]
+  const getType = (card: UserCard) => {
+    if (card.isDate) return user.here ? 'join' : 'invite'
+    else return user.here ? 'invite' : 'like'
+  }
 
-  const card = topUser ? (
+  const topCard = date.cards.length > 0 && date.cards[0]
+
+  const card = topCard ? (
     <Card
-      type={user.here ? 'invite' : 'like'}
+      type={getType(topCard)}
       user={{
         avatar: mockUser.avatar,
-        name: topUser.firstName,
-        bio: topUser.bio,
+        name: topCard.firstName,
+        bio: topCard.bio
       }}
       onResolve={resolveHandler}
       onReject={rejectHandler}
@@ -54,7 +73,7 @@ export const WaitingRoom = observer(() => {
           className={moduleStyles.toggle}
           toggleMessages={{
             on: app.params[PARAMS.WANT_TO_GO_ON_DATES],
-            off: app.params[PARAMS.DONT_WANT_TO_GO_ON_DATES],
+            off: app.params[PARAMS.DONT_WANT_TO_GO_ON_DATES]
           }}
           toggled={user.here}
           onToggle={toggleHandler}

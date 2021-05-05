@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { db } from '../firebase'
-import { PARAMETERS_COLLECTION, PARAMS } from './constants'
-import { StringDictionary } from './types'
+import { PARAMETERS_COLLECTION, PARAMS } from './utils/constants'
+import { StringDictionary } from './utils/types'
 
 export type AppState = 'WAITING' | 'COUNTDOWN' | 'VIDEO' | 'RATING' | null
 

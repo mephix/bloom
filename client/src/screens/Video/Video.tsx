@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Countdown from 'react-countdown'
 import moduleStyles from './Video.module.scss'
 import app from '../../store/app'
-import date from '../../store/date'
+import date from '../../store/meetup'
 
 export const Video = () => {
   const videoFrameRef = useRef<HTMLIFrameElement>(null)
@@ -26,7 +26,7 @@ export const Video = () => {
     const daily = DailyIframe.wrap(videoFrameRef.current, {
       showLeaveButton: false,
       showFullscreenButton: false,
-      showParticipantsBar: false,
+      showParticipantsBar: false
     })
     daily.on('left-meeting', () => {
       app.setRaitingState()

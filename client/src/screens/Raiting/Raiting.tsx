@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { IconToggle } from '../../components/IconToggle'
 import app from '../../store/app'
-import date from '../../store/date'
+import date from '../../store/meetup'
 import user from '../../store/user'
 import { classes } from '../../utils'
 import commonStyles from '../Common.module.scss'
@@ -10,7 +10,7 @@ import moduleStyles from './Raiting.module.scss'
 export const Raiting = () => {
   const [rate, setRate] = useState({
     fun: false,
-    heart: false,
+    heart: false
   })
   const [modal, setModal] = useState(false)
 

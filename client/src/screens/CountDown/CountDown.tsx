@@ -6,7 +6,7 @@ import moduleStyles from './CountDown.module.scss'
 import { classes } from '../../utils'
 import user from '../../store/user'
 import app from '../../store/app'
-import date from '../../store/date'
+import date from '../../store/meetup'
 
 export const CountDown: FC = () => {
   const onComplete = useCallback(() => {

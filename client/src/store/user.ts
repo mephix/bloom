@@ -1,12 +1,13 @@
 import { makeAutoObservable } from 'mobx'
 import { db } from '../firebase'
 import app from './app'
-import date from './date'
-import { UserState } from './types'
-import { USERS_COLLECTION } from './constants'
+import date from './meetup'
+import { UserState } from './utils/types'
+import { USERS_COLLECTION } from './utils/constants'
 
 class User {
   email: string | null = null
+  name: string | null = null
 
   here = false
   free = true
@@ -22,6 +23,7 @@ class User {
     if (!user) return console.error('User not found')
     this.email = user.email
     this.here = this.hiddenHere = user.here
+    this.name = user.firstName
     this.updateUserState({ free: true, here: this.here })
     app.setWaitingRoomState()
     date.subscribeOnDates()
