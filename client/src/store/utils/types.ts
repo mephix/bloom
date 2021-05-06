@@ -20,6 +20,8 @@ export interface UserData {
   here: boolean
 }
 
+// export interface UserDataCollection {}
+
 export interface Room {
   url: string
   token: string

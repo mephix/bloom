@@ -2,7 +2,7 @@ import axios from 'axios'
 import { DateTime } from 'luxon'
 
 const DAILY_API_KEY = process.env.REACT_APP_DAILY_API_KEY
-const ROUND_MINUTES = 2
+const ROUND_MINUTES = 15
 
 export async function makeConferenceRoom(preentry = 1) {
   const time = currentRoundStartEnd()

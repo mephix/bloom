@@ -15,8 +15,12 @@ class App {
   async initParams() {
     for (const [, param] of Object.entries(PARAMS)) {
       const doc = await db.collection(PARAMETERS_COLLECTION).doc(param).get()
-      this.params[param] = doc?.data()?.text
+      this.setParams(param, doc?.data()?.text)
     }
+  }
+
+  setParams(param: string, value: string) {
+    this.params[param] = value
   }
 
   setWaitingRoomState() {

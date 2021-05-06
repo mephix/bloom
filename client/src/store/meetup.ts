@@ -56,7 +56,16 @@ class Meetup {
     this.updateCurrentDate('timeJoin', { [this.affiliation]: time.now() })
   }
   setLeftTime() {
-    this.updateCurrentDate('timeLeft', { [this.affiliation]: time.now() })
+    this.updateCurrentDate('timeLeft', {
+      [this.affiliation]: time.now(),
+      active: false
+    })
+  }
+  getEndTime() {
+    const currentDate = this.currentDateRef?.data()
+    if (!currentDate) return new Date()
+    const currentDateEndTimestamp = currentDate.end
+    return currentDateEndTimestamp.seconds
   }
 
   async updateCurrentDate(field: string, state: DateState) {
@@ -71,10 +80,6 @@ class Meetup {
   }
 
   resetMatchingUser() {
-    if (this.currentDateRef)
-      db.collection(DATES_COLLECTION)
-        .doc(this.currentDateRef.id)
-        .update({ active: false })
     this.matchingUser = null
     this.userUnsubscribe && this.userUnsubscribe()
     this.currentDateRef = null
@@ -83,16 +88,30 @@ class Meetup {
   checkForAvailability() {
     if (!user.free) return
     const date = this.currentDateRef?.data()
+
     if (!date) return
+
+    console.info(
+      'AVAILABILITY',
+      `matchingUser.here: ${this.matchingUser?.here}`,
+      `matchingUser.free: ${this.matchingUser?.free}`,
+      `user.here: ${user.here}`,
+      `user.free: ${user.free}`,
+      `date.end.seconds > time.now().seconds: ${
+        date.end.seconds > time.now().seconds
+      }`
+    )
 
     if (
       this.matchingUser?.here &&
       this.matchingUser?.free &&
       user.here &&
       user.free &&
-      date.active
+      date.active &&
+      date.end.seconds > time.now().seconds
     )
       return app.setCountDownState()
+    else this.resetMatchingUser()
   }
 
   async shiftCards(reject = false) {
@@ -104,6 +123,10 @@ class Meetup {
 
   setProspects(prospects: Prospect[]) {
     this.prospects = prospects
+  }
+
+  setDateCards(dateCards: Prospect[]) {
+    this.dateCards = dateCards
   }
 
   async shiftProspects(reject = false) {
@@ -177,7 +200,9 @@ class Meetup {
       let dates = queryDates.docs.filter(byActive)
       const dateCards = await computeDateCards(dates, user.email)
       dates = dates.filter(byAccepted(true))
-      this.dateCards = dateCards
+      if (dates) console.info('Available dates', dates.map(computeData))
+
+      this.setDateCards(dateCards)
       const date = dates[0] && dates[0].data()
       if (!date || date.start.seconds > time.now().seconds) return
       if (!date.active) return
@@ -203,7 +228,11 @@ class Meetup {
       this.prospectsRef = doc
 
       for (const i in prospects) {
-        prospects[i] = (await prospects[i].get()).data()
+        try {
+          prospects[i] = (await prospects[i].get()).data()
+        } catch {
+          console.error('Something wrong with prospects Array!')
+        }
       }
       if (prospects) this.setProspects(prospects)
     }
@@ -235,9 +264,9 @@ async function computeDateCards(dates: DocumentSnapshot[], email: string) {
   return cards
 }
 
-// function computeData(doc: DocumentSnapshot) {
-//   return doc.data()
-// }
+function computeData(doc: DocumentSnapshot) {
+  return { ...doc.data(), id: doc.id }
+}
 
 function byActive(doc: DocumentData) {
   return !!doc.data()?.active

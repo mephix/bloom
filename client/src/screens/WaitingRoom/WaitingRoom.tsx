@@ -65,19 +65,25 @@ export const WaitingRoom = observer(() => {
     <div>{app.params[PARAMS.SETTING_YOU_UP]}</div>
   )
 
+  const toggle = !user.finished ? (
+    <Toggle
+      className={moduleStyles.toggle}
+      toggleMessages={{
+        on: app.params[PARAMS.WANT_TO_GO_ON_DATES],
+        off: app.params[PARAMS.DONT_WANT_TO_GO_ON_DATES]
+      }}
+      toggled={user.here}
+      onToggle={toggleHandler}
+    />
+  ) : (
+    <div className={moduleStyles.finished}>{app.params[PARAMS.FINISHED]}</div>
+  )
+
   return (
     <>
       <AppBarHeader />
       <div className={classes(commonStyles.container, moduleStyles.container)}>
-        <Toggle
-          className={moduleStyles.toggle}
-          toggleMessages={{
-            on: app.params[PARAMS.WANT_TO_GO_ON_DATES],
-            off: app.params[PARAMS.DONT_WANT_TO_GO_ON_DATES]
-          }}
-          toggled={user.here}
-          onToggle={toggleHandler}
-        />
+        {toggle}
         {card}
       </div>
     </>
