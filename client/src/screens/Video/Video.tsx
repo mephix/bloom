@@ -50,7 +50,7 @@ export const Video = () => {
     <>
       <AppBar position="static" className="app-bar">
         <Toolbar>
-          <div>{meetup.matchingUser?.firstName}</div>
+          <div>{meetup.currentMatchingUserData?.firstName}</div>
           <Countdown
             date={endDateTime}
             onComplete={endDate}
