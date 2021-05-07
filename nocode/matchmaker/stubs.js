@@ -2,6 +2,7 @@ const { DateTime } = require('luxon')
 const consoleColorLog = require('../utils/consoleColorLog.js')
 const firebase = require('../apis/firestoreApi.js')
 const dateClock = require('./dateClock.js')
+const tryToJoinDate = require('./tryToJoinDate.js')
 
 exports.getDates = async (userId) => {
   let dates = []
@@ -35,10 +36,7 @@ exports.tryToJoinDates = async (datesWithScore, bar) => {
   let joinableDates = datesWithScore.filter(d => d.score >= bar).sort((d1,d2) => d1.score < d2.score)
   if (joinableDates.length > 0) {
     let dateToJoin = joinableDates[0]
-    let result = await firebase.modify('Dates', dateToJoin.id, {
-      accepted: true,
-      timeReplied: firebase.db.Timestamp.now(),
-    })
+    let result = await tryToJoinDate(dateToJoin)
     consoleColorLog(`SUCCESS. Date joined.`, 'green', 'bright')
     return true
   } else return false
