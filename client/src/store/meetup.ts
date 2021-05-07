@@ -13,7 +13,7 @@ import {
   UsersPropsCollection,
   UsersDate,
   DateFields,
-  UsersUnsubscribeCollection,
+  UsersUnsubscribeCollection
 } from './utils/types'
 import { db, time } from '../firebase'
 import {
@@ -21,7 +21,7 @@ import {
   LIKES_COLLECTION,
   NEXTS_COLLECTION,
   PROSPECTS_COLLECTION,
-  USERS_COLLECTION,
+  USERS_COLLECTION
 } from './utils/constants'
 import user from './user'
 import app from './app'
@@ -69,12 +69,12 @@ class Meetup {
 
   setJoinTime() {
     this.updateCurrentDate('timeJoin', {
-      [this.currentAffiliation]: time.now(),
+      [this.currentAffiliation]: time.now()
     })
   }
   setLeftTime() {
     this.updateCurrentDate('timeLeft', {
-      [this.currentAffiliation]: time.now(),
+      [this.currentAffiliation]: time.now()
     })
     if (this.currentDate)
       db.collection(DATES_COLLECTION)
@@ -122,29 +122,20 @@ class Meetup {
   unsubscribeFromCurrentUser() {
     if (!this.currentMatchingUserData) return
     const lastUserEmail = this.currentMatchingUserData.email
-    console.log('reset', lastUserEmail)
     if (this.unsubscribeUsers[lastUserEmail]) {
       this.unsubscribeUsers[lastUserEmail]()
       delete this.unsubscribeUsers[lastUserEmail]
     }
     delete this.matchingUsers[lastUserEmail]
     this.resetCurrentMatchingUser()
-    console.info(
-      'matching users after reset',
-      JSON.parse(JSON.stringify(this.matchingUsers))
-    )
   }
 
   async checkCurrentUserAvability() {}
 
   async checkAvailability(callback: Function) {
-    console.log('checkAvailability...')
-    console.log(`user.free: ${user.free}`)
-    console.log(`user.here: ${user.here}`)
     if (!user.free) return
     if (!user.here) return
     for (const [email, userProps] of Object.entries(this.matchingUsers)) {
-      console.log('check for: ', email)
       const matchingUserRef = db.collection(USERS_COLLECTION).doc(email)
       const dateRef = db.collection(DATES_COLLECTION).doc(userProps.date.id)
       const result = await db.runTransaction(async t => {
@@ -154,19 +145,6 @@ class Meetup {
         const date = dateDoc.data()
         if (!date) return false
         if (!matchingUser) return false
-        // LOGS
-        console.log(
-          'date.end.seconds < time.now().seconds',
-          date.end.seconds < time.now().seconds
-        )
-        console.log('!date.active', !date.active)
-        console.log('!matchingUser.here', !matchingUser.here)
-        console.log('!matchingUser.free', !matchingUser.free)
-        console.log(
-          'userProps.user.dateWith && matchingUser.dateWith !== user.email',
-          userProps.user.dateWith && matchingUser.dateWith !== user.email
-        )
-        // LOGS
         if (date.end.seconds < time.now().seconds || !date.active) {
           this.deleteMatchingUser(email)
           return false
@@ -182,44 +160,7 @@ class Meetup {
       if (this.currentMatchingUser) continue
       this.setCurrentMatchingUser(email)
       callback()
-
-      // if (userProps.date.end.seconds < time.now().seconds) continue
-      // if (!userProps.user.here) continue
-      // if (!userProps.user.free) continue
-      // if (userProps.user.dateWith && userProps.user.dateWith !== user.email) {
-      //   console.log(
-      //     'email not matching',
-      //     userProps.user.dateWith,
-      //     userProps.user.dateWith !== user.email
-      //   )
-      //   continue
-      // }
-      // console.log('email matching', userProps.user.dateWith === user.email)
-      // this.setCurrentMatchingUser(email)
-      // app.setCountDownState()
     }
-
-    // console.info(
-    //   'AVAILABILITY',
-    //   `matchingUser.here: ${this.matchingUser?.here}`,
-    //   `matchingUser.free: ${this.matchingUser?.free}`,
-    //   `user.here: ${user.here}`,
-    //   `user.free: ${user.free}`,
-    //   `date.end.seconds > time.now().seconds: ${
-    //     date.end.seconds > time.now().seconds
-    //   }`
-    // )
-
-    // if (
-    //   this.matchingUser?.here &&
-    //   this.matchingUser?.free &&
-    //   user.here &&
-    //   user.free &&
-    //   date.active &&
-    //   date.end.seconds > time.now().seconds
-    // )
-    //   return app.setCountDownState()
-    // else this.resetMatchingUser()
   }
 
   async shiftCards(reject = false) {
@@ -241,12 +182,12 @@ class Meetup {
     if (!user.email) return
     if (reject) await moveProspectTo('prospects', 'nexts', user.email)
     else {
-      console.log('Creating date...')
+      console.info('Creating date...')
       const room = await makeConferenceRoom()
       if (!room) return console.error('No room!')
       const forUser = await moveProspectTo('prospects', 'likes', user.email)
       const { roomUrl, start, end } = room
-      console.log('Pushing date...')
+      console.info('Pushing date...')
 
       await db.collection(DATES_COLLECTION).add({
         start: time.fromDate(start),
@@ -255,7 +196,7 @@ class Meetup {
         for: forUser,
         with: user.email,
         active: true,
-        timeSent: time.now(),
+        timeSent: time.now()
       })
     }
   }
@@ -285,7 +226,7 @@ class Meetup {
     const token = await getToken({ user_name: user.name })
     return {
       url: room,
-      token,
+      token
     } as Room
   }
 
@@ -294,13 +235,9 @@ class Meetup {
       const userData = user.data()
       this.matchingUsers[email] = {
         user: userData as UserData,
-        date,
+        date
       }
       this.checkAvailability(() => app.setCountDownState())
-      console.info(
-        'matching users',
-        JSON.parse(JSON.stringify(this.matchingUsers))
-      )
     }
 
     return db.collection(USERS_COLLECTION).doc(email).onSnapshot(onUser)
@@ -309,10 +246,6 @@ class Meetup {
   checkUsersSubscription(dates: QueryDocumentSnapshot[], isWith: boolean) {
     const usersToSubscribe = dates.map(date =>
       isWith ? date.data().for : date.data().with
-    )
-    console.info(
-      'matching users before sub',
-      JSON.parse(JSON.stringify(this.matchingUsers))
     )
     usersToSubscribe.forEach(email => {
       const dateDoc = dates.find(
@@ -333,7 +266,7 @@ class Meetup {
         timeLeft: dateDoc.data().timeLeft,
         fun: dateDoc.data().fun,
         heart: dateDoc.data().heart,
-        dateIsWith: isWith,
+        dateIsWith: isWith
       }
       if (!this.unsubscribeUsers[email])
         this.unsubscribeUsers[email] = this.subscribeOnUser(email, date)
@@ -394,7 +327,7 @@ async function computeDateCards(dates: DocumentSnapshot[], email: string) {
       firstName: user.firstName,
       bio: user.bio,
       email: user.email,
-      dateId: date.id,
+      dateId: date.id
     })
   }
   return cards
@@ -419,6 +352,7 @@ function byFor(email: string) {
     return doc.data()?.for === email
   }
 }
+
 type CollectionSlug = 'prospects' | 'nexts' | 'likes'
 async function checkProspectsCollection(
   collectionSlug: CollectionSlug,
