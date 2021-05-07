@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { db } from '../firebase'
+import { db, time } from '../firebase'
 import app from './app'
 import meetup from './meetup'
 import { DocumentSnapshot, UserState } from './utils/types'
@@ -70,13 +70,16 @@ class User {
     this.updateUserState({ free: this.free })
   }
 
+  setWaitStartTime() {
+    this.updateUserState({ waitStartTime: time.now() })
+  }
+
   subscribeOnMe() {
     if (!this.email) return
     const onUser = async (userDoc: DocumentSnapshot) => {
       const user = userDoc.data()
       if (!user) return
       this.updateUser({
-        here: user.here,
         name: user.firstName,
         email: user.email,
         finished: user.finished,

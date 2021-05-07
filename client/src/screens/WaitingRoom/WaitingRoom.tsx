@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Card } from '../../components/Card'
 import { Toggle } from '../../components/Toggle'
 import commonStyles from '../Common.module.scss'
@@ -44,9 +44,13 @@ export const WaitingRoom = observer(() => {
   }, [disabled, setDisabled])
 
   const getType = (card: UserCard) => {
-    if (card.isDate) return user.here ? 'join' : 'invite'
+    if (card.isDate) return user.here ? 'join' : 'join'
     else return user.here ? 'invite' : 'like'
   }
+
+  useEffect(() => {
+    user.setWaitStartTime()
+  }, [])
 
   const topCard = date.cards.length > 0 && date.cards[0]
 
