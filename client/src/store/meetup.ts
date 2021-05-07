@@ -210,6 +210,7 @@ class Meetup {
         .doc(this.dateCards[0].dateId)
         .update({ accepted: false, active: false, timeReplied: time.now() })
     } else {
+      user.setHere(true)
       await moveProspectTo('prospects', 'likes', user.email)
       await db
         .collection(DATES_COLLECTION)
