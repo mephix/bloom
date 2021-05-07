@@ -4,6 +4,7 @@ export type UserState = {
   free?: boolean
   here?: boolean
   waitStartTime?: Timestamp
+  dateWith?: string | null
 }
 
 export type DateState = {}
@@ -21,6 +22,7 @@ export interface UserData {
   firstName: string
   free: boolean
   here: boolean
+  dateWith?: string
 }
 
 export interface UsersDate {

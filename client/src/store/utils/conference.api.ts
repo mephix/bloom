@@ -6,7 +6,7 @@ const ROUND_MINUTES = 15
 
 export async function makeConferenceRoom(preentry = 1) {
   const time = currentRoundStartEnd()
-  if (!time) return
+  if (!time) return console.error('No time!')
 
   // console.log(timefire.fromDate(new Date(time.roundStartTime)))
 
@@ -17,7 +17,7 @@ export async function makeConferenceRoom(preentry = 1) {
     method: 'post',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${DAILY_API_KEY}`
+      Authorization: `Bearer ${DAILY_API_KEY}`,
     },
     data: {
       privacy: 'public',
@@ -27,14 +27,14 @@ export async function makeConferenceRoom(preentry = 1) {
         eject_at_room_exp: true,
         autojoin: true,
         enable_screenshare: false,
-        enable_chat: false
-      }
-    }
+        enable_chat: false,
+      },
+    },
   })
   return {
     roomUrl: response.data.url,
     start: new Date(time.roundStartTime),
-    end: new Date(time.roundEndTime)
+    end: new Date(time.roundEndTime),
   }
 }
 
@@ -81,8 +81,8 @@ export async function getToken(properties: Properties) {
     {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${DAILY_API_KEY}`
-      }
+        Authorization: `Bearer ${DAILY_API_KEY}`,
+      },
     }
   )
   let { token } = await responsePromise.data

@@ -20,13 +20,13 @@ class App {
     }
   }
 
-  setParams(param: string, value: string) {
-    this.params[param] = value
+  resetCountDown() {
+    meetup.resetCurrentMatchingUser()
+    this.setWaitingRoomState()
   }
 
-  resetCountDown() {
-    meetup.resetMatchingUser()
-    this.setWaitingRoomState()
+  setParams(param: string, value: string) {
+    this.params[param] = value
   }
 
   setWaitingRoomState() {

@@ -35,7 +35,7 @@ class User {
       name: user.firstName,
       email: user.email,
       finished: user.finished,
-      free: user.free
+      free: user.free,
     })
     this.subscribeOnMe()
     this.updateUserState({ free: true, here: this.here })
@@ -54,14 +54,14 @@ class User {
 
   setHere(state: boolean) {
     this.hiddenHere = this.here = state
-    if (this.here) meetup.checkForAvailability()
+    if (this.here) meetup.checkAvailability(() => app.setCountDownState())
     this.updateUserState({ here: this.here })
   }
 
   setHiddenHere(state: boolean) {
     if (state && !this.here) return
     this.hiddenHere = state
-    if (this.hiddenHere) meetup.checkForAvailability()
+    if (this.hiddenHere) meetup.checkAvailability(() => app.setCountDownState())
     this.updateUserState({ here: this.hiddenHere })
   }
 
@@ -74,6 +74,10 @@ class User {
     this.updateUserState({ waitStartTime: time.now() })
   }
 
+  setDateWith(email: string | null) {
+    this.updateUserState({ dateWith: email })
+  }
+
   subscribeOnMe() {
     if (!this.email) return
     const onUser = async (userDoc: DocumentSnapshot) => {
@@ -83,7 +87,7 @@ class User {
         name: user.firstName,
         email: user.email,
         finished: user.finished,
-        free: user.free
+        free: user.free,
       })
       if (user.finished) this.updateUserState({ here: false })
     }
