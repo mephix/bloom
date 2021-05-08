@@ -25,4 +25,8 @@
   top: 0;
   left: 0;
   pointer-events: none;
+  &.rotate {
+    transform: rotate(180deg);
+    top: -3px;
+  }
 }

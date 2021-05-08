@@ -10,8 +10,12 @@ import meetup from '../../store/meetup'
 
 export const CountDown: FC = () => {
   const onComplete = useCallback(() => {
-    if (!meetup.currentMatchingUserData) return app.setWaitingRoomState()
-    if (!meetup.currentMatchingUserData?.here) app.setWaitingRoomState()
+    // meetup.checkAvailabilityAfterCountDown
+    if (!user.hiddenHere) return app.resetCountDown()
+    if (!meetup.currentMatchingUserData) return app.resetCountDown()
+    if (!meetup.currentMatchingUserData?.here) return app.resetCountDown()
+    if (meetup.currentMatchingUserData?.dateWith !== user.email)
+      return app.resetCountDown()
     else {
       user.setFree(false)
       app.setVideoState()
@@ -21,8 +25,7 @@ export const CountDown: FC = () => {
   useEffect(() => {
     if (!meetup.currentMatchingUserData) {
       console.error('Not matching user!')
-      meetup.resetMatchingUser()
-      return app.setWaitingRoomState()
+      return app.resetCountDown()
     }
   })
 

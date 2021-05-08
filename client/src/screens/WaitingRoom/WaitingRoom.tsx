@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Card } from '../../components/Card'
 import { Toggle } from '../../components/Toggle'
 import commonStyles from '../Common.module.scss'
@@ -7,10 +7,10 @@ import { AppBarHeader } from '../../components/AppBarHeader'
 import { classes } from '../../utils'
 import { observer } from 'mobx-react-lite'
 import user from '../../store/user'
-import date from '../../store/meetup'
 import app from '../../store/app'
 import { PARAMS } from '../../store/utils/constants'
 import { UserCard } from '../../store/utils/types'
+import meetup from '../../store/meetup'
 
 const mockUser = {
   avatar: '/docs/placeholder.jpg',
@@ -26,7 +26,7 @@ export const WaitingRoom = observer(() => {
     if (disabled) return console.log('action button disabled')
     try {
       setDisabled(true)
-      await date.shiftCards()
+      await meetup.shiftCards()
       setDisabled(false)
     } catch {
       setDisabled(false)
@@ -36,7 +36,7 @@ export const WaitingRoom = observer(() => {
     if (disabled) return console.log('action button disabled')
     try {
       setDisabled(true)
-      await date.shiftCards(true)
+      await meetup.shiftCards(true)
       setDisabled(false)
     } catch {
       setDisabled(false)
@@ -44,11 +44,16 @@ export const WaitingRoom = observer(() => {
   }, [disabled, setDisabled])
 
   const getType = (card: UserCard) => {
-    if (card.isDate) return user.here ? 'join' : 'invite'
+    if (card.isDate) return user.here ? 'join' : 'join'
     else return user.here ? 'invite' : 'like'
   }
 
-  const topCard = date.cards.length > 0 && date.cards[0]
+  useEffect(() => {
+    user.setWaitStartTime()
+    meetup.checkAvailability(() => app.setCountDownState())
+  }, [])
+
+  const topCard = meetup.cards.length > 0 && meetup.cards[0]
 
   const card = topCard ? (
     <Card

@@ -3,6 +3,8 @@ import firebase from 'firebase'
 export type UserState = {
   free?: boolean
   here?: boolean
+  waitStartTime?: Timestamp
+  dateWith?: string | null
 }
 
 export type DateState = {}
@@ -20,6 +22,7 @@ export interface UserData {
   firstName: string
   free: boolean
   here: boolean
+  dateWith?: string
 }
 
 export interface UsersDate {
@@ -31,7 +34,7 @@ export interface UsersDate {
   for: string
   with: string
   room: string
-  dateIsFor: boolean
+  dateIsWith: boolean
   fun?: { for: boolean; with: boolean }
   heart?: { for: boolean; with: boolean }
   timeJoin?: { for: Timestamp; with: Timestamp }

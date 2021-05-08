@@ -1,12 +1,17 @@
 import { FC } from 'react'
 import { IconProps } from '../IconToggle.type'
-import { px } from '../../../utils'
+import { classes, px } from '../../../utils'
 import stylesModule from '../IconToggle.module.scss'
 
 export const DislikeIcon: FC<IconProps> = ({ filled = false, size = 40 }) => {
   const color = filled ? '#25D8B2' : '#999999'
   return (
-    <div className={stylesModule.centerIcon}>
+    <div
+      className={classes(
+        stylesModule.centerIcon,
+        filled ? stylesModule.rotate : ''
+      )}
+    >
       <svg
         version="1.1"
         id="Capa_1"

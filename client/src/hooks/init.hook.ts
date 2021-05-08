@@ -8,15 +8,18 @@ export const useInit = () => {
     const email = getEmail()
     if (!email) return console.error('No email provided')
     user.setEmail(email)
-    const blurHandler = () => user.setHiddenHere(false)
-    const focusHandler = () => user.setHiddenHere(true)
-    window.addEventListener('beforeunload', blurHandler)
-    // window.addEventListener('blur', blurHandler)
-    window.addEventListener('focus', focusHandler)
+    const closeHandler = () => user.setHiddenHere(false)
+    const visibilityChangeHandler = () => {
+      if (document.hidden) user.setHiddenHere(false)
+      else {
+        user.setHiddenHere(true)
+      }
+    }
+    window.addEventListener('beforeunload', closeHandler)
+    window.addEventListener('visibilitychange', visibilityChangeHandler)
     return () => {
-      window.removeEventListener('beforeunload', blurHandler)
-      window.removeEventListener('blur', blurHandler)
-      window.removeEventListener('focus', focusHandler)
+      window.removeEventListener('beforeunload', closeHandler)
+      window.removeEventListener('visibilitychange', visibilityChangeHandler)
     }
   }, [])
 

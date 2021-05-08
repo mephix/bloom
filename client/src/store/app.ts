@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { db } from '../firebase'
+import meetup from './meetup'
 import { PARAMETERS_COLLECTION, PARAMS } from './utils/constants'
 import { StringDictionary } from './utils/types'
 
@@ -17,6 +18,11 @@ class App {
       const doc = await db.collection(PARAMETERS_COLLECTION).doc(param).get()
       this.setParams(param, doc?.data()?.text)
     }
+  }
+
+  resetCountDown() {
+    meetup.resetCurrentMatchingUser()
+    this.setWaitingRoomState()
   }
 
   setParams(param: string, value: string) {

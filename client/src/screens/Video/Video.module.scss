@@ -6,11 +6,14 @@
   text-transform: uppercase;
   font-weight: bold;
   transition: 0.2s ease-in-out;
+  margin-top: -4px;
+
   &:active {
     background-color: #f59799;
   }
 }
 
 .videoFrame {
-  height: calc(100vh - 64px - 60px);
+  height: calc(100% - 64px - 60px);
+  box-sizing: border-box;
 }
