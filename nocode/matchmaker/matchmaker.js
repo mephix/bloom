@@ -54,7 +54,7 @@ consoleColorLog(`sleeping for timeTilNextRound ${timeTilNextRound}`, 'cyan')
   }
 
   // For the meantime in dev: if its a new round, set 'invited' back to
-  // ffor all matches
+  // false for all matches
   consoleColorLog(`currentInterval: ${currentInterval}`, 'white')
   if (currentInterval === 1) {
     Object.keys(matches).map(id => matches[id].invited = false)
