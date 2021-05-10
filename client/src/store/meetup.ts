@@ -25,7 +25,8 @@ import {
 } from './utils/constants'
 import user from './user'
 import app from './app'
-import { getToken, makeConferenceRoom } from './utils/conference.api'
+// import { getToken, makeConferenceRoom } from './utils/conference.api'
+import { ConferenceService } from '../services/conference.service'
 
 class Meetup {
   dateIsFor: boolean = false
@@ -183,7 +184,7 @@ class Meetup {
     if (reject) await moveProspectTo('prospects', 'nexts', user.email)
     else {
       console.info('Creating date...')
-      const room = await makeConferenceRoom()
+      const room = await ConferenceService.makeConferenceRoom()
       if (!room) return console.error('No room!')
       const forUser = await moveProspectTo('prospects', 'likes', user.email)
       const { roomUrl, start, end } = room
@@ -224,7 +225,7 @@ class Meetup {
     const date = this.currentDate
     const room = date.room
     if (!user.name) return null
-    const token = await getToken({ user_name: user.name })
+    const token = await ConferenceService.getToken({ user_name: user.name })
     return {
       url: room,
       token
