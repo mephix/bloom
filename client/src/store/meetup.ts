@@ -27,6 +27,9 @@ import {
 import user from './user'
 import app from './app'
 import { ConferenceService } from '../services/conference.service'
+import { Logger } from '../services/utils/Logger'
+
+const logger = new Logger('Meetup', '#10c744')
 
 class Meetup {
   dateIsFor: boolean = false
@@ -37,6 +40,8 @@ class Meetup {
   currentMatchingUser: string | null = null
   matchingUsers: UsersPropsCollection = {}
   unsubscribeUsers: UsersUnsubscribeCollection = {}
+
+  isDateNight = false
 
   constructor() {
     makeAutoObservable(this, {}, { deep: true })
@@ -131,9 +136,8 @@ class Meetup {
     this.resetCurrentMatchingUser()
   }
 
-  async checkCurrentUserAvability() {}
-
   async checkAvailability(callback: Function) {
+    if (!this.isDateNight) return
     if (!user.free) return
     if (!user.here) return
     for (const [email, userProps] of Object.entries(this.matchingUsers)) {
@@ -156,7 +160,7 @@ class Meetup {
           return false
         return true
       })
-      console.log('complete result for ', email, result)
+      logger.debug('complete result for ', email, result)
       if (!result) continue
       if (this.currentMatchingUser) continue
       this.setCurrentMatchingUser(email)
@@ -183,12 +187,12 @@ class Meetup {
     if (!user.email) return
     if (reject) await moveProspectTo('prospects', 'nexts', user.email)
     else {
-      console.info('Creating date...')
+      logger.debug('Creating date...')
       const room = await ConferenceService.makeConferenceRoom()
-      if (!room) return console.error('No room!')
+      if (!room) return logger.error('No room!')
       const forUser = await moveProspectTo('prospects', 'likes', user.email)
       const { roomUrl, start, end } = room
-      console.info('Pushing date...')
+      logger.debug('Pushing date...')
 
       await db.collection(DATES_COLLECTION).add({
         start: time.fromDate(start),
@@ -253,8 +257,7 @@ class Meetup {
       const dateDoc = dates.find(
         d => d.data()[isWith ? 'for' : 'with'] === email
       )
-      if (!dateDoc)
-        return console.error(`dateDoc with email ${email} not found`)
+      if (!dateDoc) return logger.error(`dateDoc with email ${email} not found`)
       const date: UsersDate = {
         id: dateDoc.id,
         accepted: dateDoc.data().accepted,
@@ -277,11 +280,12 @@ class Meetup {
 
   subscribeOnDates() {
     const onDate = async (queryDates: QuerySnapshot, isWith: boolean) => {
+      if (!this.isDateNight) return
       if (!user.email) return
       let dates = queryDates.docs.filter(byActive)
       const dateCards = await computeDateCards(dates, user.email)
       dates = dates.filter(byAccepted(true))
-      if (dates) console.info('Available dates', dates.map(computeData))
+      if (dates) logger.debug('Available dates', dates.map(computeData))
       this.setDateCards(dateCards)
       this.checkUsersSubscription(dates, isWith)
     }
@@ -304,7 +308,7 @@ class Meetup {
         try {
           prospects[i] = (await prospects[i].get()).data()
         } catch {
-          console.error('Something wrong with prospects Array!')
+          logger.error('Something wrong with prospects Array!')
         }
       }
       if (prospects) this.setProspects(prospects)

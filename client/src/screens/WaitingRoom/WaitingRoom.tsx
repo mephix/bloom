@@ -84,12 +84,20 @@ export const WaitingRoom = observer(() => {
     <div className={moduleStyles.finished}>{app.params[PARAMS.FINISHED]}</div>
   )
 
+  const content = meetup.isDateNight ? (
+    <>
+      {toggle}
+      {card}
+    </>
+  ) : (
+    <div>{app.params[PARAMS.WAITING_FOR_DATE_NIGTH]}</div>
+  )
+
   return (
     <>
       <AppBarHeader />
       <div className={classes(commonStyles.container, moduleStyles.container)}>
-        {toggle}
-        {card}
+        {content}
       </div>
     </>
   )

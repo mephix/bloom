@@ -7,7 +7,7 @@ export const useInit = () => {
     await app.initParams()
     const email = getEmail()
     if (!email) return console.error('No email provided')
-    user.setEmail(email)
+    user.setUser(email)
     const closeHandler = () => user.setHiddenHere(false)
     const visibilityChangeHandler = () => {
       if (document.hidden) user.setHiddenHere(false)

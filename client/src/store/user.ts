@@ -1,9 +1,9 @@
 import { makeAutoObservable } from 'mobx'
-import { db, time } from '../firebase'
+import { db, time, USERS_COLLECTION } from '../firebase'
+import { Matchmaker } from '../services/matchmaker.service'
 import app from './app'
 import meetup from './meetup'
 import { DocumentSnapshot, UserState } from './utils/types'
-import { USERS_COLLECTION } from './utils/constants'
 
 type UpdateUserProps = {
   here?: boolean
@@ -26,7 +26,7 @@ class User {
     makeAutoObservable(this)
   }
 
-  async setEmail(email: string) {
+  async setUser(email: string) {
     const userRef = await db.collection(USERS_COLLECTION).doc(email).get()
     const user = userRef.data()
     if (!user) return console.error('User not found')
@@ -35,11 +35,17 @@ class User {
       name: user.firstName,
       email: user.email,
       finished: user.finished,
-      free: user.free,
+      free: user.free
     })
+    const isLaunched = await Matchmaker.launch()
+    if (!isLaunched) return
+    this.signUser()
+    app.setWaitingRoomState()
+  }
+
+  signUser() {
     this.subscribeOnMe()
     this.updateUserState({ free: true, here: this.here })
-    app.setWaitingRoomState()
     meetup.subscribeOnDates()
     meetup.subscribeOnProspects()
   }
@@ -87,7 +93,7 @@ class User {
         name: user.firstName,
         email: user.email,
         finished: user.finished,
-        free: user.free,
+        free: user.free
       })
       if (user.finished) this.updateUserState({ here: false })
     }
