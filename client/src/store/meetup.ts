@@ -15,17 +15,17 @@ import {
   DateFields,
   UsersUnsubscribeCollection
 } from './utils/types'
-import { db, time } from '../firebase'
 import {
+  db,
+  time,
   DATES_COLLECTION,
   LIKES_COLLECTION,
   NEXTS_COLLECTION,
   PROSPECTS_COLLECTION,
   USERS_COLLECTION
-} from './utils/constants'
+} from '../firebase'
 import user from './user'
 import app from './app'
-// import { getToken, makeConferenceRoom } from './utils/conference.api'
 import { ConferenceService } from '../services/conference.service'
 
 class Meetup {
