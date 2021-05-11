@@ -1,9 +1,9 @@
 /*
  * Key parameters to set
  */
-let DAY = '2021-05-10'
-let HOUR = 19
-let nRooms = 2
+let DAY = '2021-05-11'
+let HOUR = 16
+let nRooms = 3
 let slots = [0,1,2,3,4,5,6]
 
 // Less frequently changed parameters. 

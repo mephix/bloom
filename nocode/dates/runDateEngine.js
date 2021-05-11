@@ -1,12 +1,12 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-05-10'
-let HOUR = 17
-let SLOT = 6
+let DAY = '2021-05-11'
+let HOUR = 16
+let SLOT = 0
 let RERUN = false
 let CUTOFF = 0.001       // >0 makes the dateEngine more picky.
-let useTestIds = true   // `false` for real rounds.
+let useTestIds = false   // `false` for real rounds.
 
 // `seqOrPar` should be "parallel" unless there is a dire 503 error when
 // posting dates to Adalo. In that case, change it to to "sequential".
@@ -118,7 +118,7 @@ async function runDateEngine() {
   console.log(`\n${dates.length} dates created.`)
   console.log(``)
   displayPretty(dates, usersHere)
-  console.log(``)
+  console.log(`${dates.length} dates created.`)
 
   if (dates.length > 0) {
 

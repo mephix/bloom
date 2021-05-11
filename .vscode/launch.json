@@ -33,7 +33,7 @@
         },
         {
             "name": "update Users",
-            "program": "${workspaceFolder}/nocode/db/update collections locally.js",
+            "program": "${workspaceFolder}/nocode/db/update Users.js",
             "type": "pwa-node",
             "request": "launch",
             "skipFiles": [
