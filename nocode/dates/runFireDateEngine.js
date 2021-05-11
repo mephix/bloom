@@ -59,8 +59,8 @@ const postDateToFirebase = require('./postDateToFirebase.js')
 const consoleColorLog = require('../utils/consoleColorLog.js')
 
 // No need to set these params.
-let TODAYS_DATES_FILE = `./output/Dates ${DAY}T${HOUR}.csv`
-let TODAYS_USERS_FILE = `./output/Users ${DAY}.json`
+let TODAYS_DATES_FILE = `./nocode/output/Dates ${DAY}T${HOUR}.csv`
+let TODAYS_USERS_FILE = `./nocode/output/Users ${DAY}.json`
 
 runFireDateEngine()
 

@@ -22,7 +22,7 @@ let cityToZipcodes = {
 	"Houston":      77002,
   "Salt Lake City": 84111,
 }
-fileName = `./scores/cityToZipcode.json`
+fileName = `./nocode/scores/cityToZipcode.json`
 cityToZipcode()
 
 async function cityToZipcode() {

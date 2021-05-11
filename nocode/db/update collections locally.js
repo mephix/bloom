@@ -3,14 +3,14 @@
  */
 let collectionName = 'Users' // 'Dates' // 
 let cleanSlate = false
-let existingFileDate = '2021-04-13'
-const today = '2021-04-13'
+let existingFileDate = '2021-05-10'
+const today = '2021-05-10'
 // watch out, this might change to tomorrows date in the evening
 // const today = (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
 
 // Other parameters.
-let newFile = `./output/${collectionName} ${today}.json`
-let existingFile = cleanSlate ? `` : `./output/${collectionName} ${existingFileDate}.json`
+let newFile = `./nocode/output/${collectionName} ${today}.json`
+let existingFile = cleanSlate ? `` : `./nocode/output/${collectionName} ${existingFileDate}.json`
 const downloadNewRecords = require('./downloadNewRecords.js')
 const consoleColorLog = require('../utils/consoleColorLog.js')
 

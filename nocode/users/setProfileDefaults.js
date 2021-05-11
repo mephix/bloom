@@ -2,7 +2,7 @@ module.exports = setProfileDefaults
 
 const math = require('mathjs')
 const fs = require('fs')
-const cityToZipcode = JSON.parse(fs.readFileSync(`./scores/cityToZipcode.json`, 'utf8'))
+const cityToZipcode = JSON.parse(fs.readFileSync(`./nocode/scores/cityToZipcode.json`, 'utf8'))
 const genderMap = { 1: 'F', 2: 'M', 3: 'X' }
 const gprefMap  = { 'F': 1, 'M': 2, 'All': 3 }
 

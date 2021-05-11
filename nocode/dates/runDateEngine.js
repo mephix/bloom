@@ -1,12 +1,12 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-04-13'
-let HOUR = 16
-let SLOT = 7
+let DAY = '2021-05-10'
+let HOUR = 17
+let SLOT = 6
 let RERUN = false
-let CUTOFF = 0.00       // >0 makes the dateEngine more picky.
-let useTestIds = false   // `false` for real rounds.
+let CUTOFF = 0.001       // >0 makes the dateEngine more picky.
+let useTestIds = true   // `false` for real rounds.
 
 // `seqOrPar` should be "parallel" unless there is a dire 503 error when
 // posting dates to Adalo. In that case, change it to to "sequential".
@@ -20,29 +20,25 @@ const SLOT_STARTS = {
   0:  HOUR + ':00',
   1:  HOUR + ':05',
   2:  HOUR + ':10',
-  3:  HOUR + ':15',
-  4:  HOUR + ':20',
-  5:  HOUR + ':25',
-  6:  HOUR + ':30',
-  7:  HOUR + ':35',
-  8:  HOUR + ':40',
-  9:  HOUR + ':45',
-  10: HOUR + ':50',
-  11: HOUR + ':55',
+  3:  HOUR + ':16',
+  4:  HOUR + ':22',
+  5:  HOUR + ':28',
+  6:  HOUR + ':34',
+  7:  HOUR + ':40',
+  8:  HOUR + ':46',
+  9:  HOUR + ':52',
 }
 const SLOT_ENDS = {
   0:  HOUR + ':05',
   1:  HOUR + ':10',
-  2:  HOUR + ':15',
-  3:  HOUR + ':20',
-  4:  HOUR + ':25',
-  5:  HOUR + ':30',
-  6:  HOUR + ':35',
-  7:  HOUR + ':40',
-  8:  HOUR + ':45',
-  9:  HOUR + ':50',
-  10: HOUR + ':55',
-  11: HOUR + ':59',
+  2:  HOUR + ':16',
+  3:  HOUR + ':22',
+  4:  HOUR + ':28',
+  5:  HOUR + ':34',
+  6:  HOUR + ':40',
+  7:  HOUR + ':46',
+  8:  HOUR + ':52',
+  9:  HOUR + ':59',
 }
 // Dependencies.
 const adaloApi = require('../apis/adaloApi.js')
@@ -59,8 +55,8 @@ const postDates = require('./postDates.js')
 const { writeToCsv } = require('../utils/csv.js')
 
 // No need to set these params.
-let TODAYS_DATES_FILE = `./output/Dates ${DAY}T${HOUR}.csv`
-let TODAYS_USERS_FILE = `./output/Users ${DAY}.json`
+let TODAYS_DATES_FILE = `./nocode/output/Dates ${DAY}T${HOUR}.csv`
+let TODAYS_USERS_FILE = `./nocode/output/Users ${DAY}.json`
 
 runDateEngine()
 

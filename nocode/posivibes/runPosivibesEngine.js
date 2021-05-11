@@ -27,7 +27,7 @@ async function runPosivibesEngine() {
   console.log(`Running Posivibes Engine...`)
 
   // Load users.
-  let existingUsersFile = `./output/Users ${existingDate}.json`
+  let existingUsersFile = `./nocode/output/Users ${existingDate}.json`
   // let newUsersFile =      `./output/Users ${today}.json`
   // if (refresh)
   //   var { users } = await getNewUsers(existingUsersFile, newUsersFile)
@@ -35,7 +35,7 @@ async function runPosivibesEngine() {
     var users = JSON.parse(fs.readFileSync(existingUsersFile, 'utf8'))
 
   // Load or download dates.
-  let existingDatesFile = `./output/Dates ${existingDate}.json`
+  let existingDatesFile = `./nocode/output/Dates ${existingDate}.json`
   // let newDatesFile =      `./output/Dates ${today}.json`
   // if (refreshDates)
   //   var { records: dates } = await downloadNewRecords('Dates', newDatesFile, existingDatesFile)

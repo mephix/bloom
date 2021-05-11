@@ -2,7 +2,7 @@ const fs = require('fs')
 const runMatchEngine = require('../runMatchEngine.js')
 
 const NUMBER_OF_TOP_MATCHES = 3
-const MATCHES_FILE = './output/Matches (all positive).csv'
+const MATCHES_FILE = './nocode/output/Matches (all positive).csv'
 testRunMatchEngine()
 
 async function testRunMatchEngine() {

@@ -1,7 +1,7 @@
 const adaloApi = require('../apis/adaloApi.js')
 const fs = require('fs')
 
-let usersLocalFile = `./output/Users 2021-01-11.json`
+let usersLocalFile = `./nocode/output/Users 2021-01-11.json`
 testAugment()
 
 async function testAugment() {

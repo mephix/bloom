@@ -1,9 +1,9 @@
 /*
  * Key parameters to set
  */
-let DAY = '2021-04-13'
-let HOUR = 16
-let nRooms = 3
+let DAY = '2021-05-10'
+let HOUR = 19
+let nRooms = 2
 let slots = [0,1,2,3,4,5,6]
 
 // Less frequently changed parameters. 
@@ -14,29 +14,25 @@ const SLOT_STARTS = {
   0:  HOUR + ':00',
   1:  HOUR + ':05',
   2:  HOUR + ':10',
-  3:  HOUR + ':15',
-  4:  HOUR + ':20',
-  5:  HOUR + ':25',
-  6:  HOUR + ':30',
-  7:  HOUR + ':35',
-  8:  HOUR + ':40',
-  9:  HOUR + ':45',
-  10: HOUR + ':50',
-  11: HOUR + ':55',
+  3:  HOUR + ':16',
+  4:  HOUR + ':22',
+  5:  HOUR + ':28',
+  6:  HOUR + ':34',
+  7:  HOUR + ':40',
+  8:  HOUR + ':46',
+  9:  HOUR + ':52',
 }
 const SLOT_ENDS = {
   0:  HOUR + ':05',
   1:  HOUR + ':10',
-  2:  HOUR + ':15',
-  3:  HOUR + ':20',
-  4:  HOUR + ':25',
-  5:  HOUR + ':30',
-  6:  HOUR + ':35',
-  7:  HOUR + ':40',
-  8:  HOUR + ':45',
-  9:  HOUR + ':50',
-  10: HOUR + ':55',
-  11: HOUR + ':59',
+  2:  HOUR + ':16',
+  3:  HOUR + ':22',
+  4:  HOUR + ':28',
+  5:  HOUR + ':34',
+  6:  HOUR + ':40',
+  7:  HOUR + ':46',
+  8:  HOUR + ':52',
+  9:  HOUR + ':59',
 }
 const daily = require('../apis/dailyApi.js')
 const adalo = require('../apis/adaloApi.js')

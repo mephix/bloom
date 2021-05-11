@@ -10,8 +10,8 @@ module.exports = runMatchEngine
 /* 
  * Test and run here
  */
-const MATCH_GRAPH_FILE = './output/Matches (all positive).csv'
-const USER_LOCAL_FILE = './output/Users (matches).json'
+const MATCH_GRAPH_FILE = './nocode/output/Matches (all positive).csv'
+const USER_LOCAL_FILE = './nocode/output/Users (matches).json'
 const refresh = false
 
 runMatchEngine()
