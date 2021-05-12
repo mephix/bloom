@@ -1,16 +1,10 @@
 const firestore = require('../apis/firestoreApi.js')
 const db = firestore.db
 const time = firestore.db.Timestamp
-// import { runTransaction } from "firebase/firestore";
 
 module.exports = tryToJoinDate
 
 async function tryToJoinDate(dateId) {
-    // firestore.modify('Dates', dateId, {
-    //     accepted: true,
-    //     timeReplied: firestore.db.Timestamp.now(),
-    // })
-    // return
     const dateRef = db.collection('Dates').doc(dateId)
     const success = await db.runTransaction(async (transaction) => {
         const date = await transaction.get(dateRef)

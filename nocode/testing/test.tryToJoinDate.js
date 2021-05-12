@@ -5,6 +5,9 @@ const tryToJoinDate = require('../matchmaker/tryToJoinDate.js')
 const firestore = require('../apis/firestoreApi.js')
 
 let dateId = '0L8SjnhEoqRGIENNyf5M'
+// sender: test2
+// recipient: test
+
 testTryToJoinDate(dateId)
 
 async function testTryToJoinDate() {
