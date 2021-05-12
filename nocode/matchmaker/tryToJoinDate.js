@@ -1,12 +1,18 @@
-import { db, time } from '../firebase'
+const firestore = require('../apis/firestoreApi.js')
+const db = firestore.db
+const time = firestore.db.Timestamp
+// import { runTransaction } from "firebase/firestore";
 
-export default function tryToJoinDate(dateId) {
-    firebase.modify('Dates', dateToJoin.id, {
-        accepted: true,
-        timeReplied: firebase.db.Timestamp.now(),
-    })
+module.exports = tryToJoinDate
+
+async function tryToJoinDate(dateId) {
+    // firestore.modify('Dates', dateId, {
+    //     accepted: true,
+    //     timeReplied: firestore.db.Timestamp.now(),
+    // })
+    // return
     const dateRef = db.collection('Dates').doc(dateId)
-    const success = await runTransaction(db, async (transaction) => {
+    const success = await db.runTransaction(async (transaction) => {
         const date = await transaction.get(dateRef)
 
         // Only accept the date if it is still active.
@@ -18,7 +24,7 @@ export default function tryToJoinDate(dateId) {
             // Get all other current active dates for the recipient
             const datesForRecipient = 
                 await transaction.get(
-                    db.collection(DATES_COLLECTION)
+                    db.collection('Dates')
                         .where('for', '==', recipient)
                         .where('active', '==', true)
                         .where('end', '>', time.now())
@@ -26,7 +32,7 @@ export default function tryToJoinDate(dateId) {
             // Get all other current active dates with the recipient
             const datesWithRecipient = 
                 await transaction.get(
-                    db.collection(DATES_COLLECTION)
+                    db.collection('Dates')
                         .where('with', '==', recipient)
                         .where('active', '==', true)
                         .where('end', '>', time.now())
@@ -34,24 +40,24 @@ export default function tryToJoinDate(dateId) {
             // Get all other current active dates for the sender
             const datesForSender = 
                 await transaction.get(
-                    db.collection(DATES_COLLECTION)
+                    db.collection('Dates')
                         .where('for', '==', sender)
                         .where('active', '==', true)
                         .where('end', '>', time.now())
                 )
       
             // Set accepted=false for all other current active dates for the recipient
-            datesForRecipient.map(d => {
+            datesForRecipient.docs.map(d => {
                 transaction.update(d.ref, { accepted: false })
             })
 
             // Set active=false for all other current active dates with the recipient
-            datesWithRecipient.map(d => {
+            datesWithRecipient.docs.map(d => {
                 transaction.update(d.ref, { active: false })
             })
 
             // Set active=false for all other current active dates for the sender
-            datesForSender.map(d => {
+            datesForSender.docs.map(d => {
                 transaction.update(d.ref, { active: false })
             })
 
