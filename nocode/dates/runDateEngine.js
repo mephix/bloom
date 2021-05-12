@@ -3,9 +3,9 @@ SET THESE PARAMS
 */
 let DAY = '2021-05-11'
 let HOUR = 16
-let SLOT = 0
+let SLOT = 2
 let RERUN = false
-let CUTOFF = 0.001       // >0 makes the dateEngine more picky.
+let CUTOFF = 0.00       // >0 makes the dateEngine more picky.
 let useTestIds = false   // `false` for real rounds.
 
 // `seqOrPar` should be "parallel" unless there is a dire 503 error when

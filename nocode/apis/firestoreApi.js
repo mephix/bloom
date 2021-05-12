@@ -82,17 +82,24 @@ function getDb () {
    * process.cwd(), currently it is 'bloom') then we don't need to type it at
    * the terminal (we used to have to type: export FIREBASE_CONFIG={} at the
    * terminal every time).
+   * ** NOTE: this doesn't seem to be needed anymore.
    *
    * Then, download 'bloom-dating-firebase-adminsdk-gqirl-d8653bb914.json'
    * into this folder from Firebase Settings -> Service Accounts) (no longer
    * from google cloud console (IAM & Admin -> Service Accounts)) and require
    * it and use it for app initialization.
    */
+
+  // const dotenv = require('dotenv')
+  // dotenv.config()
+  // try {
+  //   const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG)
+  // } catch (e) {
+  //   throw new Error(`firestoreApi: could not parse FIREBASE_CONFIG from .env`)
+  // }
   const { firebaseConfig } = require('../DO_NOT_COMMIT.js')
-  const dotenv = require('dotenv')
-  dotenv.config()
-  const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG)
   const admin = require('firebase-admin')
+  let adminConfig = {}
   adminConfig.credential = admin.credential.cert(firebaseConfig.serviceAccountKey)
   adminConfig.databaseURL = "https://bloom-dating.firebaseio.com"
   admin.initializeApp(adminConfig)

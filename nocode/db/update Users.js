@@ -2,7 +2,7 @@
  * Key parameters to set.
  */
 let collectionName = 'Users' // 'Dates' // 
-let cleanSlate = true
+let cleanSlate = false
 let existingFileDate = '2021-05-11'
 const today = '2021-05-11'
 // watch out, this might change to tomorrows date in the evening

@@ -40,5 +40,14 @@
                 "<node_internals>/**"
             ],
         },
+        {
+            "name": "test tryToJoinDate",
+            "program": "${workspaceFolder}/nocode/testing/test.tryToJoinDate.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
     ]
 }
