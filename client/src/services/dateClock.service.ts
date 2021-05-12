@@ -1,7 +1,7 @@
 import { DateTime, Duration } from 'luxon'
 import { db, PARAMETERS_COLLECTION } from '../firebase'
 import CronParser from 'cron-parser'
-import { Logger } from './utils/Logger'
+import { Logger } from '../utils'
 
 // const ROUND_MINUTES = process.env.REACT_APP_ROUND_MINUTES
 //   ? +process.env.REACT_APP_ROUND_MINUTES
@@ -14,8 +14,8 @@ const logger = new Logger('DateClock', '#8708d1')
 
 const DATE_NIGHT_SETTINGS = 'date_night_settings'
 
-const fromMillisToMinutes = (millis: number) => millis / 60 / 1000
-const fromMinutesToMillis = (millis: number) => millis * 60 * 1000
+export const fromMillisToMinutes = (millis: number) => millis / 60 / 1000
+export const fromMinutesToMillis = (millis: number) => millis * 60 * 1000
 
 export class DateClockService {
   private static maxRounds = 1
@@ -26,6 +26,11 @@ export class DateClockService {
     return Duration.fromMillis(
       fromMinutesToMillis(this.maxRounds * this.roundInterval)
     )
+  }
+
+  static get isCurrentDateNight() {
+    if (this.timeTilNextDateNight() === 0) return true
+    else return false
   }
 
   static async initNextDateNight() {
@@ -40,7 +45,7 @@ export class DateClockService {
       const maxRounds = options?.maxRounds
       logger.debug('crontab', `'${crontab}'`)
       logger.debug('roundInterval', roundInterval)
-      logger.debug('maxActiveIntervals', maxRounds)
+      logger.debug('maxRounds', maxRounds)
       if (!crontab)
         throw new Error('Crontab instruction not defined in database!')
       if (!roundInterval || typeof roundInterval !== 'number')
@@ -77,6 +82,7 @@ export class DateClockService {
         Math.ceil(fromMillisToMinutes(this.timeTilNextRound()))
       )
       logger.debug('currentRoundStartEnd', this.currentRoundStartEnd())
+      logger.debug('isCurrentDateNight', this.isCurrentDateNight)
     } catch (err) {
       logger.error(err.message)
       throw new Error('Error while parsing database settings!')

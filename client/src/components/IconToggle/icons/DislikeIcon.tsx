@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { IconProps } from '../IconToggle.type'
-import { classes, px } from '../../../utils'
+import { classes, px } from '../../../utils/common'
 import stylesModule from '../IconToggle.module.scss'
 
 export const DislikeIcon: FC<IconProps> = ({ filled = false, size = 40 }) => {

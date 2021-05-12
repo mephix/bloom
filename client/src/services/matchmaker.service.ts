@@ -1,30 +1,58 @@
-// import CronParser from 'cron-parser'
-// import { db, time } from '../firebase'
-// import { UsersDate } from '../store/utils/types'
-import { DateClockService } from './dateClock.service'
-import { consoleColorLog } from './utils'
-import { Logger } from './utils/Logger'
+import meetup from '../store/meetup'
+import { DateClockService, fromMillisToMinutes } from './dateClock.service'
+import { Logger } from '../utils'
 
 const logger = new Logger('Matchmaker', '#005aeb')
 
 // const DATE_NIGHT_SETTINGS = 'date_night_settings'
 
 export class Matchmaker {
-  static async launch() {
-    try {
-      await DateClockService.initNextDateNight()
-      logger.debug('working! [temporary not...]')
-      return true
-    } catch (err) {
-      logger.error('something went wrong during launch matchmaker \n', err)
-      return false
+  static timeout: NodeJS.Timeout | null = null
+
+  static async initialize() {
+    await DateClockService.initNextDateNight()
+    this.launch()
+  }
+
+  static launch() {
+    logger.debug('Starting matchmaker...')
+    this.reset()
+    this.worker()
+  }
+
+  static reset() {
+    if (this.timeout) {
+      logger.debug('reset matchmaker')
+      clearTimeout(this.timeout)
+    }
+  }
+
+  private static worker() {
+    logger.debug('Worker invoked')
+    const sleepMatchmakerFor = (millis: number) => {
+      return setTimeout(this.worker, millis)
+    }
+
+    if (!DateClockService.isCurrentDateNight) {
+      logger.debug(
+        `No current Date Night. Sleeping for ${Math.floor(
+          fromMillisToMinutes(DateClockService.timeTilNextDateNight()) * 60
+        )} seconds until the beginning of Date Night`
+      )
+      return (this.timeout = sleepMatchmakerFor(
+        DateClockService.timeTilNextDateNight()
+      ))
+    }
+    if (!meetup.isDateNight) {
+      logger.debug('Date Night has started!')
+      meetup.setDateNight(true)
     }
   }
 }
 
 type SetTimerFunc = (num: number) => void
 
-async function matchmaker(setTimer: SetTimerFunc) {
+export async function matchmaker(setTimer: SetTimerFunc) {
   // When it finishes running, the matchMaker puts itself to sleep for a
   // certain amount of time. Write a wrapper around `setTimeout` to do
   // this. Multiply by 1000 because `setTimeout` uses milliseconds.
@@ -33,7 +61,7 @@ async function matchmaker(setTimer: SetTimerFunc) {
   const sleepMatchMakerFor = (time: number) => {
     return setTimeout(matchmaker, time * 1000, setTimer)
   }
-  consoleColorLog('\nStarting matchmaker...', 'white')
+  // consoleColorLog('\nStarting matchmaker...', 'white')
 
   let timer: number
 
@@ -44,7 +72,7 @@ async function matchmaker(setTimer: SetTimerFunc) {
   // or future date night (maybe indicating we haven't set it properly). If
   // so, sleep til the next round.
   if (timeTilNextDateNight === -1) {
-    consoleColorLog('No current or future date night found.', 'red')
+    // consoleColorLog('No current or future date night found.', 'red')
     let timeTilNextRound = DateClockService.timeTilNextRound()
     timer = sleepMatchMakerFor(timeTilNextRound)
     setTimer(timer)
@@ -54,7 +82,7 @@ async function matchmaker(setTimer: SetTimerFunc) {
   // If there is a date night in the future but it hasn't started yet, the
   // matchMaker goes dormant until it starts.
   if (timeTilNextDateNight > 0) {
-    consoleColorLog(`sleeping for ${timeTilNextDateNight / 1000}s`, 'red')
+    // consoleColorLog(`sleeping for ${timeTilNextDateNight / 1000}s`, 'red')
     timer = sleepMatchMakerFor(timeTilNextDateNight)
     setTimer(timer)
     return
@@ -73,47 +101,47 @@ async function matchmaker(setTimer: SetTimerFunc) {
   //   timer = sleepMatchMakerFor(timeTilNextRound)
   //   setTimer(timer)
   //   return
+  // }
+
+  // For the meantime in dev: if its a new round, set 'invited' back to
+  // for all matches
+  // ! InDev
+  // ? Where is matches array ?
+  // consoleColorLog(`currentInterval: ${currentInterval}`, 'white')
+  // if (currentInterval === 1) {
+  //   Object.keys(matches).map(id => (matches[id].invited = false))
+  // }
+
+  // Attach to each current, active Date For the User,
+  // the match score of the person the Date is With.
+  // ? let dates = await getDates(userId)
+  // ? Where is matches array ?
+  // ? let datesWithScore = addScore(dates, matches)
+
+  // Try to join each of these dates, in descending order of score.
+  // Return `success`=true if one of them is successfully joined.
+  // let threshold = 1 + maxActiveInterval - currentInterval
+  // const delay = DateClockService.delay
+  // let success = await tryToJoinDates(datesWithScore, threshold + delay)
+
+  // if (success) {
+  //   // If a date is successfully joined, the matchMaker goes dormant until
+  //   // the next round starts.
+  //   let timeTilNextRound = DateClockService.timeTilNextRound()
+  //   timer = sleepMatchMakerFor(timeTilNextRound)
+  //   setTimer(timer)
+  //   return
+  // } else {
+  //   // If a date is not successfully joined, create a bunch of dates for
+  //   // the person's matches above a certain score threshold, then set the
+  //   // matchMaker to run again next interval.
+  //   // ? await createDates(matches, threshold)
+  //   let timeTilNextInterval = DateClockService.timeTilNextInterval()
+  //   timer = sleepMatchMakerFor(timeTilNextInterval)
+  //   setTimer(timer)
+  //   return
+  // }
 }
-
-// For the meantime in dev: if its a new round, set 'invited' back to
-// for all matches
-// ! InDev
-// ? Where is matches array ?
-// consoleColorLog(`currentInterval: ${currentInterval}`, 'white')
-// if (currentInterval === 1) {
-//   Object.keys(matches).map(id => (matches[id].invited = false))
-// }
-
-// Attach to each current, active Date For the User,
-// the match score of the person the Date is With.
-// ? let dates = await getDates(userId)
-// ? Where is matches array ?
-// ? let datesWithScore = addScore(dates, matches)
-
-// Try to join each of these dates, in descending order of score.
-// Return `success`=true if one of them is successfully joined.
-// let threshold = 1 + maxActiveInterval - currentInterval
-// const delay = DateClockService.delay
-// // let success = await tryToJoinDates(datesWithScore, threshold + delay)
-
-// if (success) {
-//   // If a date is successfully joined, the matchMaker goes dormant until
-//   // the next round starts.
-//   let timeTilNextRound = DateClockService.timeTilNextRound()
-//   timer = sleepMatchMakerFor(timeTilNextRound)
-//   setTimer(timer)
-//   return
-// } else {
-//   // If a date is not successfully joined, create a bunch of dates for
-//   // the person's matches above a certain score threshold, then set the
-//   // matchMaker to run again next interval.
-//   // ? await createDates(matches, threshold)
-//   let timeTilNextInterval = DateClockService.timeTilNextInterval()
-//   timer = sleepMatchMakerFor(timeTilNextInterval)
-//   setTimer(timer)
-//   return
-// }
-// }
 
 // async function getDates(email: string) {
 //   let dates: UsersDate[] = []
@@ -144,8 +172,8 @@ async function matchmaker(setTimer: SetTimerFunc) {
 //   const success = await db.runTransaction(async transaction => {
 //     const date = await transaction.get(dateRef)
 
-//     // Only accept the date if it is still active.
-//     // Otherwise, do nothing.
+//     Only accept the date if it is still active.
+//     Otherwise, do nothing.
 //     if (date.data().active) {
 //       const sender = date.data().with
 //       const recipient = date.data().for

@@ -15,8 +15,6 @@ export class ConferenceService {
 
   static async makeConferenceRoom(preentry = 1) {
     const time = DateClockService.currentRoundStartEnd()
-    if (!time) return
-
     const nbf = this.calcNbf(time.roundStartTime, preentry)
     const exp = this.calcExp(time.roundEndTime)
     const response = await this.instance.post('rooms', {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, FC } from 'react'
 import { IconToggleProps } from './IconToggle.type'
-import { classes, noop } from '../../utils'
+import { classes, noop } from '../../utils/common'
 import stylesModule from './IconToggle.module.scss'
 import { HeartIcon } from './icons/HeartIcon'
 import { DislikeIcon } from './icons/DislikeIcon'
@@ -9,7 +9,7 @@ export const IconToggle: FC<IconToggleProps> = ({
   toggled = false,
   onToggle = noop,
   type,
-  className = '',
+  className = ''
 }) => {
   const [state, setState] = useState(toggled)
 

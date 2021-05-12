@@ -3,14 +3,14 @@ import { IconToggle } from '../../components/IconToggle'
 import app from '../../store/app'
 import meetup from '../../store/meetup'
 import user from '../../store/user'
-import { classes } from '../../utils'
+import { classes } from '../../utils/common'
 import commonStyles from '../Common.module.scss'
 import moduleStyles from './Raiting.module.scss'
 
 export const Raiting = () => {
   const [rate, setRate] = useState({
     fun: false,
-    heart: false,
+    heart: false
   })
   const [modal, setModal] = useState(false)
 

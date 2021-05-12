@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { IconProps } from '../IconToggle.type'
-import { px } from '../../../utils'
+import { px } from '../../../utils/common'
 import stylesModule from '../IconToggle.module.scss'
 
 export const HeartIcon: FC<IconProps> = ({ filled = false, size = 40 }) => {

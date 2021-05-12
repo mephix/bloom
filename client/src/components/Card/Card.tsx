@@ -1,7 +1,7 @@
 import { FC, useCallback } from 'react'
 import { ActionButton } from './ActionButton'
 import stylesModule from './Card.module.scss'
-import { noop } from '../../utils'
+import { noop } from '../../utils/common'
 import { CardProps } from './Card.type'
 
 const initialUser = {

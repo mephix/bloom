@@ -27,19 +27,18 @@ import {
 import user from './user'
 import app from './app'
 import { ConferenceService } from '../services/conference.service'
-import { Logger } from '../services/utils/Logger'
+import { Logger } from '../utils/Logger'
 
 const logger = new Logger('Meetup', '#10c744')
 
 class Meetup {
-  dateIsFor: boolean = false
+  // private dateIsFor: boolean = false
+  private prospects: Prospect[] = []
+  private dateCards: Prospect[] = []
 
-  prospects: Prospect[] = []
-  dateCards: Prospect[] = []
-
-  currentMatchingUser: string | null = null
-  matchingUsers: UsersPropsCollection = {}
-  unsubscribeUsers: UsersUnsubscribeCollection = {}
+  private currentMatchingUser: string | null = null
+  private matchingUsers: UsersPropsCollection = {}
+  private unsubscribeUsers: UsersUnsubscribeCollection = {}
 
   isDateNight = false
 
@@ -65,6 +64,10 @@ class Meetup {
   get currentDate(): UsersDate | null {
     if (!this.currentMatchingUser) return null
     return this.matchingUsers[this.currentMatchingUser].date
+  }
+
+  setDateNight(state: boolean) {
+    this.isDateNight = state
   }
 
   async setRaiting(fun: boolean, heart: boolean) {
@@ -129,8 +132,13 @@ class Meetup {
     if (!this.currentMatchingUserData) return
     const lastUserEmail = this.currentMatchingUserData.email
     if (this.unsubscribeUsers[lastUserEmail]) {
+      logger.debug(`unsubscribed from ${lastUserEmail}`)
       this.unsubscribeUsers[lastUserEmail]()
       delete this.unsubscribeUsers[lastUserEmail]
+      logger.debug(
+        `unsubscribeUsers object`,
+        JSON.parse(JSON.stringify(this.unsubscribeUsers))
+      )
     }
     delete this.matchingUsers[lastUserEmail]
     this.resetCurrentMatchingUser()
@@ -138,11 +146,20 @@ class Meetup {
 
   async checkAvailability(callback: Function) {
     if (!this.isDateNight) return
+    if (!Object.entries(this.matchingUsers).length) return
+    logger.debug('Checking for avability...')
+    logger.generateGroup(
+      'Current user avability',
+      `free: ${user.free}`,
+      `here: ${user.here}`
+    )
     if (!user.free) return
     if (!user.here) return
+    logger.startGroup('With users availability')
     for (const [email, userProps] of Object.entries(this.matchingUsers)) {
       const matchingUserRef = db.collection(USERS_COLLECTION).doc(email)
       const dateRef = db.collection(DATES_COLLECTION).doc(userProps.date.id)
+
       const result = await db.runTransaction(async t => {
         const matchingUserDoc = await t.get(matchingUserRef)
         const dateDoc = await t.get(dateRef)
@@ -150,7 +167,18 @@ class Meetup {
         const date = dateDoc.data()
         if (!date) return false
         if (!matchingUser) return false
-        if (date.end.seconds < time.now().seconds || !date.active) {
+        const dateNotCurrentAndActive =
+          date.end.seconds < time.now().seconds || !date.active
+        logger.generateGroup(
+          `User ${email}`,
+          `Date is current and active: ${!dateNotCurrentAndActive}`,
+          `here: ${matchingUser.here}`,
+          `free: ${matchingUser.free}`,
+          `Having date with current user ${
+            matchingUser.dateWith && matchingUser.dateWith === user.email
+          }`
+        )
+        if (dateNotCurrentAndActive) {
           this.deleteMatchingUser(email)
           return false
         }
@@ -160,12 +188,13 @@ class Meetup {
           return false
         return true
       })
-      logger.debug('complete result for ', email, result)
+
       if (!result) continue
       if (this.currentMatchingUser) continue
       this.setCurrentMatchingUser(email)
       callback()
     }
+    logger.endGroup()
   }
 
   async shiftCards(reject = false) {
@@ -187,22 +216,25 @@ class Meetup {
     if (!user.email) return
     if (reject) await moveProspectTo('prospects', 'nexts', user.email)
     else {
-      logger.debug('Creating date...')
-      const room = await ConferenceService.makeConferenceRoom()
-      if (!room) return logger.error('No room!')
-      const forUser = await moveProspectTo('prospects', 'likes', user.email)
-      const { roomUrl, start, end } = room
-      logger.debug('Pushing date...')
+      try {
+        logger.debug('Creating date...')
+        const room = await ConferenceService.makeConferenceRoom()
+        const forUser = await moveProspectTo('prospects', 'likes', user.email)
+        const { roomUrl, start, end } = room
+        logger.debug('Pushing date...')
 
-      await db.collection(DATES_COLLECTION).add({
-        start: time.fromDate(start),
-        end: time.fromDate(end),
-        room: roomUrl,
-        for: forUser,
-        with: user.email,
-        active: true,
-        timeSent: time.now()
-      })
+        await db.collection(DATES_COLLECTION).add({
+          start: time.fromDate(start),
+          end: time.fromDate(end),
+          room: roomUrl,
+          for: forUser,
+          with: user.email,
+          active: true,
+          timeSent: time.now()
+        })
+      } catch {
+        logger.error('failed to create date!')
+      }
     }
   }
 
@@ -237,6 +269,7 @@ class Meetup {
   }
 
   subscribeOnUser(email: string, date: UsersDate) {
+    logger.debug(`subscribe on ${email}`)
     const onUser = (user: DocumentSnapshot) => {
       const userData = user.data()
       this.matchingUsers[email] = {
@@ -285,7 +318,7 @@ class Meetup {
       let dates = queryDates.docs.filter(byActive)
       const dateCards = await computeDateCards(dates, user.email)
       dates = dates.filter(byAccepted(true))
-      if (dates) logger.debug('Available dates', dates.map(computeData))
+      if (dates.length) logger.debug('Available dates', dates.map(computeData))
       this.setDateCards(dateCards)
       this.checkUsersSubscription(dates, isWith)
     }

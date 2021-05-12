@@ -1,5 +1,5 @@
 import { FC, useCallback } from 'react'
-import { noop } from '../../utils'
+import { noop } from '../../utils/common'
 import stylesModule from './Card.module.scss'
 import { ActionButtonProps } from './Card.type'
 
