@@ -3,31 +3,30 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@daily-co/daily-js": "^0.9.998",
-    "@material-ui/core": "^4.11.3",
+    "@daily-co/daily-js": "^0.12.0",
+    "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@types/jest": "^26.0.15",
+    "@types/luxon": "^1.26.5",
     "@types/node": "^12.0.0",
-    "@types/react": "^16.9.53",
-    "@types/react-dom": "^16.9.8",
-    "@types/react-router-dom": "^5.1.7",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
     "axios": "^0.21.1",
     "cron-parser": "^3.5.0",
-    "firebase": "^8.2.4",
+    "firebase": "^8.6.0",
     "luxon": "^1.26.0",
     "mobx": "^6.3.0",
     "mobx-react-lite": "^3.2.0",
-    "node-sass": "^4.14.1",
-    "react": "^17.0.1",
-    "react-countdown": "^2.3.1",
-    "react-dom": "^17.0.1",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.1",
-    "typescript": "^4.0.3",
-    "web-vitals": "^0.2.4"
+    "node-sass": "^6.0.0",
+    "react": "^17.0.2",
+    "react-countdown": "^2.3.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "typescript": "^4.1.2",
+    "web-vitals": "^1.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -39,16 +38,6 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ],
-    "overrides": [
-      {
-        "files": [
-          "**/*.stories.*"
-        ],
-        "rules": {
-          "import/no-anonymous-default-export": "off"
-        }
-      }
     ]
   },
   "browserslist": {
@@ -62,8 +51,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/luxon": "^1.26.5"
   }
 }
