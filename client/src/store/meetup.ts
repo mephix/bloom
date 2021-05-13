@@ -315,6 +315,7 @@ class Meetup {
     const onDate = async (queryDates: QuerySnapshot, isWith: boolean) => {
       if (!this.isDateNight) return
       if (!user.email) return
+      // logger.debug('Fetched Dates collection update')
       let dates = queryDates.docs.filter(byActive)
       const dateCards = await computeDateCards(dates, user.email)
       dates = dates.filter(byAccepted(true))
@@ -358,7 +359,7 @@ async function computeDateCards(dates: DocumentSnapshot[], email: string) {
   for (const date of computedDataDates) {
     const userGet = await db
       .collection(USERS_COLLECTION)
-      .doc(date.data()?.for)
+      .doc(date.data()?.with)
       .get()
     const user = userGet.data()
     if (!user) continue
