@@ -1,0 +1,14 @@
+.header {
+  height: 64px;
+  box-sizing: border-box;
+  border-bottom: 1px solid white;
+  display: flex;
+  justify-content: center;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.gap {
+  height: 50px;
+  width: 50px;
+}

@@ -17,4 +17,5 @@ export type ButtonType = 'join' | 'like' | 'invite' | undefined
 export type ActionButtonProps = {
   type?: ButtonType
   onAction?: (type: ButtonType) => void
+  small?: boolean
 }

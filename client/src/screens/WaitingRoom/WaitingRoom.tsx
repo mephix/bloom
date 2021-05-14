@@ -3,7 +3,6 @@ import { Card } from '../../components/Card'
 import { Toggle } from '../../components/Toggle'
 import commonStyles from '../Common.module.scss'
 import moduleStyles from './WaitingRoom.module.scss'
-import { AppBarHeader } from '../../components/AppBarHeader'
 import { classes } from '../../utils/common'
 import { observer } from 'mobx-react-lite'
 import user from '../../store/user'
@@ -11,6 +10,7 @@ import app from '../../store/app'
 import { PARAMS } from '../../store/utils/constants'
 import { UserCard } from '../../store/utils/types'
 import meetup from '../../store/meetup'
+import { Header } from '../../components/Header'
 
 const mockUser = {
   avatar: '/docs/placeholder.jpg',
@@ -95,7 +95,8 @@ export const WaitingRoom = observer(() => {
 
   return (
     <>
-      <AppBarHeader />
+      {/* <AppBarHeader /> */}
+      <Header />
       <div className={classes(commonStyles.container, moduleStyles.container)}>
         {content}
       </div>

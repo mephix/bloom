@@ -1,5 +1,5 @@
 import DailyIframe, { DailyCall } from '@daily-co/daily-js'
-import { AppBar, Toolbar } from '@material-ui/core'
+// import { AppBar, Toolbar } from '@material-ui/core'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Countdown from 'react-countdown'
 import moduleStyles from './Video.module.scss'
@@ -48,30 +48,31 @@ export const Video = () => {
 
   return (
     <>
-      <AppBar position="static" className="app-bar">
+      {/* <AppBar position="static" className="app-bar">
         <Toolbar>
-          <div>{meetup.currentMatchingUserData?.firstName}</div>
-          <Countdown
-            date={endDateTime}
-            onComplete={endDate}
-            renderer={({ total, seconds }) => {
-              const totalMin = total / 60 / 1000
-              return (
-                <div
-                  className={
-                    totalMin < 1 ? 'video-timer ending' : 'video-timer'
-                  }
-                >
-                  <div className="video-timer-panel">
-                    {Math.floor(totalMin)}
-                  </div>
-                  <div className="video-timer-panel">{seconds}</div>
-                </div>
-              )
-            }}
-          />
+          
         </Toolbar>
-      </AppBar>
+      </AppBar> */}
+      <header className={moduleStyles.header}>
+        <div className={moduleStyles.firstName}>
+          {meetup.currentMatchingUserData?.firstName}
+        </div>
+        <Countdown
+          date={endDateTime}
+          onComplete={endDate}
+          renderer={({ total, seconds }) => {
+            const totalMin = total / 60 / 1000
+            return (
+              <div
+                className={totalMin < 1 ? 'video-timer ending' : 'video-timer'}
+              >
+                <div className="video-timer-panel">{Math.floor(totalMin)}</div>
+                <div className="video-timer-panel">{seconds}</div>
+              </div>
+            )
+          }}
+        />
+      </header>
       <iframe
         className={moduleStyles.videoFrame}
         title="date-video"

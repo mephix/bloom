@@ -1,10 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
 @import '../../scss/mixins.scss';
 
-@mixin bg($url, $size) {
-  background: url($url) no-repeat center center / $size $size;
-}
-
 .card {
   @include flex(column);
   width: 100%;
@@ -31,6 +27,7 @@
   }
 }
 
+
 .actions {
   @include flex(row);
   // background-color: red;
@@ -38,34 +35,4 @@
   width: 100%;
   height: 110px;
   margin-top: auto;
-  button {
-    @include size(50px);
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: 0.1s;
-    &.reject {
-      @include bg('../../assets/images/icons/close.svg', 30px);
-    }
-    &.like {
-      @include bg('../../assets/images/icons/heart.svg', 50px);
-    }
-    &.join {
-      @include bg('../../assets/images/icons/camera.svg', 100%);
-    }
-    &.invite {
-      color: black;
-      background: #9fc5f8;
-      text-transform: uppercase;
-      width: 70px;
-      height: 28px;
-      border-radius: 5px;
-      font-size: 0.7rem;
-      font-family: 'Roboto', sans-serif;
-      letter-spacing: 1px;
-    }
-    &:active {
-      opacity: 0.6;
-    }
-  }
 }

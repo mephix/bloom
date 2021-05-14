@@ -20,7 +20,8 @@ export class DateClockService {
   private static nextDateNight: DateTime | null = null
   private static crontab = ''
   private static isPrevDateNight = false
-  public static maxActiveInterval = 10
+  public static maxActiveIntervals = 10
+  public static acceptDateDelay = 0
 
   private static get passedFromRoundStart() {
     const { roundStartTime: roundStartTimeString } = this.currentRoundStartEnd()
@@ -65,8 +66,10 @@ export class DateClockService {
       const crontab = options?.cron
       const roundMinutes = options?.roundMinutes
       const maxRounds = options?.maxRounds
-      const maxActiveInterval = options?.maxActiveInterval
+      const maxActiveIntervals = options?.maxActiveIntervals
       const intervalSeconds = options?.intervalSeconds
+      const acceptDateDelay = options?.acceptDateDelay
+
       logger.debug('crontab', `'${crontab}'`)
       logger.debug('roundMinutes', roundMinutes)
       logger.debug('maxRounds', maxRounds)
@@ -80,19 +83,24 @@ export class DateClockService {
         throw new Error(
           'maxRounds is not defined in database or the value is invalid!'
         )
-      if (!maxActiveInterval || typeof maxActiveInterval !== 'number')
+      if (!maxActiveIntervals || typeof maxActiveIntervals !== 'number')
         throw new Error(
-          'maxActiveInterval is not defined in database or the value is invalid!'
+          'maxActiveIntervals is not defined in database or the value is invalid!'
         )
       if (!intervalSeconds || typeof intervalSeconds !== 'number')
         throw new Error(
           'intervalSeconds is not defined in database or the value is invalid!'
         )
+      if (!acceptDateDelay || typeof acceptDateDelay !== 'number')
+        throw new Error(
+          'acceptDateDelay is not defined in database or the value is invalid!'
+        )
       this.crontab = crontab
       this.roundMinutes = roundMinutes
       this.maxRounds = maxRounds
-      this.maxActiveInterval = maxActiveInterval
+      this.maxActiveIntervals = maxActiveIntervals
       this.intervalSeconds = intervalSeconds
+      this.acceptDateDelay = acceptDateDelay
       logger.debug(
         'Date Night Duration:',
         fromMillisToMinutes(this.dateNightDuration.milliseconds)

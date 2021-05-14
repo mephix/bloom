@@ -55,7 +55,7 @@ export class Matchmaker {
       meetup.setDateNight(true)
     }
     const currentInterval = DateClockService.currentInterval
-    const maxActiveInterval = DateClockService.maxActiveInterval
+    const maxActiveInterval = DateClockService.maxActiveIntervals
     logger.log('currentInterval', currentInterval)
     logger.log('maxActiveInterval', maxActiveInterval)
 
@@ -65,7 +65,10 @@ export class Matchmaker {
 
         // Todo: inviting and acceptring logic
         MatchesService.inviteMatches(threshold)
-      } else logger.debug("User doesn't have ability to invite")
+        MatchesService.acceptMatches(
+          threshold + DateClockService.acceptDateDelay
+        )
+      } else logger.debug("User doesn't have ability to invite or accept dates")
 
       logger.debug(
         `Sleeping for ${Math.floor(

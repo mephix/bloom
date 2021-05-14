@@ -1,57 +1,7 @@
-.app-bar {
-  background-color: black !important;
-  text-align: center;
-  border-bottom: 1px solid white;
-  height: 64px;
-}
+@import './mixins.scss';
 
-.logo {
-  margin: 0 auto;
-  height: 3rem;
-}
-
-p {
-  font-size: 26px;
-  text-align: center;
-  margin-top: 0;
-}
-
-.toggle {
-  padding: 1rem;
-  justify-content: center;
-  display: flex;
-}
-
-.centered-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: calc(100vh - 64px);
-}
-
-.countdown-details {
-  margin-top: 3rem;
-  font-size: 1rem;
-}
-
-.countdown-details p {
-  font-size: 1rem;
-}
-
-.countdown-details strong {
-  font-size: 2rem;
-}
-
-.countdown-box {
-  width: 6rem;
-  height: 6rem;
-  border: 1px solid grey;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
+@mixin bg($url, $size) {
+  background: url($url) no-repeat center center / $size $size;
 }
 
 .video-timer {
@@ -91,23 +41,42 @@ p {
   margin: 0 0.2rem;
 }
 
-.feedback {
-  background: #111111;
-  width: 80%;
-  padding: 2rem;
-  border-radius: 4px;
-  border: 1px solid #222222;
-  margin-bottom: 2rem;
-}
-
-.feedback button {
-  border: 1px solid;
-  margin: 0 auto;
-  display: block;
-}
-
 .close {
   fill: white !important;
   position: fixed;
   left: 1rem;
+}
+
+.actionButton {
+  @include size(50px);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.1s;
+  &.reject {
+    @include bg('../assets/images/icons/close.svg', 30px);
+  }
+  &.reject.small {
+    @include bg('../assets/images/icons/close.svg', 20px);
+  }
+  &.like {
+    @include bg('../assets/images/icons/heart.svg', 50px);
+  }
+  &.join {
+    @include bg('../assets/images/icons/camera.svg', 100%);
+  }
+  &.invite {
+    color: black;
+    background: #9fc5f8;
+    text-transform: uppercase;
+    width: 70px;
+    height: 28px;
+    border-radius: 5px;
+    font-size: 0.7rem;
+    font-family: 'Roboto', sans-serif;
+    letter-spacing: 1px;
+  }
+  &:active {
+    opacity: 0.6;
+  }
 }

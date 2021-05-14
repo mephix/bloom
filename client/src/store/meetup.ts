@@ -212,28 +212,55 @@ class Meetup {
     this.dateCards = dateCards
   }
 
+  async createDate(forUser: string) {
+    logger.debug(`Creating date for ${forUser}...`)
+    const room = await ConferenceService.makeConferenceRoom()
+    const { roomUrl, start, end } = room
+    logger.debug('Pushing date...')
+    const forUserDoc = await db.collection(USERS_COLLECTION).doc(forUser).get()
+    if (!forUserDoc.data())
+      throw new Error(`User with email ${forUser} doesn't exist'`)
+    const dateWithDoc = await db
+      .collection(DATES_COLLECTION)
+      .where('with', '==', user.email)
+      .where('for', '==', forUser)
+      .where('end', '>', time.now())
+      .where('active', '==', true)
+      .get()
+    const dateForDoc = await db
+      .collection(DATES_COLLECTION)
+      .where('with', '==', forUser)
+      .where('for', '==', user.email)
+      .where('end', '>', time.now())
+      .where('active', '==', true)
+      .get()
+
+    if (dateWithDoc.docs.length > 0)
+      throw new Error(`Active date with ${forUser} already exists!`)
+    if (dateForDoc.docs.length > 0)
+      throw new Error(`Active date for ${forUser} already exists!`)
+
+    await db.collection(DATES_COLLECTION).add({
+      start: time.fromDate(start),
+      end: time.fromDate(end),
+      room: roomUrl,
+      for: forUser,
+      with: user.email,
+      active: true,
+      timeSent: time.now()
+    })
+  }
+
   async shiftProspects(reject = false) {
     if (!user.email) return
     if (reject) await moveProspectTo('prospects', 'nexts', user.email)
     else {
       try {
-        logger.debug('Creating date...')
-        const room = await ConferenceService.makeConferenceRoom()
         const forUser = await moveProspectTo('prospects', 'likes', user.email)
-        const { roomUrl, start, end } = room
-        logger.debug('Pushing date...')
-
-        await db.collection(DATES_COLLECTION).add({
-          start: time.fromDate(start),
-          end: time.fromDate(end),
-          room: roomUrl,
-          for: forUser,
-          with: user.email,
-          active: true,
-          timeSent: time.now()
-        })
-      } catch {
-        logger.error('failed to create date!')
+        if (!forUser) throw new Error('Failed to get forUser!')
+        await this.createDate(forUser)
+      } catch (err) {
+        logger.error(`Failed to create date!`, err)
       }
     }
   }
@@ -249,6 +276,21 @@ class Meetup {
     } else {
       user.setHere(true)
       await moveProspectTo('prospects', 'likes', user.email)
+      const anotherDate = await db
+        .collection(DATES_COLLECTION)
+        .where('with', '==', user.email)
+        .where('for', '==', this.dateCards[0].email)
+        .where('end', '>', time.now())
+        .where('active', '==', true)
+        .get()
+
+      if (anotherDate.docs.length > 0) {
+        logger.log('Found similar date', anotherDate.docs)
+        anotherDate.docs.forEach(date =>
+          db.collection(DATES_COLLECTION).doc(date.id).set({ active: false })
+        )
+      }
+
       await db
         .collection(DATES_COLLECTION)
         .doc(this.dateCards[0].dateId)
@@ -422,7 +464,7 @@ async function moveProspectTo(
   from: CollectionSlug,
   to: CollectionSlug,
   email: string | undefined
-) {
+): Promise<string | void> {
   const collectionFromRef = await checkProspectsCollection(from, email)
   const collectionToRef = await checkProspectsCollection(to, email)
   const fromUsers = (await collectionFromRef.get()).data()?.[from]
@@ -434,7 +476,7 @@ async function moveProspectTo(
   await collectionFromRef.update({ [from]: [...fromUsers] })
   await collectionToRef.update({ [to]: [cutUser, ...toUsers] })
   const cutUserEmail = (await cutUser.get()).data()?.email
-  return cutUserEmail
+  return cutUserEmail as string
 }
 
 export default new Meetup()

@@ -1,30 +1,33 @@
 import { FC, useCallback } from 'react'
 import { noop } from '../../utils/common'
-import stylesModule from './Card.module.scss'
 import { ActionButtonProps } from './Card.type'
 
 export const ActionButton: FC<ActionButtonProps> = ({
   type,
-  onAction = noop
+  onAction = noop,
+  small
 }) => {
   const clickHandler = useCallback(() => onAction(type), [onAction, type])
 
   if (type === 'join')
     return (
-      <button onClick={clickHandler} className={stylesModule.join}></button>
+      <button onClick={clickHandler} className="actionButton join"></button>
     )
   if (type === 'like')
     return (
-      <button onClick={clickHandler} className={stylesModule.like}></button>
+      <button onClick={clickHandler} className="actionButton like"></button>
     )
   if (type === 'invite')
     return (
-      <button onClick={clickHandler} className={stylesModule.invite}>
+      <button onClick={clickHandler} className="actionButton invite">
         Invite
       </button>
     )
   else
     return (
-      <button onClick={clickHandler} className={stylesModule.reject}></button>
+      <button
+        onClick={clickHandler}
+        className={`actionButton reject ${small ? 'small' : ''}`}
+      ></button>
     )
 }
