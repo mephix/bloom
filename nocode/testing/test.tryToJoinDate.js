@@ -1,15 +1,16 @@
-// import tryToJoinDate from '../matchmaker/tryToJoinDate.js'
-// const matchmaker = require('../matchmaker/matchmaker.js')
 const tryToJoinDate = require('../matchmaker/tryToJoinDate.js')
-// const monkey = require('../matchmaker/test.tmpDelete.js')
 const firestore = require('../apis/firestoreApi.js')
+const db = firestore.db
 
-let dateId = '0L8SjnhEoqRGIENNyf5M'
-// sender: test2
-// recipient: test
-
-testTryToJoinDate(dateId)
+testTryToJoinDate()
 
 async function testTryToJoinDate() {
-    await tryToJoinDate(dateId)
+    const batch = db.batch()
+    batch.update(db.collection('Dates').doc('fhRntWNybEQRgwFZ8thB'), { active: true, accepted: null })
+    batch.update(db.collection('Dates').doc('SnluiFmrpnwG8rvOEuG2'), { active: true, accepted: null })
+    batch.update(db.collection('Dates').doc('gesAc2QQ5FX3R1Wd0miA'), { active: true, accepted: null })
+    batch.update(db.collection('Dates').doc('iHUZv6SWtRGWtSFLkIHK'), { active: true, accepted: null })
+    await batch.commit()
+    await tryToJoinDate('fhRntWNybEQRgwFZ8thB')
+    console.log('')
 }
