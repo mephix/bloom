@@ -60,10 +60,10 @@ export class MatchesService {
       logger.debug(email, score)
       if (score > threshold) {
         logger.debug(`Accepting date with id ${date.id} for ${email}`)
-        await db
-          .collection(DATES_COLLECTION)
-          .doc(date.id)
-          .update({ accepted: true })
+        const dateRef = await db.collection(DATES_COLLECTION).doc(date.id)
+        await db.runTransaction(async t => {
+          await t.update(dateRef, { accepted: true })
+        })
         await this.deleteFromMatches(email)
         await this.deleteFromMatchesWith(email)
       }
