@@ -54,6 +54,8 @@ export class Matchmaker {
       logger.debug('Date Night has started!')
       meetup.setDateNight(true)
     }
+    meetup.checkDatesActive()
+
     const currentInterval = DateClockService.currentInterval
     const maxActiveInterval = DateClockService.maxActiveIntervals
     logger.log('currentInterval', currentInterval)
@@ -63,9 +65,8 @@ export class Matchmaker {
       if (user.free && user.here) {
         const threshold = maxActiveInterval - currentInterval
 
-        // Todo: inviting and acceptring logic
-        MatchesService.inviteMatches(threshold)
-        MatchesService.acceptMatches(
+        MatchesService.inviteAndAcceptMatches(
+          threshold,
           threshold + DateClockService.acceptDateDelay
         )
       } else logger.debug("User doesn't have ability to invite or accept dates")

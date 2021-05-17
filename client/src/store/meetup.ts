@@ -58,11 +58,13 @@ class Meetup {
 
   get currentMatchingUserData(): UserData | null {
     if (!this.currentMatchingUser) return null
+    if (!this.matchingUsers[this.currentMatchingUser]) return null
     return this.matchingUsers[this.currentMatchingUser].user
   }
 
   get currentDate(): UsersDate | null {
     if (!this.currentMatchingUser) return null
+    if (!this.matchingUsers[this.currentMatchingUser]) return null
     return this.matchingUsers[this.currentMatchingUser].date
   }
 
@@ -85,11 +87,42 @@ class Meetup {
     this.updateCurrentDate('timeLeft', {
       [this.currentAffiliation]: time.now()
     })
-    if (this.currentDate)
+    if (this.currentDate) {
       db.collection(DATES_COLLECTION)
         .doc(this.currentDate.id)
         .update({ active: false })
+      const affiliation = this.currentDate?.dateIsWith ? 'for' : 'with'
+
+      this.canselAllDaes(this.currentDate[affiliation])
+    }
   }
+
+  async canselAllDaes(email: string) {
+    const dateWithDoc = await db
+      .collection(DATES_COLLECTION)
+      .where('with', '==', user.email)
+      .where('for', '==', email)
+      .where('end', '>', time.now())
+      .where('active', '==', true)
+      .limit(1)
+      .get()
+    const dateForDoc = await db
+      .collection(DATES_COLLECTION)
+      .where('with', '==', email)
+      .where('for', '==', user.email)
+      .where('end', '>', time.now())
+      .where('active', '==', true)
+      .limit(1)
+      .get()
+    const DateIds = [
+      ...dateWithDoc.docs.map(doc => doc.id),
+      ...dateForDoc.docs.map(doc => doc.id)
+    ]
+    DateIds.forEach(id =>
+      db.collection(DATES_COLLECTION).doc(id).update({ active: false })
+    )
+  }
+
   getEndTime() {
     if (!this.currentDate) return Date.now()
     const currentDateEndTimestamp = this.currentDate.end
@@ -136,7 +169,7 @@ class Meetup {
       this.unsubscribeUsers[lastUserEmail]()
       delete this.unsubscribeUsers[lastUserEmail]
       logger.debug(
-        `unsubscribeUsers object`,
+        'unsubscribeUsers object',
         JSON.parse(JSON.stringify(this.unsubscribeUsers))
       )
     }
@@ -191,10 +224,50 @@ class Meetup {
 
       if (!result) continue
       if (this.currentMatchingUser) continue
+
       this.setCurrentMatchingUser(email)
+
+      const currentDate = await this.checkDoubleDates(email)
+      logger.debug('Current Date', currentDate)
+      if (!currentDate) {
+        this.resetCurrentMatchingUser()
+        continue
+      }
+      this.matchingUsers[email].date = currentDate as UsersDate
       callback()
+      break
     }
     logger.endGroup()
+  }
+
+  async checkDoubleDates(email: string) {
+    const dateWithDoc = await db
+      .collection(DATES_COLLECTION)
+      .where('with', '==', user.email)
+      .where('for', '==', email)
+      .where('end', '>', time.now())
+      .where('active', '==', true)
+      .limit(1)
+      .get()
+    const dateForDoc = await db
+      .collection(DATES_COLLECTION)
+      .where('with', '==', email)
+      .where('for', '==', user.email)
+      .where('end', '>', time.now())
+      .where('active', '==', true)
+      .limit(1)
+      .get()
+    const dateWith = dateWithDoc.docs[0] ? dateWithDoc.docs[0] : null
+    const dateFor = dateForDoc.docs[0] ? dateForDoc.docs[0] : null
+    if (!dateWith || !dateFor) {
+      if (dateWith) return dateWith.data()
+      if (dateFor) return dateFor.data()
+    }
+    if (
+      dateWith?.data().timeSent.toMillis() < dateFor?.data().timeSent.toMillis()
+    )
+      return dateWith?.data()
+    else return dateFor?.data()
   }
 
   async shiftCards(reject = false) {
@@ -260,7 +333,7 @@ class Meetup {
         if (!forUser) throw new Error('Failed to get forUser!')
         await this.createDate(forUser)
       } catch (err) {
-        logger.error(`Failed to create date!`, err)
+        logger.warn(`Failed to create date!`, err)
       }
     }
   }
@@ -300,6 +373,7 @@ class Meetup {
 
   async getRoom(): Promise<Room | null> {
     if (!this.currentDate) return null
+    logger.debug('Current getting room Date Id', this.currentDate.id)
     const date = this.currentDate
     const room = date.room
     if (!user.name) return null
@@ -351,6 +425,25 @@ class Meetup {
       if (!this.unsubscribeUsers[email])
         this.unsubscribeUsers[email] = this.subscribeOnUser(email, date)
     })
+  }
+
+  async checkDatesActive() {
+    const checkedDates = []
+    for (const card of this.dateCards) {
+      const dateDoc = await db
+        .collection(DATES_COLLECTION)
+        .doc(card.dateId)
+        .get()
+      const date = dateDoc.data()
+      if (
+        date?.active &&
+        !date?.accepted &&
+        date?.end.seconds > time.now().seconds
+      )
+        checkedDates.push(card)
+    }
+    logger.debug('Active Date cards', checkedDates)
+    this.setDateCards(checkedDates)
   }
 
   subscribeOnDates() {
@@ -419,11 +512,11 @@ function computeData(doc: DocumentSnapshot) {
   return { ...doc.data(), id: doc.id }
 }
 
-function byActive(doc: DocumentData) {
+export function byActive(doc: DocumentData) {
   return !!doc.data()?.active
 }
 
-function byAccepted(state: boolean) {
+export function byAccepted(state: boolean) {
   return (doc: DocumentData) => {
     return !!doc.data()?.accepted === state
   }

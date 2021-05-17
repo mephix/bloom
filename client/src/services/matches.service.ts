@@ -1,5 +1,5 @@
 import { DATES_COLLECTION, db, MATCHES_COLLECTION, time } from '../firebase'
-import meetup from '../store/meetup'
+import meetup, { byAccepted, byActive } from '../store/meetup'
 import { DocumentReference } from '../store/utils/types'
 import { Logger } from '../utils'
 
@@ -20,6 +20,14 @@ export class MatchesService {
     this.disabled = state
   }
 
+  static async inviteAndAcceptMatches(
+    threshold: number,
+    thresholdWithDelay: number
+  ) {
+    await this.inviteMatches(threshold)
+    await this.acceptMatches(thresholdWithDelay)
+  }
+
   static async inviteMatches(threshold: number) {
     logger.debug('Invite matches. Threshold:', threshold)
     const usersToInvite = await this.getUsersBasedOnThreshold(threshold)
@@ -37,14 +45,16 @@ export class MatchesService {
 
   static async acceptMatches(threshold: number) {
     logger.debug('Accept Dates. Threshold:', threshold)
-    const dates = await db
+    const datesSnapshot = await db
       .collection(DATES_COLLECTION)
       .where('for', '==', this.email)
       .where('end', '>', time.now())
       .get()
-    logger.debug(`Number of dates to accept ${dates.docs.length}`)
     if (this.disabled) return logger.debug('MatchesService disabled!')
-    for (const date of dates.docs) {
+    let dates = datesSnapshot.docs.filter(byActive)
+    dates = dates.filter(byAccepted(false))
+    logger.debug(`Number of dates to accept ${dates.length}`)
+    for (const date of dates) {
       const email = date.data().with
       const score = await this.getUserMatchScore(email)
       logger.debug(email, score)
