@@ -77,7 +77,7 @@ export const Video = () => {
         className={moduleStyles.videoFrame}
         title="date-video"
         ref={videoFrameRef}
-        allow="camera; microphone; fullscreen"
+        allow="camera; microphone; fullscreen; autoplay; display-capture;"
         height="100%"
         width="100%"
       ></iframe>
