@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx'
-import { db, time, USERS_COLLECTION } from '../firebase'
+import { db, DocumentSnapshot, time, USERS_COLLECTION } from '../firebase'
 import app from './app'
 import meetup from './meetup'
-import { DocumentSnapshot, UserState } from './utils/types'
+import { UserState } from './utils/types'
 
 type UpdateUserProps = {
   here?: boolean
@@ -40,6 +40,7 @@ class User {
 
   signUser() {
     this.subscribeOnMe()
+    this.setDateWith(null)
     this.updateUserState({ free: true, here: this.here })
     meetup.subscribeOnDates()
     meetup.subscribeOnProspects()

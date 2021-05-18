@@ -10,7 +10,7 @@ export class Matchmaker {
   static timeout: NodeJS.Timeout | null = null
 
   static async initialize() {
-    logger.debug('Initialization')
+    logger.log('Initialization')
     if (!user.email) throw new Error('No user defined!')
     await DateClockService.initNextDateNight()
     MatchesService.setEmail(user.email)
@@ -18,20 +18,20 @@ export class Matchmaker {
   }
 
   static launch() {
-    logger.debug('Starting matchmaker...')
+    logger.log('Starting matchmaker...')
     this.reset()
     this.worker()
   }
 
   static reset() {
     if (this.timeout) {
-      logger.debug('Reset matchmaker')
+      logger.log('Reset matchmaker')
       clearTimeout(this.timeout)
     }
   }
 
   private static worker() {
-    logger.debug('Worker invoked')
+    logger.log('Worker invoked')
     if (!user.email) return logger.error('No user data!')
     const sleepMatchmakerFor = (millis: number): NodeJS.Timeout => {
       return setTimeout(this.worker.bind(this), millis)
@@ -41,7 +41,7 @@ export class Matchmaker {
     if (!DateClockService.isCurrentDateNight) {
       meetup.setDateNight(false)
       if (DateClockService.isExpired) return this.initialize()
-      logger.debug(
+      logger.log(
         `No current Date Night. Sleeping for ${Math.floor(
           fromMillisToMinutes(DateClockService.timeTilNextDateNight()) * 60
         )} seconds until the beginning of Date Night`
@@ -51,7 +51,7 @@ export class Matchmaker {
       ))
     }
     if (!meetup.isDateNight) {
-      logger.debug('Date Night has started!')
+      logger.log('Date Night has started!')
       meetup.setDateNight(true)
     }
     meetup.checkDatesActive()
@@ -69,9 +69,9 @@ export class Matchmaker {
           threshold,
           threshold + DateClockService.acceptDateDelay
         )
-      } else logger.debug("User doesn't have ability to invite or accept dates")
+      } else logger.log("User doesn't have ability to invite or accept dates")
 
-      logger.debug(
+      logger.log(
         `Sleeping for ${Math.floor(
           fromMillisToMinutes(DateClockService.timeTilNextInterval()) * 60
         )} seconds until next interval`
@@ -81,7 +81,7 @@ export class Matchmaker {
       ))
     }
 
-    logger.debug(
+    logger.log(
       `Sleeping for ${Math.floor(
         fromMillisToMinutes(DateClockService.timeTilNextRound()) * 60
       )} seconds until the beginning of next round`

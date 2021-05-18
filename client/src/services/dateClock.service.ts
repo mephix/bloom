@@ -70,9 +70,9 @@ export class DateClockService {
       const intervalSeconds = options?.intervalSeconds
       const acceptDateDelay = options?.acceptDateDelay
 
-      logger.debug('crontab', `'${crontab}'`)
-      logger.debug('roundMinutes', roundMinutes)
-      logger.debug('maxRounds', maxRounds)
+      logger.log('crontab', `'${crontab}'`)
+      logger.log('roundMinutes', roundMinutes)
+      logger.log('maxRounds', maxRounds)
       if (!crontab)
         throw new Error('Crontab instruction not defined in database!')
       if (!roundMinutes || typeof roundMinutes !== 'number')
@@ -101,7 +101,7 @@ export class DateClockService {
       this.maxActiveIntervals = maxActiveIntervals
       this.intervalSeconds = intervalSeconds
       this.acceptDateDelay = acceptDateDelay
-      logger.debug(
+      logger.log(
         'Date Night Duration:',
         fromMillisToMinutes(this.dateNightDuration.milliseconds)
       )
@@ -114,23 +114,23 @@ export class DateClockService {
         Math.abs(prevDateNight.diffNow().toMillis()) >
         this.dateNightDuration.toMillis()
       ) {
-        logger.debug('set next Date Night')
+        logger.log('set next Date Night')
         this.isPrevDateNight = false
         this.nextDateNight = nextDateNight
       } else {
-        logger.debug('set prev Date Night')
+        logger.log('set prev Date Night')
         this.isPrevDateNight = true
         this.nextDateNight = prevDateNight
       }
-      logger.debug(
+      logger.log(
         'Minutes untill next date night',
         Math.ceil(fromMillisToMinutes(this.timeTilNextDateNight()))
       )
-      logger.debug(
+      logger.log(
         'Minutes until next round',
         Math.ceil(fromMillisToMinutes(this.timeTilNextRound()))
       )
-      logger.debug('isCurrentDateNight', this.isCurrentDateNight)
+      logger.log('isCurrentDateNight', this.isCurrentDateNight)
     } catch (err) {
       logger.error(err.message)
       throw new Error('Error while parsing database settings!')
@@ -177,7 +177,7 @@ export class DateClockService {
   static timeTilNextDateNight() {
     if (!this.nextDateNight) return 0
     const timeTil = this.nextDateNight.diffNow()
-    // logger.debug('timeTil', timeTil.milliseconds)
+    // logger.log('timeTil', timeTil.milliseconds)
     if (
       Math.abs(timeTil.milliseconds) < this.dateNightDuration.milliseconds &&
       this.isPrevDateNight

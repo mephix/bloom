@@ -1,7 +1,12 @@
-import { DATES_COLLECTION, db, MATCHES_COLLECTION, time } from '../firebase'
-import meetup, { byAccepted, byActive } from '../store/meetup'
-import { DocumentReference } from '../store/utils/types'
-import { Logger } from '../utils'
+import {
+  DATES_COLLECTION,
+  db,
+  DocumentReference,
+  MATCHES_COLLECTION,
+  time
+} from '../firebase'
+import meetup from '../store/meetup'
+import { byAccepted, byActive, Logger } from '../utils'
 
 const EMPTY_MATCHES = {}
 
@@ -29,11 +34,11 @@ export class MatchesService {
   }
 
   static async inviteMatches(threshold: number) {
-    logger.debug('Invite matches. Threshold:', threshold)
+    logger.log('Invite matches. Threshold:', threshold)
     const usersToInvite = await this.getUsersBasedOnThreshold(threshold)
 
-    logger.debug('usersToInvite:', usersToInvite)
-    if (this.disabled) return logger.debug('MatchesService disabled!')
+    logger.log('usersToInvite:', usersToInvite)
+    if (this.disabled) return logger.log('MatchesService disabled!')
     for (const user of usersToInvite) {
       try {
         await meetup.createDate(user)
@@ -44,22 +49,22 @@ export class MatchesService {
   }
 
   static async acceptMatches(threshold: number) {
-    logger.debug('Accept Dates. Threshold:', threshold)
+    logger.log('Accept Dates. Threshold:', threshold)
     const datesSnapshot = await db
       .collection(DATES_COLLECTION)
       .where('for', '==', this.email)
       .where('end', '>', time.now())
       .get()
-    if (this.disabled) return logger.debug('MatchesService disabled!')
+    if (this.disabled) return logger.log('MatchesService disabled!')
     let dates = datesSnapshot.docs.filter(byActive)
     dates = dates.filter(byAccepted(false))
-    logger.debug(`Number of dates to accept ${dates.length}`)
+    logger.log(`Number of dates to accept ${dates.length}`)
     for (const date of dates) {
       const email = date.data().with
       const score = await this.getUserMatchScore(email)
-      logger.debug(email, score)
+      logger.log(email, score)
       if (score > threshold) {
-        logger.debug(`Accepting date with id ${date.id} for ${email}`)
+        logger.log(`Accepting date with id ${date.id} for ${email}`)
         const dateRef = await db.collection(DATES_COLLECTION).doc(date.id)
         await db.runTransaction(async t => {
           await t.update(dateRef, { accepted: true })
@@ -73,14 +78,14 @@ export class MatchesService {
   private static async deleteFromMatches(email: string) {
     const { matches, ref } = await this.getAllMatches(this.email)
     delete matches[email]
-    logger.debug(`Deleting ${email} from matches collection`)
+    logger.log(`Deleting ${email} from matches collection`)
     await ref.set({ matches })
   }
 
   private static async deleteFromMatchesWith(withEmail: string) {
     const { matches, ref } = await this.getAllMatches(withEmail)
     delete matches[this.email]
-    logger.debug(`Deleting ${this.email} from "with" matches collection`)
+    logger.log(`Deleting ${this.email} from "with" matches collection`)
     await ref.set({ matches })
   }
 

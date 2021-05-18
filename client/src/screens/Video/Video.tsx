@@ -12,6 +12,7 @@ export const Video = () => {
   const videoFrameRef = useRef<HTMLIFrameElement>(null)
   const [dailyObj, setDailyObj] = useState<DailyCall | null>(null)
   const [endDateTime, setEndDateTime] = useState(minute)
+  const [connecting, setConnecting] = useState(true)
   const endDate = useCallback(() => {
     if (!dailyObj) return app.setRaitingState()
     dailyObj.leave()
@@ -31,6 +32,10 @@ export const Video = () => {
       showFullscreenButton: false,
       showParticipantsBar: false
     })
+    daily.on('joined-meeting', () => {
+      console.log('VIDEO', 'JOINED!')
+      setConnecting(false)
+    })
     daily.on('left-meeting', () => {
       app.setRaitingState()
       meetup.setLeftTime()
@@ -43,16 +48,13 @@ export const Video = () => {
   useEffect(() => {
     startDate()
   }, [startDate])
-
-  // const fixedTime = Date.now() + 90 * 60 * 1000
-
   return (
     <>
-      {/* <AppBar position="static" className="app-bar">
-        <Toolbar>
-          
-        </Toolbar>
-      </AppBar> */}
+      {connecting && (
+        <div className={moduleStyles.connecting}>
+          <span>Connecting...</span>
+        </div>
+      )}
       <header className={moduleStyles.header}>
         <div className={moduleStyles.firstName}>
           {meetup.currentMatchingUserData?.firstName}

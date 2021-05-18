@@ -31,15 +31,11 @@ export class Logger {
   }
 
   log(...args: any[]) {
-    if (Logger.active) console.log.apply(null, [...this.template, ...args])
+    if (Logger.active) console.debug.apply(null, [...this.template, ...args])
   }
 
   info(...args: any[]) {
     if (Logger.active) console.info.apply(null, [...this.template, ...args])
-  }
-
-  debug(...args: any[]) {
-    if (Logger.active) console.debug.apply(null, [...this.template, ...args])
   }
 
   warn(...args: any[]) {
@@ -51,9 +47,9 @@ export class Logger {
   }
 
   generateGroup(label: string, ...args: any[]) {
-    console.groupCollapsed(...this.template, label)
+    this.startGroup(label)
     args.forEach(log => console.debug(log))
-    console.groupEnd()
+    this.endGroup()
   }
 
   startGroup(label: string) {
@@ -62,5 +58,24 @@ export class Logger {
 
   endGroup() {
     console.groupEnd()
+  }
+}
+
+export class LogGroup {
+  groupItems: any[] = []
+
+  constructor(private label: string, private logger: Logger) {}
+
+  add(...args: any[]) {
+    args.forEach(arg => this.groupItems.push(arg))
+  }
+
+  apply() {
+    this.logger.startGroup(this.label)
+    this.groupItems.forEach(item => {
+      if (typeof item === 'function') item()
+      else console.debug(item)
+    })
+    this.logger.endGroup()
   }
 }
