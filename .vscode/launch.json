@@ -67,5 +67,14 @@
                 "<node_internals>/**"
             ],
         },
+        {
+            "name": "run Fire Date Engine",
+            "program": "${workspaceFolder}/nocode/dates/runFireDateEngine.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
     ]
 }

@@ -1,9 +1,9 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-04-08'
-let HOUR = '10'
-let SLOT = 9
+let DAY = '2021-05-19'
+let HOUR = '16'
+let SLOT = 6
 let RERUN = false        // Only do reruns after the slot starts.
 let CUTOFF = 0.00       // >0 makes the dateEngine more picky.
 let useTestIds = true   // `false` for real rounds.
@@ -59,8 +59,8 @@ const postDateToFirebase = require('./postDateToFirebase.js')
 const consoleColorLog = require('../utils/consoleColorLog.js')
 
 // No need to set these params.
-let TODAYS_DATES_FILE = `./output/Dates ${DAY}T${HOUR}.csv`
-let TODAYS_USERS_FILE = `./output/Users ${DAY}.json`
+let TODAYS_DATES_FILE = `./nocode/output/Dates ${DAY}T${HOUR}.csv`
+let TODAYS_USERS_FILE = `./nocode/output/Users ${DAY}.json`
 
 runFireDateEngine()
 

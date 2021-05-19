@@ -2,9 +2,9 @@
  * Key parameters to set.
  */
 let collectionName = 'Users' // 'Dates' // 
-let cleanSlate = false
-let existingFileDate = '2021-04-13'
-const today = '2021-04-13'
+let cleanSlate = true
+let existingFileDate = '2021-05-19'
+const today = '2021-05-19'
 // watch out, this might change to tomorrows date in the evening
 // const today = (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
 
