@@ -9,6 +9,8 @@ function prospectEngine (users) {
     'gender': { transform: z => z, weight: 1, score: [] },
     // Don't show someone they've liked already.
     'liked': { transform: z => !z, weight: 1, score: [] },
+    // Prioritize showing someone who has liked them.
+    'liked_by': { transform: z => z ? 1 : 0.5, weight: 1, score: [] },
     // Don't show someone they've nexted already.
     'nexted': { transform: z => !z, weight: 1, score: [] },
     // Don't show someone they've dated already.

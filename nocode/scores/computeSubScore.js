@@ -8,7 +8,10 @@ exports.gender = gender
 exports.age = age
 exports.location = location
 exports.liked = liked
+exports.liked_by = liked_by
+exports.both_liked = both_liked
 exports.nexted = nexted
+exports.either_nexted = either_nexted
 exports.dated = dated
 exports.hearted = hearted
 exports.posivibes = posivibes
@@ -55,8 +58,20 @@ function liked(p,q) {
   return p['Likes']?.includes(q.id) || false
 }
 
+function liked_by(p,q) {
+  return q['Likes']?.includes(p.id) || false
+}
+
+function both_liked(p,q) {
+  return ( p['Likes']?.includes(q.id) && q['Likes']?.includes(p.id) ) || false
+}
+
 function nexted(p,q) {
   return p['Nexts']?.includes(q.id) || false
+}
+
+function either_nexted(p,q) {
+  return p['Nexts']?.includes(q.id) || q['Nexts']?.includes(p.id) || false
 }
 
 function dated(p,q) {

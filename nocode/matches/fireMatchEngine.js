@@ -1,8 +1,8 @@
 const computeScore = require('../scores/computeScore.js')
 
-module.exports = matchEngine
+module.exports = fireMatchEngine
 
-function matchEngine (users) {
+function fireMatchEngine (users) {
   // Weights reflect the overall match probability implied by the signals.
   // The weaker the signals, the less they move the probability from the
   // base rate (which is low). The weight on `notself`, the most basic
@@ -16,9 +16,9 @@ function matchEngine (users) {
     // Don't match someone they've dated already.
     'dated': { transform: z => !z, weight: 1, score: [] },
     // Match more with someone they've liked.
-    'liked': { transform: z => z ? 1 : 0.5, weight: 1, score: [] },
-    // Match less with someone they've nexted.
-    'nexted': { transform: z => z ? 0.1 : 1, weight: 1, score: [] },
+    'both_liked': { transform: z => z ? 1 : 0.5, weight: 1, score: [] },
+    // Don't match if either person nexted.
+    'either_nexted': { transform: z => z ? 0 : 1, weight: 1, score: [] },
     // For matches, the closer, the better.
     'location': { transform: z => z, weight: 1, score: [] },
     // Don't show someone themself.

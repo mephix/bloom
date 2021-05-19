@@ -58,5 +58,14 @@
                 "<node_internals>/**"
             ],
         },
+        {
+            "name": "run Fire Match Engine",
+            "program": "${workspaceFolder}/nocode/matches/runFireMatchEngine.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
     ]
 }
