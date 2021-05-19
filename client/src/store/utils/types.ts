@@ -1,4 +1,4 @@
-import { Timestamp } from "../../firebase"
+import { Timestamp } from '../../firebase'
 
 export type UserState = {
   free?: boolean
@@ -71,6 +71,7 @@ export type Prospect = {
   email: string
   firstName: string
   bio: string
+  face?: string
   dateId?: string
 }
 
@@ -78,6 +79,7 @@ export type UserCard = {
   email: string
   firstName: string
   bio: string
+  face?: string
   isDate: boolean
   dateId?: string
 }

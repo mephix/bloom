@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { db, PARAMETERS_COLLECTION } from '../firebase'
 import meetup from './meetup'
-import { PARAMS } from './utils/constants'
+import { FACE_DISPLAY, PARAMS } from './utils/constants'
 import { StringDictionary } from './utils/types'
 
 export type AppState = 'WAITING' | 'COUNTDOWN' | 'VIDEO' | 'RATING' | null
@@ -9,6 +9,7 @@ export type AppState = 'WAITING' | 'COUNTDOWN' | 'VIDEO' | 'RATING' | null
 class App {
   state: AppState = null
   params: StringDictionary = PARAMS
+  faceDisplay: string = ''
   constructor() {
     makeAutoObservable(this)
   }
@@ -18,6 +19,12 @@ class App {
       const doc = await db.collection(PARAMETERS_COLLECTION).doc(param).get()
       this.setParams(param, doc?.data()?.text)
     }
+    const fdDoc = await db
+      .collection(PARAMETERS_COLLECTION)
+      .doc(FACE_DISPLAY)
+      .get()
+    const fd = fdDoc.data()?.params
+    this.setFaceDisplay(fd || '')
   }
 
   resetCountDown() {
@@ -27,6 +34,10 @@ class App {
 
   setParams(param: string, value: string) {
     this.params[param] = value
+  }
+
+  setFaceDisplay(fd: string) {
+    this.faceDisplay = fd
   }
 
   setWaitingRoomState() {

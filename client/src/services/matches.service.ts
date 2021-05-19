@@ -3,9 +3,11 @@ import {
   db,
   DocumentReference,
   MATCHES_COLLECTION,
-  time
+  time,
+  USERS_COLLECTION
 } from '../firebase'
 import meetup from '../store/meetup'
+import user from '../store/user'
 import { byAccepted, byActive, Logger } from '../utils'
 
 const EMPTY_MATCHES = {}
@@ -65,12 +67,25 @@ export class MatchesService {
       logger.log(email, score)
       if (score > threshold) {
         logger.log(`Accepting date with id ${date.id} for ${email}`)
-        const dateRef = await db.collection(DATES_COLLECTION).doc(date.id)
-        await db.runTransaction(async t => {
-          await t.update(dateRef, { accepted: true })
+        const dateRef = db.collection(DATES_COLLECTION).doc(date.id)
+        const userRef = db.collection(USERS_COLLECTION).doc(email)
+        const result = await db.runTransaction(async t => {
+          const dateDoc = await t.get(dateRef)
+          const userWithDoc = await t.get(userRef)
+          const userWith = userWithDoc.data()
+          const date = dateDoc.data()
+          const dateNotCurrentAndActive =
+            date?.end.seconds < time.now().seconds || !date?.active
+          if (!userWith?.here || !userWith?.free) return false
+          if (!user.here || !user.free) return false
+          if (dateNotCurrentAndActive) return false
+          await t.update(dateRef, { accepted: true, timeReplied: time.now() })
+          return true
         })
-        await this.deleteFromMatches(email)
-        await this.deleteFromMatchesWith(email)
+        if (result) {
+          await this.deleteFromMatches(email)
+          await this.deleteFromMatchesWith(email)
+        }
       }
     }
   }

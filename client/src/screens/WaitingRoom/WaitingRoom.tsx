@@ -59,7 +59,9 @@ export const WaitingRoom = observer(() => {
     <Card
       type={getType(topCard)}
       user={{
-        avatar: mockUser.avatar,
+        avatar: topCard.face
+          ? `${topCard.face}${app.faceDisplay}`
+          : mockUser.avatar,
         name: topCard.firstName,
         bio: topCard.bio
       }}
@@ -67,7 +69,7 @@ export const WaitingRoom = observer(() => {
       onReject={rejectHandler}
     />
   ) : (
-    <div>{app.params[PARAMS.SETTING_YOU_UP]}</div>
+    user.here && <div>{app.params[PARAMS.SETTING_YOU_UP]}</div>
   )
 
   const toggle = !user.finished ? (

@@ -6,3 +6,5 @@ export const PARAMS = {
   WAITING_FOR_DATE_NIGTH: 'date_night_settings',
   FINISHED: 'finished'
 }
+
+export const FACE_DISPLAY = 'face-display'

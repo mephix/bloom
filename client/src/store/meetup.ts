@@ -190,7 +190,6 @@ class Meetup {
     logGroup.apply()
     if (!user.free) return
     if (!user.here) return
-    // logger.startGroup('With users availability')
     const usersLogGroup = new LogGroup('With users availability', logger)
     for (const [email, userProps] of Object.entries(this.matchingUsers)) {
       const matchingUserRef = db.collection(USERS_COLLECTION).doc(email)
