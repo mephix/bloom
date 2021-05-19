@@ -15,6 +15,7 @@
     "axios": "^0.21.1",
     "cron-parser": "^3.5.0",
     "firebase": "^8.6.0",
+    "logrocket": "^1.2.0",
     "luxon": "^1.26.0",
     "mobx": "^6.3.0",
     "mobx-react-lite": "^3.2.0",

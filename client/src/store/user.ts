@@ -1,5 +1,7 @@
+import LogRocket from 'logrocket'
 import { makeAutoObservable } from 'mobx'
 import { db, DocumentSnapshot, time, USERS_COLLECTION } from '../firebase'
+import { isProd } from '../utils'
 import app from './app'
 import meetup from './meetup'
 import { UserState } from './utils/types'
@@ -29,6 +31,11 @@ class User {
     const userRef = await db.collection(USERS_COLLECTION).doc(email).get()
     const user = userRef.data()
     if (!user) throw new Error('User not found')
+    if (isProd)
+      LogRocket.identify(email, {
+        name: user.firstName,
+        email: email
+      })
     this.updateUser({
       here: user.here,
       name: user.firstName,

@@ -62,16 +62,17 @@ export async function computeDateCards(
   const computedDataDates = dates.filter(byAccepted(false)).filter(byFor(email))
   const cards: Prospect[] = []
   for (const date of computedDataDates) {
-    const userGet = await db
+    const userDoc = await db
       .collection(USERS_COLLECTION)
       .doc(date.data()?.with)
       .get()
-    const user = userGet.data()
+    const user = userDoc.data()
     if (!user) continue
     cards.push({
       firstName: user.firstName,
       bio: user.bio,
       email: user.email,
+      face: user.face,
       dateId: date.id
     })
   }

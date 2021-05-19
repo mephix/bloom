@@ -10,7 +10,6 @@ import meetup from '../../store/meetup'
 
 export const CountDown: FC = () => {
   const onComplete = useCallback(() => {
-    // meetup.checkAvailabilityAfterCountDown
     if (!user.hiddenHere) return app.resetCountDown()
     if (!meetup.currentMatchingUserData) return app.resetCountDown()
     if (!meetup.currentMatchingUserData?.here) return app.resetCountDown()
