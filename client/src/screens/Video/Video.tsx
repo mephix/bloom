@@ -1,10 +1,12 @@
 import DailyIframe, { DailyCall } from '@daily-co/daily-js'
-// import { AppBar, Toolbar } from '@material-ui/core'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Countdown from 'react-countdown'
 import moduleStyles from './Video.module.scss'
 import app from '../../store/app'
 import meetup from '../../store/meetup'
+import { fromSecondsToMillis } from '../../services/dateClock.service'
+import { CountDown } from './CountDown'
+import user from '../../store/user'
 
 const minute = Date.now() + 60 * 60 * 1000
 
@@ -12,10 +14,25 @@ export const Video = () => {
   const videoFrameRef = useRef<HTMLIFrameElement>(null)
   const [dailyObj, setDailyObj] = useState<DailyCall | null>(null)
   const [endDateTime, setEndDateTime] = useState(minute)
-  const [connecting, setConnecting] = useState(true)
+  const [visibleCountDown, setVisibleCountDown] = useState(true)
   const endDate = useCallback(() => {
     if (!dailyObj) return app.setRaitingState()
     dailyObj.leave()
+  }, [dailyObj])
+
+  const countDownEnd = useCallback(async () => {
+    if (!dailyObj) return
+    const { local, ...participants } = dailyObj.participants()
+    if (Object.keys(participants).length) {
+      setVisibleCountDown(false)
+      dailyObj.setLocalAudio(true)
+      meetup.setJoinTime()
+      user.setFree(false)
+    } else {
+      meetup.resetCurrentMatchingUser()
+      user.setFree(true)
+      app.setWaitingRoomState()
+    }
   }, [dailyObj])
 
   const startDate = useCallback(async () => {
@@ -24,7 +41,7 @@ export const Video = () => {
       console.error('No date was available for video chat.')
       app.setWaitingRoomState()
     }
-    setEndDateTime(meetup.getEndTime() * 1000)
+    setEndDateTime(fromSecondsToMillis(meetup.getEndTime()))
     const roomUrl = `${room?.url}?t=${room?.token}`
     if (!videoFrameRef.current) return
     const daily = DailyIframe.wrap(videoFrameRef.current, {
@@ -33,27 +50,29 @@ export const Video = () => {
       showParticipantsBar: false
     })
     daily.on('joined-meeting', () => {
-      console.log('VIDEO', 'JOINED!')
-      setConnecting(false)
+      // setConnecting(false)
+      daily.setLocalAudio(false)
     })
     daily.on('left-meeting', () => {
       app.setRaitingState()
       meetup.setLeftTime()
     })
-    meetup.setJoinTime()
+
     daily.join({ url: roomUrl })
     setDailyObj(daily)
-  }, [videoFrameRef])
+  }, [videoFrameRef, setDailyObj])
 
   useEffect(() => {
     startDate()
   }, [startDate])
   return (
     <>
-      {connecting && (
-        <div className={moduleStyles.connecting}>
-          <span>Connecting...</span>
-        </div>
+      {visibleCountDown && (
+        <CountDown
+          onComplete={countDownEnd}
+          firstName={meetup.currentMatchingUserData?.firstName || ''}
+          bio={meetup.currentMatchingUserData?.bio || ''}
+        />
       )}
       <header className={moduleStyles.header}>
         <div className={moduleStyles.firstName}>

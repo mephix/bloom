@@ -50,7 +50,7 @@ export const WaitingRoom = observer(() => {
 
   useEffect(() => {
     user.setWaitStartTime()
-    meetup.checkAvailability(() => app.setCountDownState())
+    meetup.checkAvailability(() => app.setVideoState())
   }, [])
 
   const topCard = meetup.cards.length > 0 && meetup.cards[0]

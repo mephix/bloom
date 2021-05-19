@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import Countdown from 'react-countdown'
-import { noop } from '../../utils/common'
+import { noop } from '../../../utils/common'
 import moduleStyles from './CountDown.module.scss'
 import { CountDownBoxProps } from './CountDown.type'
 

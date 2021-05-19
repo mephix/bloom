@@ -181,6 +181,11 @@ class Meetup {
     this.resetCurrentMatchingUser()
   }
 
+  /**
+   * Checks the availability of all users with whom the date can be
+   * @param callback Runs when the availability check was successful
+   * @returns void
+   */
   async checkAvailability(callback: Function) {
     if (!this.isDateNight) return
     if (!Object.entries(this.matchingUsers).length) return
@@ -189,7 +194,7 @@ class Meetup {
     logGroup.add(`free: ${user.free}`, `here: ${user.here}`)
     logGroup.apply()
     if (!user.free) return
-    if (!user.here) return
+    if (!user.here || !user.hiddenHere) return
     const usersLogGroup = new LogGroup('With users availability', logger)
     for (const [email, userProps] of Object.entries(this.matchingUsers)) {
       const matchingUserRef = db.collection(USERS_COLLECTION).doc(email)
@@ -402,7 +407,7 @@ class Meetup {
         user: userData as UserData,
         date
       }
-      this.checkAvailability(() => app.setCountDownState())
+      this.checkAvailability(() => app.setVideoState())
     }
 
     return db.collection(USERS_COLLECTION).doc(email).onSnapshot(onUser)

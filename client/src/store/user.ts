@@ -63,14 +63,14 @@ class User {
 
   setHere(state: boolean) {
     this.hiddenHere = this.here = state
-    if (this.here) meetup.checkAvailability(() => app.setCountDownState())
+    if (this.here) meetup.checkAvailability(() => app.setVideoState())
     this.updateUserState({ here: this.here })
   }
 
   setHiddenHere(state: boolean) {
     if (state && !this.here) return
     this.hiddenHere = state
-    if (this.hiddenHere) meetup.checkAvailability(() => app.setCountDownState())
+    if (this.hiddenHere) meetup.checkAvailability(() => app.setVideoState())
     this.updateUserState({ here: this.hiddenHere })
   }
 
