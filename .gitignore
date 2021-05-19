@@ -1,5 +1,6 @@
-client/*
+# client/*
 nocode/.env
 nocode/output/*
 nocode/scores/US Zip Codes*
 nocode/node_modules/*
+nocode/DO_NOT_COMMIT.js
