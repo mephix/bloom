@@ -1,6 +1,7 @@
+import LogRocket from 'logrocket'
 import { useCallback, useEffect } from 'react'
 import { Matchmaker } from '../services/matchmaker.service'
-import { Logger } from '../utils'
+import { isProd, Logger } from '../utils'
 import app from '../store/app'
 import user from '../store/user'
 import { MatchesService } from '../services/matches.service'
@@ -10,6 +11,7 @@ const logger = new Logger('Init', '#e38707')
 export const useInit = () => {
   const init = useCallback(async () => {
     try {
+      if (isProd) LogRocket.init('isym43/the-zero-date')
       await app.initParams()
       const { email, log, matchesDisable } = getUrlParams()
       if (log) Logger.active = true

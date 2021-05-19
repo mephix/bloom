@@ -22,3 +22,5 @@ export const byFor = (email: string) => {
     return doc.data()?.for === email
   }
 }
+
+export const isProd = process.env.NODE_ENV === 'production'
