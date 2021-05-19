@@ -49,5 +49,14 @@
                 "<node_internals>/**"
             ],
         },
+        {
+            "name": "copy users to Firebase",
+            "program": "${workspaceFolder}/nocode/db/copy users to Firebase.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
     ]
 }
