@@ -38,3 +38,11 @@
     opacity: 0.6;
   }
 }
+
+.appreciateButtons {
+  display: flex;
+  justify-content: space-around;
+  width: 80%;
+  height: 200px;
+  flex-wrap: wrap;
+}

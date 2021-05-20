@@ -3,7 +3,7 @@ import { db, PARAMETERS_COLLECTION } from '../firebase'
 import CronParser from 'cron-parser'
 import { Logger } from '../utils'
 
-const ISO_OPTIONS = { suppressMilliseconds: true, suppressSeconds: true }
+export const ISO_OPTIONS = { suppressMilliseconds: true, suppressSeconds: true }
 
 const logger = new Logger('DateClock', '#8708d1')
 

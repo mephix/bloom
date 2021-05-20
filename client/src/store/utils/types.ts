@@ -41,12 +41,21 @@ export type DateFields =
   | 'active'
   | 'start'
   | 'end'
-  | 'fun'
-  | 'heart'
   | 'timeJoin'
   | 'timeLeft'
   | 'timeReplied'
   | 'timeSent'
+  | RateToggles
+
+export type RateToggles =
+  | 'fun'
+  | 'curious'
+  | 'outgoing'
+  | 'interesting'
+  | 'creative'
+  | 'goodListener'
+  | 'asksInterestingQuestion'
+  | 'heart'
 
 export interface UserProps {
   user: UserData

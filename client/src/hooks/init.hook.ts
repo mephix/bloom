@@ -13,8 +13,8 @@ export const useInit = () => {
     try {
       if (isProd) LogRocket.init('isym43/the-zero-date')
       await app.initParams()
-      const { email, log, matchesDisable } = getUrlParams()
-      if (log) Logger.active = true
+      const { email, matchesDisable } = getUrlParams()
+      Logger.active = true
       if (matchesDisable) MatchesService.setDisabled(true)
       if (!email) throw new Error('No email provided')
       await user.setUser(email)
@@ -48,7 +48,6 @@ function getUrlParams() {
   const urlParams = new URLSearchParams(window.location.search)
   return {
     email: urlParams.get('email'),
-    log: urlParams.get('log'),
     matchesDisable: urlParams.get('matches_disable')
   }
 }

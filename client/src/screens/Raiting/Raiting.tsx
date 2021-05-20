@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { ButtonToggle } from '../../components/ButtonToggle'
 import { IconToggle } from '../../components/IconToggle'
 import app from '../../store/app'
 import meetup from '../../store/meetup'
@@ -6,18 +7,35 @@ import user from '../../store/user'
 import { classes } from '../../utils/common'
 import commonStyles from '../Common.module.scss'
 import moduleStyles from './Raiting.module.scss'
+import { RateToggles } from '../../store/utils/types'
 
 export const Raiting = () => {
-  const [rate, setRate] = useState({
+  const [rate, setRate] = useState<{ [key in RateToggles]: boolean }>({
     fun: false,
+    curious: false,
+    outgoing: false,
+    interesting: false,
+    creative: false,
+    goodListener: false,
+    asksInterestingQuestion: false,
     heart: false
   })
   const [modal, setModal] = useState(false)
 
   const doneRaitingHandler = useCallback(() => {
-    meetup.setRaiting(rate.fun, rate.heart)
+    meetup.setRaiting(rate)
     setModal(true)
   }, [rate, setModal])
+
+  const setRateValue = useCallback(
+    (value: string, state: boolean) => {
+      setRate({
+        ...rate,
+        [value]: state
+      })
+    },
+    [setRate, rate]
+  )
 
   const modalHandler = useCallback(state => {
     user.setHere(state)
@@ -56,13 +74,35 @@ export const Raiting = () => {
     <div className={classes(commonStyles.container, moduleStyles.container)}>
       <div>Time's up!</div>
       <div>
-        Could you and {meetup.currentMatchingUserData?.firstName} see and hear
-        each other ok?
+        How would you describe {meetup.currentMatchingUserData?.firstName}?
       </div>
-      <div>
-        <IconToggle
-          onToggle={state => setRate({ ...rate, fun: state })}
-          type="dislike"
+      <div className={moduleStyles.appreciateButtons}>
+        <ButtonToggle onToggle={setRateValue} title="fun" value="fun" />
+        <ButtonToggle onToggle={setRateValue} title="curious" value="curious" />
+        <ButtonToggle
+          onToggle={setRateValue}
+          title="outgoing"
+          value="outgoing"
+        />
+        <ButtonToggle
+          onToggle={setRateValue}
+          title="interesting"
+          value="interesting"
+        />
+        <ButtonToggle
+          onToggle={setRateValue}
+          title="good listener"
+          value="goodListener"
+        />
+        <ButtonToggle
+          onToggle={setRateValue}
+          title="creative"
+          value="creative"
+        />
+        <ButtonToggle
+          onToggle={setRateValue}
+          title="asks interesting question"
+          value="asksInterestingQuestion"
         />
       </div>
       <div>

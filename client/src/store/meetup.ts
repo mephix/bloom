@@ -8,7 +8,8 @@ import {
   UsersPropsCollection,
   UsersDate,
   DateFields,
-  UsersUnsubscribeCollection
+  UsersUnsubscribeCollection,
+  RateToggles
 } from './utils/types'
 import {
   db,
@@ -18,7 +19,8 @@ import {
   USERS_COLLECTION,
   QueryDocumentSnapshot,
   DocumentSnapshot,
-  QuerySnapshot
+  QuerySnapshot,
+  Timestamp
 } from '../firebase'
 import user from './user'
 import app from './app'
@@ -30,6 +32,8 @@ import {
   dateDocToUsersDate,
   moveProspectTo
 } from './meetup.utils'
+import { DateClockService, ISO_OPTIONS } from '../services/dateClock.service'
+import { DateTime } from 'luxon'
 
 const logger = new Logger('Meetup', '#10c744')
 
@@ -74,9 +78,12 @@ class Meetup {
     this.isDateNight = state
   }
 
-  async setRaiting(fun: boolean, heart: boolean) {
-    await this.updateCurrentDate('fun', { [this.currentAffiliation]: fun })
-    await this.updateCurrentDate('heart', { [this.currentAffiliation]: heart })
+  async setRaiting(Rate: { [key in RateToggles]: boolean }) {
+    for (const [key, value] of Object.entries(Rate)) {
+      await this.updateCurrentDate(key as RateToggles, {
+        [this.currentAffiliation]: value
+      })
+    }
     this.unsubscribeFromCurrentUser()
   }
 
@@ -275,14 +282,14 @@ class Meetup {
     const dateWith = dateWithDoc.docs[0] ? dateWithDoc.docs[0] : null
     const dateFor = dateForDoc.docs[0] ? dateForDoc.docs[0] : null
     if (!dateWith || !dateFor) {
-      if (dateWith) return dateWith.data()
-      if (dateFor) return dateFor.data()
+      if (dateWith) return { ...dateWith.data(), id: dateWith.id }
+      if (dateFor) return { ...dateFor.data(), id: dateFor.id }
     }
     if (
       dateWith?.data().timeSent.toMillis() < dateFor?.data().timeSent.toMillis()
     )
-      return dateWith?.data()
-    else return dateFor?.data()
+      return { ...dateWith?.data(), id: dateWith?.id }
+    else return { ...dateFor?.data(), id: dateFor?.id }
   }
 
   async shiftCards(reject = false) {
@@ -302,8 +309,9 @@ class Meetup {
 
   async createDate(forUser: string) {
     logger.log(`Creating date for ${forUser}...`)
-    const room = await ConferenceService.makeConferenceRoom()
-    const { roomUrl, start, end } = room
+    // const room = await ConferenceService.makeConferenceRoom()
+    const { roundStartTime, roundEndTime } =
+      DateClockService.currentRoundStartEnd()
     logger.log('Pushing date...')
     const forUserDoc = await db.collection(USERS_COLLECTION).doc(forUser).get()
     if (!forUserDoc.data())
@@ -329,9 +337,8 @@ class Meetup {
       throw new Error(`Active date for ${forUser} already exists!`)
 
     await db.collection(DATES_COLLECTION).add({
-      start: time.fromDate(start),
-      end: time.fromDate(end),
-      room: roomUrl,
+      start: time.fromDate(new Date(roundStartTime)),
+      end: time.fromDate(new Date(roundEndTime)),
       for: forUser,
       with: user.email,
       active: true,
@@ -341,8 +348,10 @@ class Meetup {
 
   async shiftProspects(reject = false) {
     if (!user.email) return
-    if (reject) await moveProspectTo('prospects', 'nexts', user.email)
-    else {
+    this.prospects.shift()
+    if (reject) {
+      await moveProspectTo('prospects', 'nexts', user.email)
+    } else {
       try {
         const forUser = await moveProspectTo('prospects', 'likes', user.email)
         if (!forUser) throw new Error('Failed to get forUser!')
@@ -388,9 +397,40 @@ class Meetup {
 
   async getRoom(): Promise<Room | null> {
     if (!this.currentDate) return null
-    logger.log('Current getting room Date Id', this.currentDate.id)
-    const date = this.currentDate
-    const room = date.room
+
+    logger.log('!!! Current getting room Date', this.currentDate)
+    const currentDateRef = db
+      .collection(DATES_COLLECTION)
+      .doc(this.currentDate.id)
+    let room: string | null = null
+    while (!room) {
+      room = await db.runTransaction(async t => {
+        const dateDoc = await t.get(currentDateRef)
+        const date = dateDoc.data()
+        if (!date) return logger.log('No date!')
+        const room = date.room
+        if (room) return room
+        if (date.with !== user.email) return null
+        const dateStartTimestamp = date?.start as Timestamp
+        const dateEndTimestamp = date?.end as Timestamp
+
+        const dateStartIso = DateTime.fromJSDate(
+          dateStartTimestamp.toDate()
+        ).toISO(ISO_OPTIONS)
+        const dateEndIso = DateTime.fromJSDate(dateEndTimestamp.toDate()).toISO(
+          ISO_OPTIONS
+        )
+        logger.log(`Creating conference room for date ${dateDoc.id}`)
+        const roomUrl = await ConferenceService.makeConferenceRoom(
+          dateStartIso,
+          dateEndIso
+        )
+        logger.log(`Conference room created ${roomUrl}`)
+        await t.update(currentDateRef, { room: roomUrl })
+        return roomUrl
+      })
+    }
+
     if (!user.name) return null
     const token = await ConferenceService.getToken({ user_name: user.name })
     return {

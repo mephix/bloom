@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { DateClockService } from './dateClock.service'
 
 const DAILY_API_KEY = process.env.REACT_APP_DAILY_API_KEY
 
@@ -13,10 +12,14 @@ export class ConferenceService {
     }
   })
 
-  static async makeConferenceRoom(preentry = 1) {
-    const time = DateClockService.currentRoundStartEnd()
-    const nbf = this.calcNbf(time.roundStartTime, preentry)
-    const exp = this.calcExp(time.roundEndTime)
+  static async makeConferenceRoom(
+    dateStartTime: string,
+    dateEndTime: string,
+    preentry = 1
+  ) {
+    // const time = DateClockService.currentRoundStartEnd()
+    const nbf = this.calcNbf(dateStartTime, preentry)
+    const exp = this.calcExp(dateEndTime)
     const response = await this.instance.post('rooms', {
       privacy: 'public',
       properties: {
@@ -28,11 +31,7 @@ export class ConferenceService {
         enable_chat: false
       }
     })
-    return {
-      roomUrl: response.data.url,
-      start: new Date(time.roundStartTime),
-      end: new Date(time.roundEndTime)
-    }
+    return response.data.url
   }
 
   static async getToken(properties: Properties) {

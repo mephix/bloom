@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, FC } from 'react'
+import { useState, useEffect, useCallback, FC } from 'react'
 import { IconToggleProps } from './IconToggle.type'
 import { classes, noop } from '../../utils/common'
 import stylesModule from './IconToggle.module.scss'
