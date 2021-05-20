@@ -28,7 +28,7 @@ function postDateToFirebase(date) {
     'room': refRoom,
     'active': true,
     // Start with accepted=true, and later on don't set it.
-    'accepted': false,
+    'accepted': true,
   }
   // Firebase uses emails, not Adalo IDs.
   const for1 = {
