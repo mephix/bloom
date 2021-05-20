@@ -51,17 +51,17 @@ async function runFireMatchEngine() {
 
   // Keep only scores above a cutoff.
   // For firebase, we're scoring matches 1-100.
-  const CUTOFF = 20
+  const CUTOFF = 1
   score = applyToScores(score, Math.floor)
   score = subsetScores(score, { above: CUTOFF })
 
   // Write matches to file, along with prefs and subscores.  
-  writeScoresToFile({
-    people: peopleById,
-    score,
-    subScores,
-    fileName: MATCH_GRAPH_FILE,
-  })
+  // writeScoresToFile({
+  //   people: peopleById,
+  //   score,
+  //   subScores,
+  //   fileName: MATCH_GRAPH_FILE,
+  // })
 
   // Post matches to Firebase.
   const batch = firestoreApi.db.batch()
@@ -82,10 +82,13 @@ async function runFireMatchEngine() {
     let id = ids[i]
     // Limit to 100 matches per night.
     // For now, randomize them in score order (by sorting in alphabetical order).
-    const matches = Object.keys(score[id]).slice(0,100).sort()
+    let matches = Object.keys(score[id]).slice(0,100).sort()
+    // Convert from strings to refs.
+    matches = matches.map(m => firestoreApi.db.collection('Users').doc(m))
     // const oldmatches = peopleById[id].Matches
     if (matches.length > 0) {
       // if (oldmatches.length === 0) {
+        // Check 'Matches' and { matches }
         const ref = firestoreApi.db.collection('Matches').doc(id)
         batch.set(ref, { matches })
         consoleColorLog(`[${i}]: ${id}: ${matches.length} matches added to batch.`, 'green')
