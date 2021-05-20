@@ -6,9 +6,11 @@ const today = '2021-05-17'
 // File to load users from and store matches:
 const loadFromLocalFile = `./nocode/output/Users ${today}.json`
 const MATCH_GRAPH_FILE = `./nocode/output/Matches ${today}.csv`
+const writeToMatchGraphFile = false
 
 const getAllUsers = require('../users/getAllUsers.js')
 const setProfileDefaults = require('../users/setProfileDefaults.js')
+const switchToFirebaseIds = require('../users/switchToFirebaseIds.js')
 const fireMatchEngine = require('./fireMatchEngine.js')
 const writeScoresToFile = require('../scores/writeScoresToFile.js')
 const applyToScores = require('../scores/applyToScores.js')
@@ -36,15 +38,7 @@ async function runFireMatchEngine() {
   users = users.map(setProfileDefaults)
 
   // For Firebase, switch users and scores from adaloIds to emails.
-  let usersById = {}
-  users.map(({ id, ...rest }) => usersById[id] = { id, ...rest })
-  users = users.map(u => {
-    u.adaloId = u.id
-    u.id = u.Email
-    u.Likes = u.Likes.map(aid => usersById[aid].Email)
-    u.Nexts = u.Nexts.map(aid => usersById[aid].Email)
-    return u
-  })
+  users = users.map(switchToFirebaseIds)
 
   // Rank matches according to people's preferences.
   let { score, subScores, peopleById } = fireMatchEngine(users)
@@ -55,13 +49,15 @@ async function runFireMatchEngine() {
   score = applyToScores(score, Math.floor)
   score = subsetScores(score, { above: CUTOFF })
 
-  // Write matches to file, along with prefs and subscores.  
-  // writeScoresToFile({
-  //   people: peopleById,
-  //   score,
-  //   subScores,
-  //   fileName: MATCH_GRAPH_FILE,
-  // })
+  // Write matches to file, along with prefs and subscores.
+  if (writeToMatchGraphFile) {
+    writeScoresToFile({
+      people: peopleById,
+      score,
+      subScores,
+      fileName: MATCH_GRAPH_FILE,
+    })
+  }
 
   // Post matches to Firebase.
   const batch = firestoreApi.db.batch()

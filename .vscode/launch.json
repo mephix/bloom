@@ -68,6 +68,15 @@
             ],
         },
         {
+            "name": "run Fire Prospect Engine",
+            "program": "${workspaceFolder}/nocode/prospects/runFireProspectEngine.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
+        {
             "name": "run Fire Date Engine",
             "program": "${workspaceFolder}/nocode/dates/runFireDateEngine.js",
             "type": "pwa-node",

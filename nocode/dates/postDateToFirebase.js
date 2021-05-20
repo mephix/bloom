@@ -17,7 +17,7 @@ function postDateToFirebase(date) {
   const { idDate1 } = dateIdsForFirebase(date)
   const refDate1 = firestoreApi.db.collection('Dates').doc(idDate1)
   // const refDate2 = firestoreApi.db.collection('Dates').doc(idDate2)
-  const refRoom =  firestoreApi.db.collection('Rooms').doc(date.dailyRoomName)
+  const refRoom =  date.dailyRoomURL // firestoreApi.db.collection('Rooms').doc(date.dailyRoomName)
   // const refUser1 = firestoreApi.db.collection('Users').doc(date.id1)
   // const refUser2 = firestoreApi.db.collection('Users').doc(date.id2)
 
@@ -59,7 +59,7 @@ function postDateToFirebase(date) {
   const batch = firestoreApi.db.batch()
   batch.set(refDate1, date1)
   // batch.set(refDate2, date2)
-  batch.set(refRoom, room)
+  // batch.set(refRoom, room)
   return batch.commit()
 }
 

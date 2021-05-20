@@ -22,8 +22,8 @@ function writeScoresToFile({ people, score, subScores, fileName }) {
         ${p2['First Name']},${p2['Email']},\
         ${score_id2},\
         ${subScores['dated'].score?.[id1]?.[id2] ? 'dated' : ''},\
-        ${subScores['liked'].score?.[id1]?.[id2] ? 'liked' : ''},\
-        ${subScores['nexted'].score?.[id1]?.[id2] ? 'nexted' : ''},\
+        ${subScores?.['liked']?.score?.[id1]?.[id2] ? 'liked' : ''},\
+        ${subScores?.['nexted']?.score?.[id1]?.[id2] ? 'nexted' : ''},\
         ${p1['Gender']},${p2['Gender Preference']},\
         ${p2['Gender']},${p1['Gender Preference']},\
         ${subScores['gender'].score?.[id1]?.[id2] || 0},\
