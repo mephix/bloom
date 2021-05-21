@@ -245,7 +245,13 @@ class Meetup {
       usersLogGroup.add(() => specificUserLogGroup.apply())
 
       if (!result) continue
-      if (this.currentMatchingUser) continue
+      if (this.currentMatchingUser && this.currentMatchingUser !== email) {
+        specificUserLogGroup.add(
+          `Current matching user already exists ${this.currentMatchingUser}`
+        )
+        continue
+      }
+      specificUserLogGroup.add(`Setting up date!`)
 
       this.setCurrentMatchingUser(email)
 
@@ -256,6 +262,7 @@ class Meetup {
         continue
       }
       this.matchingUsers[email].date = currentDate as UsersDate
+
       callback()
       break
     }
@@ -407,7 +414,10 @@ class Meetup {
       room = await db.runTransaction(async t => {
         const dateDoc = await t.get(currentDateRef)
         const date = dateDoc.data()
-        if (!date) return logger.log('No date!')
+        if (!date) {
+          app.setWaitingRoomState()
+          return logger.log('No date!')
+        }
         const room = date.room
         if (room) return room
         if (date.with !== user.email) return null

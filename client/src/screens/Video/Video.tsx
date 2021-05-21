@@ -7,8 +7,10 @@ import meetup from '../../store/meetup'
 import { fromSecondsToMillis } from '../../services/dateClock.service'
 import { CountDown } from './CountDown'
 import user from '../../store/user'
+import { Logger } from '../../utils'
 
 const minute = Date.now() + 60 * 60 * 1000
+const logger = new Logger('Video', 'red')
 
 export const Video = () => {
   const videoFrameRef = useRef<HTMLIFrameElement>(null)
@@ -29,6 +31,7 @@ export const Video = () => {
       meetup.setJoinTime()
       user.setFree(false)
     } else {
+      logger.error('No participants in room!')
       meetup.resetCurrentMatchingUser()
       user.setFree(true)
       app.setWaitingRoomState()
@@ -38,7 +41,7 @@ export const Video = () => {
   const startDate = useCallback(async () => {
     const room = await meetup.getRoom()
     if (!room) {
-      console.error('No date was available for video chat.')
+      logger.error('No date was available for video chat.')
       app.setWaitingRoomState()
     }
     setEndDateTime(fromSecondsToMillis(meetup.getEndTime()))
