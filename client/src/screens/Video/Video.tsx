@@ -27,18 +27,18 @@ export const Video = () => {
 
   const countDownEnd = useCallback(async () => {
     if (!dailyObj) return
-    const { local, ...participants } = dailyObj.participants()
-    if (Object.keys(participants).length) {
-      setVisibleCountDown(false)
-      dailyObj.setLocalAudio(true)
-      meetup.setJoinTime()
-      user.setFree(false)
-    } else {
-      logger.error('No participants in room!')
-      meetup.resetCurrentMatchingUser()
-      user.setFree(true)
-      app.setWaitingRoomState()
-    }
+    // const { local, ...participants } = dailyObj.participants()
+    // if (Object.keys(participants).length) {
+    setVisibleCountDown(false)
+    dailyObj.setLocalAudio(true)
+    meetup.setJoinTime()
+    user.setFree(false)
+    // } else {
+    //   logger.error('No participants in room!')
+    //   meetup.resetCurrentMatchingUser()
+    //   user.setFree(true)
+    //   app.setWaitingRoomState()
+    // }
   }, [dailyObj])
 
   const startDate = useCallback(async () => {
