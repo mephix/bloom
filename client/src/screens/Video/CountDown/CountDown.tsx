@@ -9,11 +9,12 @@ import { CountDownProps } from './CountDown.type'
 export const CountDown: FC<CountDownProps> = ({
   onComplete = noop,
   firstName,
-  bio
+  bio,
+  timeout
 }) => {
   return (
     <div className={classes(commonStyles.container, moduleStyles.container)}>
-      <CountDownBox onComplete={onComplete} />
+      <CountDownBox timeout={timeout} onComplete={onComplete} />
       <div className={moduleStyles.info}>you have a date with...</div>
       <div className={moduleStyles.userInfo}>
         <div className={moduleStyles.name}>{firstName}</div>

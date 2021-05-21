@@ -12,11 +12,14 @@ import { Logger } from '../../utils'
 const minute = Date.now() + 60 * 60 * 1000
 const logger = new Logger('Video', 'red')
 
+const COUNT_DOWN = 10
+
 export const Video = () => {
   const videoFrameRef = useRef<HTMLIFrameElement>(null)
   const [dailyObj, setDailyObj] = useState<DailyCall | null>(null)
   const [endDateTime, setEndDateTime] = useState(minute)
   const [visibleCountDown, setVisibleCountDown] = useState(true)
+  const [timeout] = useState(Date.now() + COUNT_DOWN * 1000)
   const endDate = useCallback(() => {
     if (!dailyObj) return app.setRaitingState()
     dailyObj.leave()
@@ -75,6 +78,7 @@ export const Video = () => {
           onComplete={countDownEnd}
           firstName={meetup.currentMatchingUserData?.firstName || ''}
           bio={meetup.currentMatchingUserData?.bio || ''}
+          timeout={timeout}
         />
       )}
       <header className={moduleStyles.header}>

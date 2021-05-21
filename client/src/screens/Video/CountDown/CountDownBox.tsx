@@ -5,10 +5,9 @@ import moduleStyles from './CountDown.module.scss'
 import { CountDownBoxProps } from './CountDown.type'
 
 export const CountDownBox: FC<CountDownBoxProps> = ({
-  seconds = 10,
-  onComplete = noop
+  onComplete = noop,
+  timeout
 }) => {
-  const timeout = Date.now() + seconds * 1000
   return (
     <div className={moduleStyles.countDownBox}>
       <Countdown
