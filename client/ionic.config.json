@@ -1,0 +1,7 @@
+{
+  "name": "bloom",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
