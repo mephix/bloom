@@ -1,16 +1,17 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-05-21'
-let HOUR = '07'
-let SLOT = 3
+let DAY = '2021-05-23'
+let HOUR = '23'
+let SLOT = 8
 let RERUN = false        // Only do reruns after the slot starts.
 let CUTOFF = 0.00       // >0 makes the dateEngine more picky.
 let useTestIds = true   // `false` for real rounds.
+// !! dont forget to change timezone back from 6 to 7 !!
 
 // Less frequently changed params.
 // Timezone offset switches between 07:00 and 08:00 with daylight saving.
-const TIMEZONE_OFFSET = '-07:00'
+const TIMEZONE_OFFSET = '-06:00'
 // let ROUND_ID = 1
 const SLOT_PREENTRY = 1
 const SLOT_STARTS = {
@@ -73,7 +74,8 @@ async function runFireDateEngine() {
     // Only use this option for testing.
     const emails = [
       'john.prins@gmail.com',
-      'amel.assioua@gmail.com',
+      'female_straight_25_SF@bloom.com',
+      // 'amel.assioua@gmail.com',
     ] 
     // "id":4,"Email":"amel.assioua@gmail.com","First Name":"Amel"
     // "id":836,"Email":"female_straight_25_SF@bloom.com","First Name":"Anastasia"
