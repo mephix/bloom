@@ -1,13 +1,13 @@
 import { useCallback, useState } from 'react'
 import { ButtonToggle } from '../../components/ButtonToggle'
 import { IconToggle } from '../../components/IconToggle'
-import app from '../../store/app'
-import meetup from '../../store/meetup'
-import user from '../../store/user'
+import app from '../../state/app'
+import meetup from '../../state/meetup'
+import user from '../../state/user'
 import { classes } from '../../utils/common'
 import commonStyles from '../Common.module.scss'
 import moduleStyles from './Raiting.module.scss'
-import { RateToggles } from '../../store/utils/types'
+import { RateToggles } from '../../state/utils/types'
 
 export const Raiting = () => {
   const [rate, setRate] = useState<{ [key in RateToggles]: boolean }>({

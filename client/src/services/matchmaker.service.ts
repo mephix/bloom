@@ -1,8 +1,8 @@
-import meetup from '../store/meetup'
+import meetup from '../state/meetup'
 import { DateClockService, fromMillisToMinutes } from './dateClock.service'
 import { Logger } from '../utils'
 import { MatchesService } from './matches.service'
-import user from '../store/user'
+import user from '../state/user'
 
 const logger = new Logger('Matchmaker', '#005aeb')
 

@@ -4,5 +4,9 @@ import './scss/App.scss'
 
 export const App = () => {
   useInit()
-  return <Screen />
+  return (
+    <>
+      <Screen />
+    </>
+  )
 }

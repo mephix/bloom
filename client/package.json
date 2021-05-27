@@ -8,9 +8,11 @@
     "@capacitor/cli": "^3.0.0",
     "@capacitor/core": "^3.0.0",
     "@capacitor/haptics": "^1.0.0",
+    "@capacitor/ios": "3.0.0",
     "@capacitor/keyboard": "^1.0.0",
     "@daily-co/daily-js": "^0.12.0",
     "@ionic-native/android-permissions": "^5.33.0",
+    "@ionic-native/core": "^5.33.0",
     "@ionic/cli": "^6.16.1",
     "@ionic/react": "^5.6.7",
     "@testing-library/jest-dom": "^5.11.4",
@@ -23,6 +25,7 @@
     "@types/react-dom": "^17.0.0",
     "axios": "^0.21.1",
     "cordova-plugin-android-permissions": "^1.1.2",
+    "cordova-plugin-iosrtc": "^6.0.21",
     "cron-parser": "^3.5.0",
     "firebase": "^8.6.0",
     "logrocket": "^1.2.0",
@@ -33,7 +36,6 @@
     "react": "^17.0.2",
     "react-countdown": "^2.3.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1",
     "workbox-background-sync": "^5.1.4",
@@ -75,5 +77,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "react-scripts": "4.0.3"
   }
 }

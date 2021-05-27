@@ -6,8 +6,8 @@ import {
   time,
   USERS_COLLECTION
 } from '../firebase'
-import meetup from '../store/meetup'
-import user from '../store/user'
+import meetup from '../state/meetup'
+import user from '../state/user'
 import { byAccepted, byActive, Logger } from '../utils'
 
 const EMPTY_MATCHES = {}

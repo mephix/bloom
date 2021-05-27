@@ -3,7 +3,7 @@ import { db, PARAMETERS_COLLECTION } from '../firebase'
 import { FACE_DISPLAY, PARAMS } from './utils/constants'
 import { StringDictionary } from './utils/types'
 
-export type AppState = 'WAITING' | 'VIDEO' | 'RATING' | null
+export type AppState = 'WAITING' | 'VIDEO' | 'RATING' | 'NO_PERMISSIONS' | null
 
 class App {
   state: AppState = null
@@ -32,6 +32,10 @@ class App {
 
   setFaceDisplay(fd: string) {
     this.faceDisplay = fd
+  }
+
+  setNoPermissionsState() {
+    this.state = 'NO_PERMISSIONS'
   }
 
   setWaitingRoomState() {
