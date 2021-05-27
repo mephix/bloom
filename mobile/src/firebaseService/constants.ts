@@ -1,0 +1,7 @@
+export const USERS_COLLECTION = 'Users'
+export const DATES_COLLECTION = 'Dates'
+export const PROSPECTS_COLLECTION = 'Prospects'
+export const PARAMETERS_COLLECTION = 'Parameters'
+export const NEXTS_COLLECTION = 'Nexts'
+export const LIKES_COLLECTION = 'Likes'
+export const MATCHES_COLLECTION = 'Matches'
