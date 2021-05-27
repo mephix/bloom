@@ -17,7 +17,7 @@ export const AuthRoutes = () => {
       <Route exact path="/login">
         <Login />
       </Route>
-      <Route exact path="/register">
+      <Route path="/register">
         <Register />
       </Route>
       <Redirect to="/" />

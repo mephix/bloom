@@ -27,7 +27,7 @@ class User {
   free = true
   hiddenHere = false
   finished = false
-  auth = false
+  auth: boolean | null = null
 
   constructor() {
     makeAutoObservable(this)
@@ -49,6 +49,10 @@ class User {
       finished: user.finished,
       free: user.free
     })
+  }
+
+  setAuth(state: boolean) {
+    this.auth = state
   }
 
   signUser() {

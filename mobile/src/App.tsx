@@ -22,13 +22,20 @@ import './scss/App.scss'
 import './theme/variables.css'
 import { AuthRoutes, MainRoutes } from './routes'
 import { observer } from 'mobx-react-lite'
+import user from 'state/user'
+import { useInit } from 'hooks/init'
+import { LoaderPage } from 'pages/LoaderPage'
+import { FC } from 'react'
 
-const App: React.FC = () => {
-  const auth = false
-
+const App: FC = () => {
+  useInit()
+  let appContext
+  if (user.auth === null) appContext = <LoaderPage />
+  else if (user.auth) appContext = <MainRoutes />
+  else appContext = <AuthRoutes />
   return (
     <IonApp>
-      <IonReactRouter>{auth ? <MainRoutes /> : <AuthRoutes />}</IonReactRouter>
+      <IonReactRouter>{appContext}</IonReactRouter>
     </IonApp>
   )
 }

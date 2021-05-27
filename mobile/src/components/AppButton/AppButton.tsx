@@ -4,6 +4,7 @@ import {
   DetailedHTMLProps,
   FC
 } from 'react'
+import { classes } from 'utils'
 import { THEME } from '../../theme/theme'
 import moduleStyles from './AppButton.module.scss'
 
@@ -16,6 +17,7 @@ interface AppButtonProps
   full?: boolean
   clear?: boolean
   style?: CSSProperties
+  loading?: boolean
 }
 
 type Colors = 'light' | 'dark' | 'primary'
@@ -27,25 +29,47 @@ interface ButtonColors {
 }
 
 export const AppButton: FC<AppButtonProps> = props => {
-  const { children, clear, style, color = 'primary', full, ...other } = props
+  const {
+    children,
+    loading,
+    clear,
+    style,
+    color = 'primary',
+    full,
+    ...other
+  } = props
   const clearBackground = clear
     ? { background: 'none', border: 'none', color: THEME.PRIMARY }
     : {}
   return (
     <button
       {...other}
-      className={moduleStyles.button}
+      className={classes(
+        moduleStyles.button,
+        loading ? moduleStyles.loading : ''
+      )}
       style={{
         ...setColor(color),
         width: full ? '100%' : '',
         ...clearBackground,
         ...style
       }}
+      disabled={loading}
     >
-      {children}
+      {loading ? <Loader /> : children}
     </button>
   )
 }
+
+const Loader = () => (
+  <div className={moduleStyles['lds-ring']}>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+)
+
 const setColor = (color: Colors): ButtonColors => {
   switch (color) {
     case 'light':

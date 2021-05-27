@@ -12,8 +12,8 @@ export const Login = () => {
         <div className={stylesModule.titleWrap}>
           <span className={stylesModule.title}>Welcome Back!</span>
         </div>
-        <AppInput placeholder="Email" full />
-        <AppInput placeholder="Password" full />
+        <AppInput full />
+        <AppInput full />
 
         <AppButton color="dark" full>
           Login
