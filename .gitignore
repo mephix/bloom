@@ -1,4 +1,4 @@
-# client/*
+client/*
 nocode/.env
 nocode/output/*
 nocode/node_modules/*

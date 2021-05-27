@@ -1,9 +1,9 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-05-23'
-let HOUR = '23'
-let SLOT = 8
+let DAY = '2021-05-26'
+let HOUR = '17'
+let SLOT = 2
 let RERUN = false        // Only do reruns after the slot starts.
 let CUTOFF = 0.00       // >0 makes the dateEngine more picky.
 let useTestIds = true   // `false` for real rounds.
@@ -74,8 +74,11 @@ async function runFireDateEngine() {
     // Only use this option for testing.
     const emails = [
       'john.prins@gmail.com',
+      'amel.assioua@gmail.com',
+      // 'hklucy25@gmail.com',
+      'glenntheblack@gmail.com',
       'female_straight_25_SF@bloom.com',
-      // 'amel.assioua@gmail.com',
+      // 'female_straight_33_LA@bloom.com',
     ] 
     // "id":4,"Email":"amel.assioua@gmail.com","First Name":"Amel"
     // "id":836,"Email":"female_straight_25_SF@bloom.com","First Name":"Anastasia"
