@@ -1,6 +1,6 @@
 import { AppButton } from 'components/AppButton'
 import { AppInput } from 'components/AppInput'
-import { createContext, useCallback, useContext, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Screen } from '../../wrappers/Screen'
 import stylesModule from './AuthIndex.module.scss'
 import { isValidPhoneNumber } from 'react-phone-number-input'

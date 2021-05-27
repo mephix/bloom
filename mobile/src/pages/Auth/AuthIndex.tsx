@@ -4,7 +4,6 @@ import { classes } from 'utils'
 import { AppButton } from '../../components/AppButton'
 import { Screen } from '../../wrappers/Screen'
 import stylesModule from './AuthIndex.module.scss'
-import logo from 'assets/images/logo.jpeg'
 
 export const AuthIndex: FC = () => {
   const history = useHistory()

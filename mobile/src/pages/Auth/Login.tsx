@@ -1,5 +1,3 @@
-import { IonChip, IonIcon, IonLabel } from '@ionic/react'
-import { close, pin, heart } from 'ionicons/icons'
 import { AppButton } from '../../components/AppButton'
 import { AppInput } from '../../components/AppInput'
 import { Screen } from '../../wrappers/Screen'
