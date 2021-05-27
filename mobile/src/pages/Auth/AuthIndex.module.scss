@@ -9,6 +9,15 @@
   > button {
     margin: 10px 0;
   }
+  &.index {
+    justify-content: flex-end;
+    margin-bottom: var(--ion-safe-area-top);
+    height: calc(100% - 624px);
+
+    > button {
+      margin: 12px 0;
+    }
+  }
 }
 
 .titleWrap {
@@ -20,4 +29,9 @@
 .title {
   font-size: 1.6rem;
   font-weight: bolder;
+}
+
+.image {
+  height: 624px;
+  background: url('../../assets/images/logo.jpeg') no-repeat center top;
 }

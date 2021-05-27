@@ -1,10 +1,14 @@
 import { IonContent, IonPage } from '@ionic/react'
 import { FC } from 'react'
 
-export const Screen: FC = ({ children }) => {
+interface ScreenProps {
+  color?: string
+}
+
+export const Screen: FC<ScreenProps> = ({ children, color }) => {
   return (
     <IonPage>
-      <IonContent color="dark">{children}</IonContent>
+      <IonContent color={color}>{children}</IonContent>
     </IonPage>
   )
 }

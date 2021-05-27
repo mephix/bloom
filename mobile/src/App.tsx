@@ -21,6 +21,7 @@ import '@ionic/react/css/display.css'
 import './scss/App.scss'
 import './theme/variables.css'
 import { AuthRoutes, MainRoutes } from './routes'
+import { observer } from 'mobx-react-lite'
 
 const App: React.FC = () => {
   const auth = false
@@ -32,4 +33,4 @@ const App: React.FC = () => {
   )
 }
 
-export default App
+export default observer(App)

@@ -27,6 +27,7 @@ class User {
   free = true
   hiddenHere = false
   finished = false
+  auth = false
 
   constructor() {
     makeAutoObservable(this)

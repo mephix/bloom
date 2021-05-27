@@ -49,15 +49,11 @@ export const AppButton: FC<AppButtonProps> = props => {
 const setColor = (color: Colors): ButtonColors => {
   switch (color) {
     case 'light':
-      return {
-        color: 'black',
-        background: THEME.LIGHT,
-        border: '2px solid rgba(128, 128, 128, 0.6)'
-      }
+      return { color: 'black', background: THEME.LIGHT }
     case 'dark':
       return { color: 'white', background: THEME.DARK }
     case 'primary':
-      return { color: 'white', background: THEME.PRIMARY }
+      return { color: 'black', background: THEME.PRIMARY }
     default:
       return { color: 'black', background: THEME.LIGHT }
   }

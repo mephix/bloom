@@ -7,7 +7,7 @@ import { Screen } from 'wrappers/Screen'
 export const WaitingRoomApp = () => {
   useInitWaitingRoom()
   return (
-    <Screen>
+    <Screen color="dark">
       <WaitingRoomScreen />
     </Screen>
   )
