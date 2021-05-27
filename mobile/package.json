@@ -13,6 +13,7 @@
     "@daily-co/daily-js": "^0.13.0",
     "@ionic-native/android-permissions": "^5.33.0",
     "@ionic-native/core": "^5.33.0",
+    "@ionic/cli": "^6.16.1",
     "@ionic/react": "^5.5.0",
     "@ionic/react-router": "^5.5.0",
     "@testing-library/jest-dom": "^5.11.9",
@@ -61,6 +62,7 @@
     "workbox-streams": "^5.1.4"
   },
   "scripts": {
+    "serve": "ionic serve",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
