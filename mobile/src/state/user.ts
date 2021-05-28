@@ -11,7 +11,7 @@ import app from './app'
 import meetup from './meetup'
 import { UserState } from './utils/types'
 
-type UpdateUserProps = {
+interface UpdateUserProps {
   here?: boolean
   free?: boolean
   name?: string
@@ -19,7 +19,14 @@ type UpdateUserProps = {
   email?: string
 }
 
+type AuthStatus =
+  | 'authorized'
+  | 'unauthorized'
+  | 'unknown'
+  | 'without_information'
+
 class User {
+  id: string | null = null
   email: string | null = null
   name: string | null = null
 
@@ -27,10 +34,15 @@ class User {
   free = true
   hiddenHere = false
   finished = false
-  auth: boolean | null = null
+
+  auth: AuthStatus = 'unknown'
 
   constructor() {
     makeAutoObservable(this)
+  }
+
+  async setId(id: string) {
+    this.id = id
   }
 
   async setUser(email: string) {
@@ -51,7 +63,7 @@ class User {
     })
   }
 
-  setAuth(state: boolean) {
+  setAuth(state: AuthStatus) {
     this.auth = state
   }
 

@@ -8,25 +8,21 @@ import { auth } from 'firebaseService'
 import stylesModule from '../AuthIndex.module.scss'
 import { RegisterContext } from './RegisterContext'
 import { useHistory } from 'react-router'
+import { useErrorToast } from './error.toast.hook'
 
 const SEND_CODE_BUTTON_ID = 'send-code'
 
 export const PhoneNumberScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [loading, setLoading] = useState(false)
-  const [present] = useIonToast()
+  const showError = useErrorToast()
   const context = useContext(RegisterContext)
   const history = useHistory()
 
   const sendCodeHandler = useCallback(async () => {
     try {
       if (!phoneNumber || !isValidPhoneNumber(phoneNumber))
-        return present({
-          message: 'Invalid phone number!',
-          color: 'danger',
-          duration: 3 * 1000,
-          position: 'top'
-        })
+        return showError('Invalid phone number!')
       const { recapchaVerifier } = verifyWithRecaptcha()
       setLoading(true)
       const confirmationResult = await auth().signInWithPhoneNumber(
@@ -38,14 +34,9 @@ export const PhoneNumberScreen = () => {
       history.push('/register/code')
     } catch {
       setLoading(false)
-      present({
-        message: 'Oops, something went wrong...',
-        color: 'danger',
-        duration: 3 * 1000,
-        position: 'top'
-      })
+      showError('Oops, something went wrong. Try again later!')
     }
-  }, [phoneNumber, present, context, history])
+  }, [phoneNumber, showError, context, history])
 
   return (
     <Screen>
@@ -54,6 +45,7 @@ export const PhoneNumberScreen = () => {
           value={phoneNumber}
           onChangeText={phone => setPhoneNumber(phone)}
           label="What's your phone number?"
+          small="We will send you a text with a verification code."
           phone
         />
         <AppButton

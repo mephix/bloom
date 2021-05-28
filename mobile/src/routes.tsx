@@ -2,7 +2,6 @@ import { IonRouterOutlet } from '@ionic/react'
 import { WaitingRoomApp } from 'pages/Main/WaitingRoom'
 import { Redirect, Route } from 'react-router-dom'
 import { AuthIndex } from 'pages/Auth/AuthIndex'
-import { Login } from 'pages/Auth/Login'
 import { Register } from 'pages/Auth/Register'
 import { useStatusBar } from 'hooks/status-bar.hook'
 import { Style } from '@capacitor/status-bar'
@@ -13,9 +12,6 @@ export const AuthRoutes = () => {
     <IonRouterOutlet mode="ios">
       <Route exact path="/">
         <AuthIndex />
-      </Route>
-      <Route exact path="/login">
-        <Login />
       </Route>
       <Route path="/register">
         <Register />

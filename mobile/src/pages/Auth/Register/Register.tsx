@@ -1,7 +1,8 @@
 import { IonRouterOutlet } from '@ionic/react'
-import { Redirect, Route } from 'react-router-dom'
+import { Route } from 'react-router-dom'
 import { Screen } from 'wrappers/Screen'
 import { CodeScreen } from './CodeScreen'
+import { GetInfoScreen } from './GetInfoScreen'
 import { PhoneNumberScreen } from './PhoneNumberScreen'
 import { DEFAULT_REGISTER_CONTEXT, RegisterContext } from './RegisterContext'
 
@@ -15,6 +16,9 @@ export const Register = () => {
           </Route>
           <Route exact path="/register/code">
             <CodeScreen />
+          </Route>
+          <Route exact path="/register/get-info">
+            <GetInfoScreen />
           </Route>
         </IonRouterOutlet>
       </RegisterContext.Provider>

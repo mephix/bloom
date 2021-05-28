@@ -1,4 +1,4 @@
-export const USERS_COLLECTION = 'Users'
+export const USERS_COLLECTION = 'Users-dev'
 export const DATES_COLLECTION = 'Dates'
 export const PROSPECTS_COLLECTION = 'Prospects'
 export const PARAMETERS_COLLECTION = 'Parameters'

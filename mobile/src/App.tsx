@@ -30,8 +30,8 @@ import { FC } from 'react'
 const App: FC = () => {
   useInit()
   let appContext
-  if (user.auth === null) appContext = <LoaderPage />
-  else if (user.auth) appContext = <MainRoutes />
+  if (user.auth === 'unknown') appContext = <LoaderPage />
+  else if (user.auth === 'authorized') appContext = <MainRoutes />
   else appContext = <AuthRoutes />
   return (
     <IonApp>

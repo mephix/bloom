@@ -7,3 +7,4 @@ export type DocumentData = firebase.firestore.DocumentData
 export type DocumentReference = firebase.firestore.DocumentReference
 export type Timestamp = firebase.firestore.Timestamp
 export type ConfirmationResult = firebase.auth.ConfirmationResult
+export type Transaction = firebase.firestore.Transaction
