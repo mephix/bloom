@@ -14,9 +14,9 @@ export const CodeScreen = () => {
     if (!context.confirmationResult) return history.replace('/register')
   }, [history, context])
   const checkCodeHandler = useCallback(async () => {
-    if (!context.confirmationResult) return history.replace('/register')
-    const result = await context.confirmationResult.confirm(code)
-    console.log('res', result)
+    // if (!context.confirmationResult) return history.replace('/register')
+    // const result = await context.confirmationResult.confirm(code)
+    // console.log('res', result)
   }, [context, history, code])
   return (
     <Screen>

@@ -1,1 +1,6 @@
-{}
+{
+	"appId": "io.ionic.starter",
+	"appName": "mobile",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}

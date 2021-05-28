@@ -27,13 +27,13 @@ export const PhoneNumberScreen = () => {
           duration: 3 * 1000,
           position: 'top'
         })
-      const { recapchaVerifier } = verifyWithRecaptcha()
+      // const { recapchaVerifier } = verifyWithRecaptcha()
       setLoading(true)
-      const confirmationResult = await auth().signInWithPhoneNumber(
-        phoneNumber,
-        recapchaVerifier
-      )
-      context.confirmationResult = confirmationResult
+      // const confirmationResult = await auth().signInWithPhoneNumber(
+      //   phoneNumber,
+      //   recapchaVerifier
+      // )
+      // context.confirmationResult = confirmationResult
       context.phone = phoneNumber
       history.push('/register/code')
     } catch {
