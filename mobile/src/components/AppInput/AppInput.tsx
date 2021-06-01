@@ -1,8 +1,10 @@
-import { DetailedHTMLProps, FC, InputHTMLAttributes } from 'react'
+import React, { DetailedHTMLProps, FC, InputHTMLAttributes } from 'react'
 import stylesModule from './AppInput.module.scss'
 import PhoneInput from 'react-phone-number-input/input'
 import { noop } from 'utils'
 import { DateInput } from './DateInput'
+import { IonIcon, IonRange } from '@ionic/react'
+import { person } from 'ionicons/icons'
 interface AppInputProps
   extends DetailedHTMLProps<
     InputHTMLAttributes<HTMLInputElement>,
@@ -12,8 +14,16 @@ interface AppInputProps
   full?: boolean
   phone?: boolean
   date?: boolean
+  range?: boolean
+  rangeOptions?: RangeOptions
+  icon?: string
   small?: string
   onChangeText?: (value: string) => void
+}
+
+interface RangeOptions {
+  min: number
+  max: number
 }
 
 export const AppInput: FC<AppInputProps> = props => {
@@ -24,6 +34,9 @@ export const AppInput: FC<AppInputProps> = props => {
     full,
     label,
     phone,
+    range,
+    rangeOptions,
+    icon,
     ...other
   } = props
   let input
@@ -35,6 +48,19 @@ export const AppInput: FC<AppInputProps> = props => {
       />
     )
   else if (date) input = <DateInput onChangeText={onChangeText} />
+  else if (range)
+    input = (
+      <IonRange
+        {...rangeOptions}
+        color="dark"
+        pin={true}
+        value={{ lower: rangeOptions?.min || 0, upper: rangeOptions?.max || 0 }}
+        dualKnobs
+      >
+        <IonIcon size="small" slot="start" icon={icon} />
+        <IonIcon slot="end" icon={icon} />
+      </IonRange>
+    )
   else
     input = (
       <input

@@ -14,7 +14,7 @@ import { Style } from '@capacitor/status-bar'
 import { heartOutline, home, personOutline } from 'ionicons/icons'
 import { Screen } from 'wrappers/Screen'
 import { Profile } from 'pages/Main/Profile'
-import { Header } from 'components/Header'
+import { Matches } from 'pages/Main/Matches'
 
 export const AuthRoutes = () => {
   useStatusBar(Style.Light)
@@ -39,7 +39,7 @@ export const MainRoutes = () => {
           <WaitingRoomApp />
         </Route>
         <Route path="/matches">
-          <Screen header>No Matches Yet...</Screen>
+          <Matches />
         </Route>
         <Route path="/profile">
           <Profile />

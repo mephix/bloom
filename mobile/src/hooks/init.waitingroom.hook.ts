@@ -22,12 +22,12 @@ export const useInitWaitingRoom = () => {
     try {
       if (isProd) LogRocket.init('isym43/the-zero-date')
       await app.initParams()
-      const { email, matchesDisable } = getUrlParams()
+      const { matchesDisable } = getUrlParams()
       logger.error("Dating doesn't work right now!")
       Logger.active = true
       if (matchesDisable) MatchesService.setDisabled(true)
-      if (!email) throw new Error('No email provided')
-      await user.setUser(email)
+      // if (!email) throw new Error('No email provided') // ! delete
+      // await user.setUser_OLD(email) // ! delete
       await Matchmaker.initialize()
       const havePermissons = await checkPermission()
       if (!havePermissons) return app.setNoPermissionsState()

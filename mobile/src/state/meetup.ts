@@ -522,21 +522,26 @@ class Meetup {
 
   subscribeOnProspects() {
     const onProspects = async (doc: DocumentSnapshot) => {
-      const prospects = doc.data()?.prospects
+      const prospectsData = doc.data()
+      const prospects = prospectsData!.prospects
 
-      for (const i in prospects) {
-        try {
-          prospects[i] = (await prospects[i].get()).data()
-        } catch {
-          logger.error('Something wrong with prospects Array!')
-        }
-      }
-      if (prospects) this.setProspects(prospects)
+      const prospectsUsers = await getProspectUsersFromRefs(prospects)
+      if (prospectsUsers) this.setProspects(prospectsUsers)
     }
-    if (!user.email) return
 
-    db.collection(PROSPECTS_COLLECTION).doc(user.email).onSnapshot(onProspects)
+    db.collection(PROSPECTS_COLLECTION).doc(user.id).onSnapshot(onProspects)
   }
+}
+
+async function getProspectUsersFromRefs(prospects: any): Promise<Prospect[]> {
+  for (const i in prospects) {
+    try {
+      prospects[i] = (await prospects[i].get()).data()
+    } catch {
+      logger.error('Something wrong with prospects Array!')
+    }
+  }
+  return prospects
 }
 
 export default new Meetup()

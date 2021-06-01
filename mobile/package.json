@@ -29,6 +29,7 @@
     "@types/react-router": "^5.1.11",
     "@types/react-router-dom": "^5.1.7",
     "axios": "^0.21.1",
+    "classnames": "^2.3.1",
     "cordova-plugin-android-permissions": "^1.1.2",
     "cordova-plugin-datepicker": "^0.9.3",
     "cordova-plugin-iosrtc": "^6.0.21",

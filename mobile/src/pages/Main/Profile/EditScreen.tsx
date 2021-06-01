@@ -1,19 +1,38 @@
 import { IonTextarea } from '@ionic/react'
 import { AppButton } from 'components/AppButton'
 import { PhotoPicker } from 'components/PhotoPicker'
+import { storage } from 'firebaseService'
 import { useCallback, useState } from 'react'
 import { useHistory } from 'react-router'
+import user from 'state/user'
 import { Screen } from 'wrappers/Screen'
 import stylesModule from './Profile.module.scss'
 
 export const EditScreen = () => {
   const [hideTextarea, setHideTextarea] = useState(false)
+  const [bio, setBio] = useState(user.bio)
+  const [avatar, setAvatar] = useState<File | null>(null)
+  const [loading, setLoading] = useState(false)
   const history = useHistory()
 
-  const doneHandler = useCallback(() => {
+  const fileChangeHandler = useCallback((file: File) => setAvatar(file), [])
+  const bioChangeHandler = useCallback((e: any) => setBio(e.target.value), [])
+
+  const doneHandler = useCallback(async () => {
+    setLoading(true)
+    if (avatar) {
+      const storageRef = storage.ref()
+      const [, type] = avatar.type.split('/')
+      const avatarFileRef = storageRef.child(`${user.id}.${type}`)
+      await avatarFileRef.put(avatar)
+      const avatarUrl = await avatarFileRef.getDownloadURL()
+      user.updateUserData({ avatar: avatarUrl })
+    }
+    await user.updateUserData({ bio })
+
     setHideTextarea(true)
     history.goBack()
-  }, [history])
+  }, [history, avatar, bio])
 
   return (
     <Screen>
@@ -26,7 +45,10 @@ export const EditScreen = () => {
             </span>
           </div>
 
-          <PhotoPicker />
+          <PhotoPicker
+            onChangeFile={fileChangeHandler}
+            defaultPreview={user.avatar}
+          />
 
           <div className={stylesModule.label}>
             <span>
@@ -35,6 +57,8 @@ export const EditScreen = () => {
           </div>
           {!hideTextarea && (
             <IonTextarea
+              onIonChange={bioChangeHandler}
+              value={bio}
               autoGrow
               placeholder="Enter Text"
               className={stylesModule.textareaInput}
@@ -43,7 +67,12 @@ export const EditScreen = () => {
         </div>
 
         <div className={stylesModule.buttonWrapper}>
-          <AppButton full onClick={doneHandler} color="primary">
+          <AppButton
+            full
+            onClick={doneHandler}
+            color="primary"
+            loading={loading}
+          >
             Done
           </AppButton>
         </div>

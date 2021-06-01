@@ -14,9 +14,7 @@ import { UserState } from './utils/types'
 interface UpdateUserProps {
   here?: boolean
   free?: boolean
-  name?: string
   finished?: boolean
-  email?: string
 }
 
 type AuthStatus =
@@ -25,10 +23,27 @@ type AuthStatus =
   | 'unknown'
   | 'without_information'
 
+interface UserData {
+  id: string
+  name: string
+  bio?: string
+  avatar?: string
+  here?: boolean
+  free?: boolean
+  finished?: boolean
+}
+
+interface UserDataUpdate {
+  bio?: string
+  avatar?: string
+}
+
 class User {
-  id: string | null = null
+  id: string | undefined
   email: string | null = null
-  name: string | null = null
+  name: string = ''
+  bio: string = ''
+  avatar: string = ''
 
   here = false
   free = true
@@ -45,9 +60,20 @@ class User {
     this.id = id
   }
 
-  async setUser(email: string) {
-    const userRef = await db.collection(USERS_COLLECTION).doc(email).get()
-    const user = userRef.data()
+  setUser(user: UserData) {
+    this.id = user.id
+    this.name = user.name
+    this.bio = user.bio || ''
+    this.avatar = user.avatar || ''
+
+    this.updateUser({
+      finished: user.finished
+    })
+  }
+
+  async setUser_OLD(email: string) {
+    const userDoc = await db.collection(USERS_COLLECTION).doc(email).get()
+    const user = userDoc.data()
     if (!user) throw new Error('User not found')
     if (isProd)
       LogRocket.identify(email, {
@@ -56,8 +82,6 @@ class User {
       })
     this.updateUser({
       here: user.here,
-      name: user.firstName,
-      email: user.email,
       finished: user.finished,
       free: user.free
     })
@@ -75,10 +99,8 @@ class User {
     meetup.subscribeOnProspects()
   }
 
-  updateUser({ here, name, email, finished, free }: UpdateUserProps) {
-    if (typeof email === 'string') this.email = email
+  updateUser({ here, finished, free }: UpdateUserProps) {
     if (typeof here === 'boolean') this.here = this.hiddenHere = here
-    if (typeof name === 'string') this.name = name
     if (typeof finished === 'boolean') this.finished = finished
     if (typeof free === 'boolean') this.free = free
   }
@@ -105,29 +127,32 @@ class User {
     this.updateUserState({ waitStartTime: time.now() })
   }
 
-  setDateWith(email: string | null) {
-    this.updateUserState({ dateWith: email })
+  setDateWith(id: string | null) {
+    this.updateUserState({ dateWith: id })
   }
 
   subscribeOnMe() {
-    if (!this.email) return
     const onUser = async (userDoc: DocumentSnapshot) => {
       const user = userDoc.data()
       if (!user) return
       this.updateUser({
-        name: user.firstName,
-        email: user.email,
         finished: user.finished,
         free: user.free
       })
       if (user.finished) this.updateUserState({ here: false })
     }
-    db.collection(USERS_COLLECTION).doc(this.email).onSnapshot(onUser)
+    db.collection(USERS_COLLECTION).doc(this.id).onSnapshot(onUser)
+  }
+
+  async updateUserData(user: UserDataUpdate) {
+    this.bio = user.bio || this.bio
+    this.avatar = user.avatar || this.avatar
+    await db.collection(USERS_COLLECTION).doc(this.id).update(user)
   }
 
   async updateUserState(state: UserState) {
     if (this.email)
-      await db.collection(USERS_COLLECTION).doc(this.email).update(state)
+      await db.collection(USERS_COLLECTION).doc(this.id).update(state)
   }
 }
 

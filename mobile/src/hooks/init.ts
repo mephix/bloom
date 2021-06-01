@@ -10,10 +10,18 @@ export const useInit = () => {
       if (firebaseUser) {
         const userId = firebaseUser.uid
         const userDoc = await db.collection(USERS_COLLECTION).doc(userId).get()
-        if (!userDoc.data()) {
+        const userData = userDoc.data()
+        if (!userData) {
           user.setId(userId)
           return user.setAuth('without_information')
         }
+        user.setUser({
+          id: userId,
+          name: userData.name,
+          bio: userData.bio,
+          avatar: userData.avatar,
+          finished: userData.finished
+        })
         user.setAuth('authorized')
       } else user.setAuth('unauthorized')
     })

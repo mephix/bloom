@@ -2,6 +2,7 @@ import { IonRouterOutlet } from '@ionic/react'
 import { Route } from 'react-router-dom'
 import { Screen } from 'wrappers/Screen'
 import { EditScreen } from './EditScreen'
+import { OptionsScreen } from './OptionsScreen'
 import { ProfileInfo } from './ProfileInfo'
 
 export const Profile = () => {
@@ -13,6 +14,9 @@ export const Profile = () => {
         </Route>
         <Route exact path="/profile/edit">
           <EditScreen />
+        </Route>
+        <Route exact path="/profile/options">
+          <OptionsScreen />
         </Route>
       </IonRouterOutlet>
     </Screen>
