@@ -3,9 +3,10 @@
   box-sizing: border-box;
   border-bottom: 1px solid white;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-top: var(--ion-safe-area-top);
+  width: 100%;
 }
 
 .gap {

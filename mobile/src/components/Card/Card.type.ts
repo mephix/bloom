@@ -1,10 +1,10 @@
 import { User } from 'pages/Main/WaitingRoom/screens/WaitingRoom/WaitingRoom.type'
 
-export type CardType = 'join' | 'invite' | 'like'
+export type CardType = 'join' | 'invite' | 'like' | 'profile'
 
 export interface CardProps {
   user?: User
-  type: 'join' | 'invite' | 'like'
+  type: CardType
   onResolve?: (type: CardType) => void
   onReject?: () => void
   width?: number
@@ -12,7 +12,7 @@ export interface CardProps {
   background?: string
 }
 
-export type ButtonType = 'join' | 'like' | 'invite' | undefined
+export type ButtonType = 'join' | 'like' | 'invite' | 'profile' | undefined
 
 export type ActionButtonProps = {
   type?: ButtonType

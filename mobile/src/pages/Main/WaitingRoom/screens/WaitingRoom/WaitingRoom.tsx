@@ -10,13 +10,7 @@ import app from 'state/app'
 import { PARAMS } from 'state/utils/constants'
 import { UserCard } from 'state/utils/types'
 import meetup from 'state/meetup'
-import { Header } from 'components/Header'
-
-const mockUser = {
-  avatar: '/docs/placeholder.jpg',
-  name: 'Name',
-  bio: 'this is a bio \n can have multiple lines'
-}
+import placeholderImage from 'assets/images/placeholder.jpg'
 
 export const WaitingRoom = observer(() => {
   const toggleHandler = useCallback(state => user.setHere(state), [])
@@ -61,7 +55,7 @@ export const WaitingRoom = observer(() => {
       user={{
         avatar: topCard.face
           ? `${topCard.face}${app.faceDisplay}`
-          : mockUser.avatar,
+          : placeholderImage,
         name: topCard.firstName,
         bio: topCard.bio
       }}
@@ -96,12 +90,8 @@ export const WaitingRoom = observer(() => {
   )
 
   return (
-    <>
-      {/* <AppBarHeader /> */}
-      <Header />
-      <div className={classes(commonStyles.container, moduleStyles.container)}>
-        {content}
-      </div>
-    </>
+    <div className={classes(commonStyles.container, moduleStyles.container)}>
+      {content}
+    </div>
   )
 })

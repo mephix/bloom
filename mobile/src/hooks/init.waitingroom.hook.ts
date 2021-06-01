@@ -23,6 +23,7 @@ export const useInitWaitingRoom = () => {
       if (isProd) LogRocket.init('isym43/the-zero-date')
       await app.initParams()
       const { email, matchesDisable } = getUrlParams()
+      logger.error("Dating doesn't work right now!")
       Logger.active = true
       if (matchesDisable) MatchesService.setDisabled(true)
       if (!email) throw new Error('No email provided')

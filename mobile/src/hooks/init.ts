@@ -4,6 +4,8 @@ import user from 'state/user'
 
 export const useInit = () => {
   useEffect(() => {
+    document.body.classList.toggle('dark', true)
+
     auth().onAuthStateChanged(async firebaseUser => {
       if (firebaseUser) {
         const userId = firebaseUser.uid

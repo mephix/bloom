@@ -1,3 +1,7 @@
+html {
+  user-select: none;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -10,4 +14,24 @@ button {
 
 .grecaptcha-badge {
   visibility: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: white;
+  border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(212, 212, 212);
 }
