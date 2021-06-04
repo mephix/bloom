@@ -1,8 +1,8 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-05-24'
-let HOUR = 20
+let DAY = '2021-05-31'
+let HOUR = 19
 let SLOT = 6
 let RERUN = false
 let CUTOFF = 0.00       // >0 makes the dateEngine more picky.
@@ -14,7 +14,7 @@ let seqOrPar = 'parallel' // 'sequential' //
 
 // Less frequently changed params:
 let ROUND_ID = 1
-const TIMEZONE_OFFSET = '-06:00'
+const TIMEZONE_OFFSET = '-07:00'
 const SLOT_PREENTRY = 1
 const SLOT_STARTS = {
   0:  HOUR + ':00',
@@ -70,7 +70,7 @@ async function runDateEngine() {
   let idsOfUsersHere
   if (useTestIds) {
     // Only use this option for testing.
-    idsOfUsersHere = [3,836] // [1052,1051,1050,1049,1081,1080,1076,1075,]
+    idsOfUsersHere = [3,4] // [1052,1051,1050,1049,1081,1080,1076,1075,]
     // "id":4,"Email":"amel.assioua@gmail.com","First Name":"Amel"
     // "id":836,"Email":"female_straight_25_SF@bloom.com","First Name":"Anastasia"
     // "id":837,"Email":"female_straight_33_LA@bloom.com","First Name":"Christine"

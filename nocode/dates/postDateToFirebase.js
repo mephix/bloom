@@ -45,21 +45,27 @@ function postDateToFirebase(date) {
   const date1 = { ...commonFields, ...for1, }
   // const date2 = { ...commonFields, ...for2, }
 
-  // Create the Room.
-  const room = {
-    nbf: date.nbf,
-    exp: date.exp,
-    name: date.dailyRoomName,
-    url: date.dailyRoomURL,
-    date: refDate1,
-    // dates: [refDate1, refDate2],
-  }
+  // // Create the Room.
+  // const room = {
+  //   nbf: date.nbf,
+  //   exp: date.exp,
+  //   name: date.dailyRoomName,
+  //   url: date.dailyRoomURL,
+  //   date: refDate1,
+  //   // dates: [refDate1, refDate2],
+  // }
 
   // Add the Date and their Room in a batch.
   const batch = firestoreApi.db.batch()
   batch.set(refDate1, date1)
   // batch.set(refDate2, date2)
   // batch.set(refRoom, room)
+
+  // Now set both people's 'dateWith'
+  batch.update(firestoreApi.db.collection('Users').doc(date1.for), { dateWith: date1.with }, { merge: true })
+  batch.update(firestoreApi.db.collection('Users').doc(date1.with), { dateWith: date1.for }, { merge: true })
+
+  // Commit
   return batch.commit()
 }
 

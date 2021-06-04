@@ -1,4 +1,5 @@
 client/*
+mobile/*
 nocode/.env
 nocode/output/*
 nocode/node_modules/*

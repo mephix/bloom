@@ -1,14 +1,14 @@
 /*
  * Key parameters to set
  */
-let DAY = '2021-05-24'
-let HOUR = 20
+let DAY = '2021-05-31'
+let HOUR = 19
 let nRooms = 3
 let slots = [0,1,2,3,4,5,6]
 
 // Less frequently changed parameters. 
 // Change timezone between 7 and 8 depending on Daylight Saving.
-const TIMEZONE_OFFSET = '-06:00'
+const TIMEZONE_OFFSET = '-07:00'
 const SLOT_PREENTRY = 1
 const SLOT_STARTS = {
   0:  HOUR + ':00',
