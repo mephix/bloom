@@ -4,7 +4,8 @@ import {
   QueryDocumentSnapshot,
   QuerySnapshot,
   time,
-  USERS_COLLECTION
+  USERS_COLLECTION,
+  DocumentData
 } from 'firebaseService'
 import { DateTime } from 'luxon'
 import { makeAutoObservable } from 'mobx'
@@ -31,6 +32,10 @@ class Matches {
     this.loading = state
   }
 
+  async blockDate(dateId: string) {
+    await db.collection(DATES_COLLECTION).doc(dateId).update({ blocked: true })
+  }
+
   async setHeart(dateId: string) {
     const dateRef = db.collection(DATES_COLLECTION).doc(dateId)
     const dateDoc = await dateRef.get()
@@ -52,20 +57,35 @@ class Matches {
       for (const dateDoc of dates.docs) {
         const date = dateDoc.data()
         if (date.active) continue
+        if (date.blocked) continue
         const currentUserMatch = this.matchesUsers.find(
           match => match.dateId === dateDoc.id
         )
-        if (!currentUserMatch) continue // todo: add to matches array!
         const affiliation = isWith ? 'with' : 'for'
         const otherAffiliation = affiliation === 'for' ? 'with' : 'for'
+
+        if (!currentUserMatch) {
+          const matchesUser = await convertDateToUser(
+            dateDoc.id,
+            date,
+            affiliation,
+            otherAffiliation
+          )
+          if (!matchesUser) continue
+          const matchesUsers = [...this.matchesUsers, matchesUser].sort(byDesc)
+          this.setMatchesUsers(matchesUsers)
+          continue
+        }
+
         const type = getMatchType(
           date.rate[affiliation].heart,
           date.rate[otherAffiliation].heart
         )
-        this.matchesUsers = this.matchesUsers.map(user => {
+        const newMatchesUsers = this.matchesUsers.map(user => {
           if (user.dateId === dateDoc.id) return { ...user, type }
           return user
         })
+        this.setMatchesUsers(newMatchesUsers)
       }
       // console.log(isWith)
       logger.log('update...')
@@ -105,15 +125,16 @@ class Matches {
 
     const usersFor = await mapDatesToUsers(dateForDocs.docs, 'for')
     const usersWith = await mapDatesToUsers(dateWithDocs.docs, 'with')
-    const users = [...usersFor, ...usersWith].sort(
-      (userA, userB) => userB.dateEnd.seconds - userA.dateEnd.seconds
-    )
+    const users = [...usersFor, ...usersWith].sort(byDesc)
     this.setMatchesUsers(users)
     this.setLoading(false)
   }
 }
 
 export default new Matches()
+
+const byDesc = (userA: UserMatch, userB: UserMatch) =>
+  userB.dateEnd.seconds - userA.dateEnd.seconds
 
 export async function mapDatesToUsers(
   dateDocs: QueryDocumentSnapshot[],
@@ -125,31 +146,60 @@ export async function mapDatesToUsers(
     const date = dateDoc.data()
     if (date.blocked) continue
 
-    if (!date.rate?.[affiliation]) continue
-    if (!date.rate?.[otherAffiliation]) continue
-    const userDoc = await db
-      .collection(USERS_COLLECTION)
-      .doc(date[affiliation])
-      .get()
-    const user = userDoc.data()
-    if (!user) continue
+    // if (!date.rate?.[affiliation]) continue
+    // if (!date.rate?.[otherAffiliation]) continue
+    // const userDoc = await db
+    //   .collection(USERS_COLLECTION)
+    //   .doc(date[affiliation])
+    //   .get()
+    // const user = userDoc.data()
+    // if (!user) continue
 
-    const type = getMatchType(
-      date.rate?.[affiliation].heart,
-      date.rate?.[otherAffiliation].heart
+    // const type = getMatchType(
+    //   date.rate?.[affiliation].heart,
+    //   date.rate?.[otherAffiliation].heart
+    // )
+
+    const matchesUser = await convertDateToUser(
+      dateDoc.id,
+      date,
+      affiliation,
+      otherAffiliation
     )
-
-    users.push({
-      dateId: dateDoc.id,
-      dateEnd: date.end,
-      firstName: user.firstName,
-      avatar: user.avatar,
-      bio: user.bio,
-      userId: userDoc.id,
-      type
-    })
+    if (!matchesUser) continue
+    users.push(matchesUser)
   }
   return users
+}
+
+async function convertDateToUser(
+  id: string,
+  date: DocumentData,
+  affiliation: string,
+  otherAffiliation: string
+): Promise<UserMatch | null> {
+  if (!date.rate?.[affiliation]) return null
+  if (!date.rate?.[otherAffiliation]) return null
+  const userDoc = await db
+    .collection(USERS_COLLECTION)
+    .doc(date[affiliation])
+    .get()
+  const user = userDoc.data()
+  if (!user) return null
+
+  const type = getMatchType(
+    date.rate?.[affiliation].heart,
+    date.rate?.[otherAffiliation].heart
+  )
+  return {
+    dateId: id,
+    dateEnd: date.end,
+    firstName: user.firstName,
+    avatar: user.avatar,
+    bio: user.bio,
+    userId: userDoc.id,
+    type
+  }
 }
 
 function getMatchType(myMatch: boolean, otherMatch: boolean): MatchType {

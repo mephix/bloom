@@ -58,7 +58,7 @@ class Meetup {
   }
 
   get currentAffiliation() {
-    console.log('afffffffffffffffffffffffff', this.currentDate?.dateIsWith)
+    console.log('Current date while currentAffiliation', this.currentDate)
     return this.currentDate?.dateIsWith ? 'with' : 'for'
   }
 
@@ -171,13 +171,13 @@ class Meetup {
     this.currentMatchingUser = id
   }
 
-  deleteMatchingUser(email: string) {
-    if (this.unsubscribeUsers[email]) {
-      logger.log(`unsubscribed from ${email}`)
-      this.unsubscribeUsers[email]()
-      delete this.unsubscribeUsers[email]
+  deleteMatchingUser(id: string) {
+    if (this.unsubscribeUsers[id]) {
+      logger.log(`unsubscribed from ${id}`)
+      this.unsubscribeUsers[id]()
+      delete this.unsubscribeUsers[id]
     }
-    delete this.matchingUsers[email]
+    delete this.matchingUsers[id]
   }
 
   unsubscribeFromCurrentUser() {
@@ -212,10 +212,10 @@ class Meetup {
     if (!user.free) return
     if (!user.here || !user.hiddenHere) return
     const usersLogGroup = new LogGroup('With users availability', logger)
-    for (const [email, userProps] of Object.entries(this.matchingUsers)) {
-      const matchingUserRef = db.collection(USERS_COLLECTION).doc(email)
+    for (const [id, userProps] of Object.entries(this.matchingUsers)) {
+      const matchingUserRef = db.collection(USERS_COLLECTION).doc(id)
       const dateRef = db.collection(DATES_COLLECTION).doc(userProps.date.id)
-      const specificUserLogGroup = new LogGroup(`User ${email}`, logger)
+      const specificUserLogGroup = new LogGroup(`User ${id}`, logger)
 
       const result = await db.runTransaction(async t => {
         const matchingUserDoc = await t.get(matchingUserRef)
@@ -236,7 +236,7 @@ class Meetup {
         )
 
         if (dateNotCurrentAndActive) {
-          this.deleteMatchingUser(email)
+          this.deleteMatchingUser(id)
           return false
         }
         if (!matchingUser.here) return false
@@ -254,7 +254,7 @@ class Meetup {
       usersLogGroup.add(() => specificUserLogGroup.apply())
 
       if (!result) continue
-      if (this.currentMatchingUser && this.currentMatchingUser !== email) {
+      if (this.currentMatchingUser && this.currentMatchingUser !== id) {
         specificUserLogGroup.add(
           `Current matching user already exists ${this.currentMatchingUser}`
         )
@@ -262,15 +262,15 @@ class Meetup {
       }
       specificUserLogGroup.add(`Setting up date!`)
 
-      this.setCurrentMatchingUser(email)
+      this.setCurrentMatchingUser(id)
 
-      const currentDate = await this.checkDoubleDates(email)
+      const currentDate = await this.checkDoubleDates(id)
       logger.log('Current Date', currentDate)
       if (!currentDate) {
         this.resetCurrentMatchingUser()
         continue
       }
-      this.matchingUsers[email].date = currentDate as UsersDate
+      this.matchingUsers[id].date = currentDate as UsersDate
 
       callback()
       break
@@ -278,18 +278,18 @@ class Meetup {
     usersLogGroup.apply()
   }
 
-  async checkDoubleDates(email: string) {
+  async checkDoubleDates(id: string) {
     const dateWithDoc = await db
       .collection(DATES_COLLECTION)
       .where('with', '==', user.id)
-      .where('for', '==', email)
+      .where('for', '==', id)
       .where('end', '>', time.now())
       .where('active', '==', true)
       .limit(1)
       .get()
     const dateForDoc = await db
       .collection(DATES_COLLECTION)
-      .where('with', '==', email)
+      .where('with', '==', id)
       .where('for', '==', user.id)
       .where('end', '>', time.now())
       .where('active', '==', true)
@@ -298,14 +298,16 @@ class Meetup {
     const dateWith = dateWithDoc.docs[0] ? dateWithDoc.docs[0] : null
     const dateFor = dateForDoc.docs[0] ? dateForDoc.docs[0] : null
     if (!dateWith || !dateFor) {
-      if (dateWith) return { ...dateWith.data(), id: dateWith.id }
-      if (dateFor) return { ...dateFor.data(), id: dateFor.id }
+      if (dateWith)
+        return { ...dateWith.data(), id: dateWith.id, dateIsWith: true }
+      if (dateFor)
+        return { ...dateFor.data(), id: dateFor.id, dateIsWith: false }
     }
     if (
       dateWith?.data().timeSent.toMillis() < dateFor?.data().timeSent.toMillis()
     )
-      return { ...dateWith?.data(), id: dateWith?.id }
-    else return { ...dateFor?.data(), id: dateFor?.id }
+      return { ...dateWith?.data(), id: dateWith?.id, dateIsWith: true }
+    else return { ...dateFor?.data(), id: dateFor?.id, dateIsWith: false }
   }
 
   async shiftCards(reject = false) {
@@ -480,6 +482,7 @@ class Meetup {
     usersToSubscribe.forEach(id => {
       const dateDoc = dates.find(d => d.data()[isWith ? 'for' : 'with'] === id)
       if (!dateDoc) return logger.error(`dateDoc with id ${id} not found`)
+      console.log('isWith while check subs', isWith)
       const date = dateDocToUsersDate(dateDoc, isWith)
       if (!this.unsubscribeUsers[id])
         this.unsubscribeUsers[id] = this.subscribeOnUser(id, date)

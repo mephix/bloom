@@ -1,3 +1,4 @@
+import { useIonAlert } from '@ionic/react'
 import { useErrorToast } from 'hooks/error.toast.hook'
 import { useInfoToast } from 'hooks/info.toast.hook'
 import { observer } from 'mobx-react-lite'
@@ -19,26 +20,15 @@ export const Matches = observer(() => {
 
   const [section, setSection] = useState<MatchesSections>('recent')
   const allUsers = matches.matchesUsers
-  // const [allUsers, setAllUsers] = useState<UserMatch[]>([])
-  // const [loading, setLoading] = useState(true)
+  const [present] = useIonAlert()
 
   const matchesUsers = useMemo(
     () => allUsers.filter(user => user.type === 'both'),
     [allUsers]
   )
 
-  // const fetchUsers = useCallback(async () => {
-  //   const fetchedUsers = await MatchesService.getLastDateUsers()
-  //   setAllUsers(fetchedUsers)
-  //   setLoading(false)
-  // }, [])
-
-  // useEffect(() => {
-  //   fetchUsers()
-  // }, [fetchUsers])
   const actionHandler = useCallback(
     async (userId: string, dateId: string, type: MatchType) => {
-      // console.log(userId, dateId, type)
       switch (type) {
         case 'both': {
           const phoneNumber = await PhoneNumberService.getUserPhoneNumber(
@@ -59,9 +49,19 @@ export const Matches = observer(() => {
     },
     [showError, showInfo]
   )
-  const blockHandler = useCallback(dateId => {
-    console.log('block', dateId)
-  }, [])
+  const blockHandler = useCallback(
+    dateId => {
+      // console.log('block', dateId)
+      present('Are you sure you want to log out?', [
+        { text: 'Cancel' },
+        {
+          text: 'Yes',
+          handler: () => matches.blockDate(dateId)
+        }
+      ])
+    },
+    [present]
+  )
 
   if (matches.loading) return <LoaderPage header color="light" />
   const users = section === 'recent' ? allUsers : matchesUsers
