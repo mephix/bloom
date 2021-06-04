@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { Card } from 'components/Card'
 import { Toggle } from 'components/Toggle'
 import commonStyles from '../Common.module.scss'
@@ -11,10 +11,15 @@ import { PARAMS } from 'state/utils/constants'
 import { UserCard } from 'state/utils/types'
 import meetup from 'state/meetup'
 import placeholderImage from 'assets/images/placeholder.jpg'
+import { TabContext } from 'routes'
 
 export const WaitingRoom = observer(() => {
   const toggleHandler = useCallback(state => user.setHere(state), [])
   const [disabled, setDisabled] = useState<boolean>(false)
+  // const { hideTabs } = useContext(TabContext)
+  // useEffect(() => {
+  //   hideTabs()
+  // }, [hideTabs])
 
   const resolveHandler = useCallback(async () => {
     if (disabled) return console.log('action button disabled')
@@ -53,9 +58,7 @@ export const WaitingRoom = observer(() => {
     <Card
       type={getType(topCard)}
       user={{
-        avatar: topCard.face
-          ? `${topCard.face}${app.faceDisplay}`
-          : placeholderImage,
+        avatar: topCard.avatar ? topCard.avatar : placeholderImage,
         name: topCard.firstName,
         bio: topCard.bio
       }}

@@ -11,9 +11,7 @@ export class Matchmaker {
 
   static async initialize() {
     logger.log('Initialization')
-    if (!user.email) throw new Error('No user defined!')
     await DateClockService.initNextDateNight()
-    MatchesService.setEmail(user.email)
     this.launch()
   }
 
@@ -32,7 +30,6 @@ export class Matchmaker {
 
   private static worker() {
     logger.log('Worker invoked')
-    if (!user.email) return logger.error('No user data!')
     const sleepMatchmakerFor = (millis: number): NodeJS.Timeout => {
       return setTimeout(this.worker.bind(this), millis)
     }

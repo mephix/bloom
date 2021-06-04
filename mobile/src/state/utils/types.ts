@@ -11,7 +11,7 @@ export type DateState = {}
 
 export interface UserData {
   bio: string
-  email: string
+  id: string
   firstName: string
   free: boolean
   here: boolean
@@ -45,7 +45,7 @@ export type DateFields =
   | 'timeLeft'
   | 'timeReplied'
   | 'timeSent'
-  | RateToggles
+  | 'rate'
 
 export type RateToggles =
   | 'fun'
@@ -56,6 +56,17 @@ export type RateToggles =
   | 'goodListener'
   | 'asksInterestingQuestion'
   | 'heart'
+
+export type MatchType = 'both' | 'me' | 'unknown'
+export interface UserMatch {
+  dateId: string
+  userId: string
+  dateEnd: Timestamp
+  firstName: string
+  avatar: string
+  bio: string
+  type: MatchType
+}
 
 export interface UserProps {
   user: UserData
@@ -77,18 +88,18 @@ export interface Room {
 
 // export type Date = {}
 export type Prospect = {
-  email: string
+  userId: string
   firstName: string
   bio: string
-  face?: string
+  avatar?: string
   dateId?: string
 }
 
 export type UserCard = {
-  email: string
+  userId: string
   firstName: string
   bio: string
-  face?: string
+  avatar?: string
   isDate: boolean
   dateId?: string
 }

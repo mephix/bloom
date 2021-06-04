@@ -3,12 +3,11 @@ import { AppInput } from 'components/AppInput'
 import { useCallback, useContext, useState } from 'react'
 import { Screen } from 'wrappers/Screen'
 import { isValidPhoneNumber } from 'react-phone-number-input'
-import { useIonToast } from '@ionic/react'
 import { auth } from 'firebaseService'
 import stylesModule from '../AuthIndex.module.scss'
 import { RegisterContext } from './RegisterContext'
 import { useHistory } from 'react-router'
-import { useErrorToast } from './error.toast.hook'
+import { useErrorToast } from '../../../hooks/error.toast.hook'
 
 const SEND_CODE_BUTTON_ID = 'send-code'
 

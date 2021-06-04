@@ -1,5 +1,5 @@
 import DailyIframe, { DailyCall } from '@daily-co/daily-js'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import Countdown from 'react-countdown'
 import moduleStyles from './Video.module.scss'
 import app from 'state/app'
@@ -8,6 +8,8 @@ import { fromSecondsToMillis } from 'services/dateClock.service'
 import { CountDown } from './CountDown'
 import user from 'state/user'
 import { Logger } from 'utils'
+import { TabContext } from 'routes'
+import commonStyles from '../Common.module.scss'
 
 const minute = Date.now() + 60 * 60 * 1000
 const logger = new Logger('Video', 'red')
@@ -20,6 +22,7 @@ export const Video = () => {
   const [endDateTime, setEndDateTime] = useState(minute)
   const [visibleCountDown, setVisibleCountDown] = useState(true)
   const [timeout] = useState(Date.now() + COUNT_DOWN * 1000)
+  const { hideTabs } = useContext(TabContext)
   const endDate = useCallback(() => {
     if (!dailyObj) return app.setRaitingState()
     dailyObj.leave()
@@ -27,18 +30,10 @@ export const Video = () => {
 
   const countDownEnd = useCallback(async () => {
     if (!dailyObj) return
-    // const { local, ...participants } = dailyObj.participants()
-    // if (Object.keys(participants).length) {
     setVisibleCountDown(false)
     dailyObj.setLocalAudio(true)
     meetup.setJoinTime()
     user.setFree(false)
-    // } else {
-    //   logger.error('No participants in room!')
-    //   meetup.resetCurrentMatchingUser()
-    //   user.setFree(true)
-    //   app.setWaitingRoomState()
-    // }
   }, [dailyObj])
 
   const startDate = useCallback(async () => {
@@ -69,10 +64,11 @@ export const Video = () => {
   }, [videoFrameRef, setDailyObj])
 
   useEffect(() => {
+    hideTabs()
     startDate()
-  }, [startDate])
+  }, [startDate, hideTabs])
   return (
-    <>
+    <div className={commonStyles.fullScreen}>
       {visibleCountDown && (
         <CountDown
           onComplete={countDownEnd}
@@ -112,6 +108,6 @@ export const Video = () => {
       <button onClick={endDate} className={moduleStyles.leaveVideo}>
         Leave date
       </button>
-    </>
+    </div>
   )
 }

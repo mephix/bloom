@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { db, PARAMETERS_COLLECTION } from 'firebaseService'
 import { FACE_DISPLAY, PARAMS } from './utils/constants'
 import { StringDictionary } from './utils/types'
+import { Matchmaker } from 'services/matchmaker.service'
 
 export type AppState = 'WAITING' | 'VIDEO' | 'RATING' | 'NO_PERMISSIONS' | null
 
@@ -13,26 +14,30 @@ class App {
     makeAutoObservable(this)
   }
 
-  async initParams() {
+  init() {
+    return new Promise(resolve => {
+      db.collection(PARAMETERS_COLLECTION).onSnapshot(async () => {
+        await this.getParams()
+        await Matchmaker.initialize()
+        resolve && resolve(null)
+      })
+    })
+  }
+
+  async getParams() {
     for (const [, param] of Object.entries(PARAMS)) {
       const doc = await db.collection(PARAMETERS_COLLECTION).doc(param).get()
       this.setParams(param, doc?.data()?.text)
     }
-    const fdDoc = await db
-      .collection(PARAMETERS_COLLECTION)
-      .doc(FACE_DISPLAY)
-      .get()
-    const fd = fdDoc.data()?.params
-    this.setFaceDisplay(fd || '')
   }
 
   setParams(param: string, value: string) {
     this.params[param] = value
   }
 
-  setFaceDisplay(fd: string) {
-    this.faceDisplay = fd
-  }
+  // setFaceDisplay(fd: string) {
+  //   this.faceDisplay = fd
+  // }
 
   setNoPermissionsState() {
     this.state = 'NO_PERMISSIONS'

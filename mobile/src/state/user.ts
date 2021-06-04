@@ -8,6 +8,7 @@ import {
 } from '../firebaseService'
 import { isProd } from '../utils'
 import app from './app'
+import matches from './matches'
 import meetup from './meetup'
 import { UserState } from './utils/types'
 
@@ -23,27 +24,40 @@ type AuthStatus =
   | 'unknown'
   | 'without_information'
 
+export type Gender = 'm' | 'f' | 'x' | ''
+
 interface UserData {
   id: string
-  name: string
+  firstName: string
   bio?: string
   avatar?: string
   here?: boolean
   free?: boolean
   finished?: boolean
+  meetGender?: Gender
+  meetAges?: MeetAges
+}
+
+interface MeetAges {
+  from: number
+  to: number
 }
 
 interface UserDataUpdate {
   bio?: string
   avatar?: string
+  meetGender?: Gender
+  meetAges?: MeetAges
 }
 
 class User {
   id: string | undefined
-  email: string | null = null
-  name: string = ''
+  // email: string | null = null
+  firstName: string = ''
   bio: string = ''
   avatar: string = ''
+  meetGender: Gender = ''
+  meetAges: MeetAges = { from: 18, to: 99 }
 
   here = false
   free = true
@@ -62,9 +76,11 @@ class User {
 
   setUser(user: UserData) {
     this.id = user.id
-    this.name = user.name
-    this.bio = user.bio || ''
-    this.avatar = user.avatar || ''
+    this.firstName = user.firstName
+    this.bio = user.bio || this.bio
+    this.avatar = user.avatar || this.avatar
+    this.meetGender = user.meetGender || this.meetGender
+    this.meetAges = user.meetAges || this.meetAges
 
     this.updateUser({
       finished: user.finished
@@ -92,11 +108,18 @@ class User {
   }
 
   signUser() {
-    this.subscribeOnMe()
+    const meUnsubscribe = this.subscribeOnMe()
     this.setDateWith(null)
     this.updateUserState({ free: true, here: this.here })
-    meetup.subscribeOnDates()
-    meetup.subscribeOnProspects()
+    const datesUnsubscribe = meetup.subscribeOnDates()
+    const prospectsUnsubscribe = meetup.subscribeOnProspects()
+    const matchesUnsubscribe = matches.subscribeOnMatches()
+    return () => {
+      meUnsubscribe()
+      datesUnsubscribe()
+      prospectsUnsubscribe()
+      matchesUnsubscribe()
+    }
   }
 
   updateUser({ here, finished, free }: UpdateUserProps) {
@@ -141,18 +164,19 @@ class User {
       })
       if (user.finished) this.updateUserState({ here: false })
     }
-    db.collection(USERS_COLLECTION).doc(this.id).onSnapshot(onUser)
+    return db.collection(USERS_COLLECTION).doc(this.id).onSnapshot(onUser)
   }
 
-  async updateUserData(user: UserDataUpdate) {
+  updateUserData(user: UserDataUpdate) {
     this.bio = user.bio || this.bio
     this.avatar = user.avatar || this.avatar
-    await db.collection(USERS_COLLECTION).doc(this.id).update(user)
+    this.meetGender = user.meetGender || this.meetGender
+    this.meetAges = user.meetAges || this.meetAges
+    return db.collection(USERS_COLLECTION).doc(this.id).update(user)
   }
 
   async updateUserState(state: UserState) {
-    if (this.email)
-      await db.collection(USERS_COLLECTION).doc(this.id).update(state)
+    await db.collection(USERS_COLLECTION).doc(this.id).update(state)
   }
 }
 

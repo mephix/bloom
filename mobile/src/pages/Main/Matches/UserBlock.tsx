@@ -2,21 +2,64 @@ import stylesModule from './UserBlock.module.scss'
 import placeholderImage from 'assets/images/placeholder.jpg'
 import { FC } from 'react'
 import { IonIcon } from '@ionic/react'
-import { closeCircleOutline, heart } from 'ionicons/icons'
+import {
+  chatboxEllipses,
+  closeCircleOutline,
+  heart,
+  heartOutline
+} from 'ionicons/icons'
+import { MatchType } from 'state/utils/types'
+import { noop } from 'utils'
+import { AppImage } from 'components/AppImage/AppImage'
 
 interface UserBlockProps {
+  type: MatchType
   name?: string
   bio?: string
   avatar?: string
-  type: 'date' | 'match',
   onBlock?: Function
+  onAction?: (type: MatchType) => void
 }
 
-export const UserBlock: FC<UserBlockProps> = ({ name, bio, avatar, type, onBlock }) => {
+export const UserBlock: FC<UserBlockProps> = ({
+  name,
+  bio,
+  avatar,
+  type,
+  onBlock = noop,
+  onAction = noop
+}) => {
+  const typeIcon =
+    type === 'both' ? (
+      <IonIcon
+        className={stylesModule.action}
+        onClick={() => onAction(type)}
+        size="large"
+        icon={chatboxEllipses}
+        color="danger"
+      />
+    ) : type === 'me' ? (
+      <IonIcon
+        className={stylesModule.action}
+        onClick={() => onAction(type)}
+        size="large"
+        icon={heart}
+        color="danger"
+      />
+    ) : (
+      <IonIcon
+        className={stylesModule.action}
+        onClick={() => onAction(type)}
+        size="large"
+        icon={heartOutline}
+        color="dark"
+      />
+    )
   return (
     <div className={stylesModule.blockContainer}>
       <div className={stylesModule.user}>
-        <img
+        <AppImage
+          defaultSrc={placeholderImage}
           className={stylesModule.avatar}
           src={avatar || placeholderImage}
           alt="avatar"
@@ -29,8 +72,14 @@ export const UserBlock: FC<UserBlockProps> = ({ name, bio, avatar, type, onBlock
         </div>
       </div>
       <div className={stylesModule.actions}>
-        <IonIcon size="large" icon={heart} color="danger" />
-        <IonIcon size="large" icon={closeCircleOutline} color="medium" />
+        {typeIcon}
+        <IonIcon
+          className={stylesModule.action}
+          onClick={() => onBlock()}
+          size="large"
+          icon={closeCircleOutline}
+          color="medium"
+        />
       </div>
     </div>
   )

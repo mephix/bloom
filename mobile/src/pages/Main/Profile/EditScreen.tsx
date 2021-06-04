@@ -31,6 +31,7 @@ export const EditScreen = () => {
     await user.updateUserData({ bio })
 
     setHideTextarea(true)
+
     history.goBack()
   }, [history, avatar, bio])
 

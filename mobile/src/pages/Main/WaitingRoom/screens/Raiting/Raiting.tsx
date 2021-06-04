@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { ButtonToggle } from 'components/ButtonToggle'
 import { IconToggle } from 'components/IconToggle'
 import app from 'state/app'
@@ -8,8 +8,11 @@ import { classes } from 'utils/common'
 import commonStyles from '../Common.module.scss'
 import moduleStyles from './Raiting.module.scss'
 import { RateToggles } from 'state/utils/types'
+import { TabContext } from 'routes'
 
 export const Raiting = () => {
+  const { showTabs } = useContext(TabContext)
+
   const [rate, setRate] = useState<{ [key in RateToggles]: boolean }>({
     fun: false,
     curious: false,
@@ -21,6 +24,9 @@ export const Raiting = () => {
     heart: false
   })
   const [modal, setModal] = useState(false)
+  useEffect(() => {
+    showTabs()
+  }, [showTabs])
 
   const doneRaitingHandler = useCallback(() => {
     meetup.setRaiting(rate)

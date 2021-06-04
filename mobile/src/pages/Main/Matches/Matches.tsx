@@ -1,4 +1,11 @@
-import { useState } from 'react'
+import { useErrorToast } from 'hooks/error.toast.hook'
+import { useInfoToast } from 'hooks/info.toast.hook'
+import { observer } from 'mobx-react-lite'
+import { LoaderPage } from 'pages/LoaderPage'
+import { useCallback, useMemo, useState } from 'react'
+import { PhoneNumberService } from 'services/phoneNumber.service'
+import matches from 'state/matches'
+import { MatchType } from 'state/utils/types'
 import { classes } from 'utils'
 import { Screen } from 'wrappers/Screen'
 import stylesModule from './Matches.module.scss'
@@ -6,11 +13,61 @@ import { UserBlock } from './UserBlock'
 
 type MatchesSections = 'recent' | 'matches'
 
-export const Matches = () => {
+export const Matches = observer(() => {
+  const showError = useErrorToast()
+  const [showInfo] = useInfoToast()
+
   const [section, setSection] = useState<MatchesSections>('recent')
+  const allUsers = matches.matchesUsers
+  // const [allUsers, setAllUsers] = useState<UserMatch[]>([])
+  // const [loading, setLoading] = useState(true)
+
+  const matchesUsers = useMemo(
+    () => allUsers.filter(user => user.type === 'both'),
+    [allUsers]
+  )
+
+  // const fetchUsers = useCallback(async () => {
+  //   const fetchedUsers = await MatchesService.getLastDateUsers()
+  //   setAllUsers(fetchedUsers)
+  //   setLoading(false)
+  // }, [])
+
+  // useEffect(() => {
+  //   fetchUsers()
+  // }, [fetchUsers])
+  const actionHandler = useCallback(
+    async (userId: string, dateId: string, type: MatchType) => {
+      // console.log(userId, dateId, type)
+      switch (type) {
+        case 'both': {
+          const phoneNumber = await PhoneNumberService.getUserPhoneNumber(
+            userId
+          )
+          if (!phoneNumber)
+            return showError(
+              'Opps.. there was an error while getting the phone number'
+            )
+          showInfo('Phone number ' + phoneNumber)
+          break
+        }
+        case 'unknown': {
+          showInfo('Sending your heart 💕')
+          matches.setHeart(dateId)
+        }
+      }
+    },
+    [showError, showInfo]
+  )
+  const blockHandler = useCallback(dateId => {
+    console.log('block', dateId)
+  }, [])
+
+  if (matches.loading) return <LoaderPage header color="light" />
+  const users = section === 'recent' ? allUsers : matchesUsers
 
   return (
-    <Screen>
+    <Screen header>
       <div className={stylesModule.sectionsContainer}>
         <div
           onClick={() => setSection('recent')}
@@ -31,14 +88,18 @@ export const Matches = () => {
       </div>
 
       <div className={stylesModule.usersBlockContauner}>
-        <UserBlock name="First Name" bio="some text such as bio" type="date" />
-        <UserBlock name="First Name" bio="some text such as bio" type="date" />
-        <UserBlock
-          name="First Name"
-          bio="some text such as bio, some text such as bio, some text such as bio, some text such as bio"
-          type="date"
-        />
+        {users.map(user => (
+          <UserBlock
+            key={user.dateId}
+            name={user.firstName}
+            avatar={user.avatar}
+            bio={user.bio}
+            type={user.type}
+            onAction={type => actionHandler(user.userId, user.dateId, type)}
+            onBlock={() => blockHandler(user.dateId)}
+          />
+        ))}
       </div>
     </Screen>
   )
-}
+})

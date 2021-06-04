@@ -5,6 +5,7 @@ import { noop } from '../../utils/common'
 import { ButtonType, CardProps, CardType } from './Card.type'
 import { AppButton } from 'components/AppButton'
 import placeholderImage from 'assets/images/placeholder.jpg'
+import { AppImage } from 'components/AppImage/AppImage'
 
 const initialUser = {
   avatar: '',
@@ -32,7 +33,8 @@ export const Card: FC<CardProps> = ({
     <div className={stylesModule.card}>
       <div className={stylesModule.scrollable}>
         <div className={stylesModule.userInfo}>
-          <img
+          <AppImage
+            defaultSrc={placeholderImage}
             className={stylesModule.avatar}
             src={user.avatar || placeholderImage}
             alt="profile-avatar"

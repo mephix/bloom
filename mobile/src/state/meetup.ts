@@ -25,17 +25,22 @@ import {
 import user from './user'
 import app from './app'
 import { ConferenceService } from '../services/conference.service'
-import { Logger, LogGroup } from '../utils/Logger'
+import { LogGroup } from '../utils/Logger'
 import { byAccepted, byActive, computeData } from '../utils'
 import {
+  checkDateCardsActive,
+  checkProspectsCollection,
   computeDateCards,
   dateDocToUsersDate,
-  moveProspectTo
+  getProspectUsersFromRefs,
+  logger,
+  mapDatesByWith,
+  moveProspectTo,
+  subscribeOnAllDates
 } from './meetup.utils'
 import { DateClockService, ISO_OPTIONS } from '../services/dateClock.service'
 import { DateTime } from 'luxon'
-
-const logger = new Logger('Meetup', '#10c744')
+import { PhoneNumberService } from 'services/phoneNumber.service'
 
 class Meetup {
   // private dateIsFor: boolean = false
@@ -53,6 +58,7 @@ class Meetup {
   }
 
   get currentAffiliation() {
+    console.log('afffffffffffffffffffffffff', this.currentDate?.dateIsWith)
     return this.currentDate?.dateIsWith ? 'with' : 'for'
   }
 
@@ -78,12 +84,14 @@ class Meetup {
     this.isDateNight = state
   }
 
-  async setRaiting(Rate: { [key in RateToggles]: boolean }) {
-    for (const [key, value] of Object.entries(Rate)) {
-      await this.updateCurrentDate(key as RateToggles, {
-        [this.currentAffiliation]: value
-      })
+  async setRaiting(rate: { [key in RateToggles]: boolean }) {
+    if (this.currentMatchingUser) {
+      if (rate.heart)
+        await PhoneNumberService.allowMyPhoneNumber(this.currentMatchingUser)
     }
+    await this.updateCurrentDate('rate', {
+      [this.currentAffiliation]: rate
+    })
     this.unsubscribeFromCurrentUser()
   }
 
@@ -106,19 +114,19 @@ class Meetup {
     }
   }
 
-  async canselAllDaes(email: string) {
+  async canselAllDaes(id: string) {
     const dateWithDoc = await db
       .collection(DATES_COLLECTION)
-      .where('with', '==', user.email)
-      .where('for', '==', email)
+      .where('with', '==', user.id)
+      .where('for', '==', id)
       .where('end', '>', time.now())
       .where('active', '==', true)
       .limit(1)
       .get()
     const dateForDoc = await db
       .collection(DATES_COLLECTION)
-      .where('with', '==', email)
-      .where('for', '==', user.email)
+      .where('with', '==', id)
+      .where('for', '==', user.id)
       .where('end', '>', time.now())
       .where('active', '==', true)
       .limit(1)
@@ -158,9 +166,9 @@ class Meetup {
     this.currentMatchingUser = null
   }
 
-  setCurrentMatchingUser(email: string) {
-    user.setDateWith(email)
-    this.currentMatchingUser = email
+  setCurrentMatchingUser(id: string) {
+    user.setDateWith(id)
+    this.currentMatchingUser = id
   }
 
   deleteMatchingUser(email: string) {
@@ -174,20 +182,21 @@ class Meetup {
 
   unsubscribeFromCurrentUser() {
     if (!this.currentMatchingUserData) return
-    const lastUserEmail = this.currentMatchingUserData.email
-    if (this.unsubscribeUsers[lastUserEmail]) {
-      logger.log(`unsubscribed from ${lastUserEmail}`)
-      this.unsubscribeUsers[lastUserEmail]()
-      delete this.unsubscribeUsers[lastUserEmail]
+    const lastUserId = this.currentMatchingUserData.id
+    if (this.unsubscribeUsers[lastUserId]) {
+      logger.log(`unsubscribed from ${lastUserId}`)
+      this.unsubscribeUsers[lastUserId]()
+      delete this.unsubscribeUsers[lastUserId]
       logger.log(
         'unsubscribeUsers object',
         JSON.parse(JSON.stringify(this.unsubscribeUsers))
       )
     }
-    delete this.matchingUsers[lastUserEmail]
+    delete this.matchingUsers[lastUserId]
     this.resetCurrentMatchingUser()
   }
 
+  // todo: refactor
   /**
    * Checks the availability of all users with whom the date can be
    * @param callback Runs when the availability check was successful
@@ -222,7 +231,7 @@ class Meetup {
           `here: ${matchingUser.here}`,
           `free: ${matchingUser.free}`,
           `Having date with current user ${
-            matchingUser.dateWith && matchingUser.dateWith === user.email
+            matchingUser.dateWith && matchingUser.dateWith === user.id
           }`
         )
 
@@ -234,10 +243,10 @@ class Meetup {
         if (
           !matchingUser.free &&
           matchingUser.dateWith &&
-          matchingUser.dateWith !== user.email
+          matchingUser.dateWith !== user.id
         )
           return false
-        if (matchingUser.dateWith && matchingUser.dateWith !== user.email)
+        if (matchingUser.dateWith && matchingUser.dateWith !== user.id)
           return false
         return true
       })
@@ -272,7 +281,7 @@ class Meetup {
   async checkDoubleDates(email: string) {
     const dateWithDoc = await db
       .collection(DATES_COLLECTION)
-      .where('with', '==', user.email)
+      .where('with', '==', user.id)
       .where('for', '==', email)
       .where('end', '>', time.now())
       .where('active', '==', true)
@@ -281,7 +290,7 @@ class Meetup {
     const dateForDoc = await db
       .collection(DATES_COLLECTION)
       .where('with', '==', email)
-      .where('for', '==', user.email)
+      .where('for', '==', user.id)
       .where('end', '>', time.now())
       .where('active', '==', true)
       .limit(1)
@@ -300,7 +309,7 @@ class Meetup {
   }
 
   async shiftCards(reject = false) {
-    if (!user.email) return
+    if (!user.id) return
     if (!this.cards[0]) return
     if (this.cards[0].isDate) await this.shiftDates(reject)
     else await this.shiftProspects(reject)
@@ -322,10 +331,10 @@ class Meetup {
     logger.log('Pushing date...')
     const forUserDoc = await db.collection(USERS_COLLECTION).doc(forUser).get()
     if (!forUserDoc.data())
-      throw new Error(`User with email ${forUser} doesn't exist'`)
+      throw new Error(`User with id ${forUser} doesn't exist'`)
     const dateWithDoc = await db
       .collection(DATES_COLLECTION)
-      .where('with', '==', user.email)
+      .where('with', '==', user.id)
       .where('for', '==', forUser)
       .where('end', '>', time.now())
       .where('active', '==', true)
@@ -333,7 +342,7 @@ class Meetup {
     const dateForDoc = await db
       .collection(DATES_COLLECTION)
       .where('with', '==', forUser)
-      .where('for', '==', user.email)
+      .where('for', '==', user.id)
       .where('end', '>', time.now())
       .where('active', '==', true)
       .get()
@@ -347,20 +356,20 @@ class Meetup {
       start: time.fromDate(new Date(roundStartTime)),
       end: time.fromDate(new Date(roundEndTime)),
       for: forUser,
-      with: user.email,
+      with: user.id,
       active: true,
       timeSent: time.now()
     })
   }
 
   async shiftProspects(reject = false) {
-    if (!user.email) return
-    this.prospects.shift()
+    if (!user.id) return
+    // this.prospects.shift() // ? delete
     if (reject) {
-      await moveProspectTo('prospects', 'nexts', user.email)
+      await moveProspectTo('prospects', 'nexts', user.id)
     } else {
       try {
-        const forUser = await moveProspectTo('prospects', 'likes', user.email)
+        const forUser = await moveProspectTo('prospects', 'likes', user.id)
         if (!forUser) throw new Error('Failed to get forUser!')
         await this.createDate(forUser)
       } catch (err) {
@@ -370,20 +379,20 @@ class Meetup {
   }
 
   async shiftDates(reject = false) {
-    if (!user.email) return
+    if (!user.id) return
     if (reject) {
-      await moveProspectTo('prospects', 'nexts', user.email)
+      await moveProspectTo('prospects', 'nexts', user.id)
       await db
         .collection(DATES_COLLECTION)
         .doc(this.dateCards[0].dateId)
         .update({ accepted: false, active: false, timeReplied: time.now() })
     } else {
       user.setHere(true)
-      await moveProspectTo('prospects', 'likes', user.email)
+      await moveProspectTo('prospects', 'likes', user.id)
       const anotherDate = await db
         .collection(DATES_COLLECTION)
-        .where('with', '==', user.email)
-        .where('for', '==', this.dateCards[0].email)
+        .where('with', '==', user.id)
+        .where('for', '==', this.dateCards[0].userId)
         .where('end', '>', time.now())
         .where('active', '==', true)
         .get()
@@ -394,6 +403,7 @@ class Meetup {
           db.collection(DATES_COLLECTION).doc(date.id).set({ active: false })
         )
       }
+      logger.log('accepting date with id', this.dateCards[0].dateId)
 
       await db
         .collection(DATES_COLLECTION)
@@ -411,8 +421,8 @@ class Meetup {
       .doc(this.currentDate.id)
     let room: string | null = null
     while (!room) {
-      room = await db.runTransaction(async t => {
-        const dateDoc = await t.get(currentDateRef)
+      room = await db.runTransaction(async dateConferenceTransaction => {
+        const dateDoc = await dateConferenceTransaction.get(currentDateRef)
         const date = dateDoc.data()
         if (!date) {
           app.setWaitingRoomState()
@@ -420,7 +430,7 @@ class Meetup {
         }
         const room = date.room
         if (room) return room
-        if (date.with !== user.email) return null
+        if (date.with !== user.id) return null
         const dateStartTimestamp = date?.start as Timestamp
         const dateEndTimestamp = date?.end as Timestamp
 
@@ -436,63 +446,48 @@ class Meetup {
           dateEndIso
         )
         logger.log(`Conference room created ${roomUrl}`)
-        await t.update(currentDateRef, { room: roomUrl })
+        await dateConferenceTransaction.update(currentDateRef, {
+          room: roomUrl
+        })
         return roomUrl
       })
     }
-
-    if (!user.name) return null
-    const token = await ConferenceService.getToken({ user_name: user.name })
+    const token = await ConferenceService.getToken({
+      user_name: user.firstName
+    })
     return {
       url: room,
       token
     } as Room
   }
 
-  subscribeOnUser(email: string, date: UsersDate) {
-    logger.log(`subscribe on ${email}`)
+  subscribeOnUser(id: string, date: UsersDate) {
+    logger.log(`subscribe on ${id}`)
     const onUser = (user: DocumentSnapshot) => {
-      const userData = user.data()
-      this.matchingUsers[email] = {
+      const userData = user.data()!
+      this.matchingUsers[id] = {
         user: userData as UserData,
         date
       }
       this.checkAvailability(() => app.setVideoState())
     }
 
-    return db.collection(USERS_COLLECTION).doc(email).onSnapshot(onUser)
+    return db.collection(USERS_COLLECTION).doc(id).onSnapshot(onUser)
   }
 
   checkUsersSubscription(dates: QueryDocumentSnapshot[], isWith: boolean) {
-    const usersToSubscribe = dates.map(date =>
-      isWith ? date.data().for : date.data().with
-    )
-    usersToSubscribe.forEach(email => {
-      const dateDoc = dates.find(
-        d => d.data()[isWith ? 'for' : 'with'] === email
-      )
-      if (!dateDoc) return logger.error(`dateDoc with email ${email} not found`)
+    const usersToSubscribe = dates.map(mapDatesByWith(isWith))
+    usersToSubscribe.forEach(id => {
+      const dateDoc = dates.find(d => d.data()[isWith ? 'for' : 'with'] === id)
+      if (!dateDoc) return logger.error(`dateDoc with id ${id} not found`)
       const date = dateDocToUsersDate(dateDoc, isWith)
-      if (!this.unsubscribeUsers[email])
-        this.unsubscribeUsers[email] = this.subscribeOnUser(email, date)
+      if (!this.unsubscribeUsers[id])
+        this.unsubscribeUsers[id] = this.subscribeOnUser(id, date)
     })
   }
 
   async checkDatesActive() {
-    const checkedDates = []
-    for (const card of this.dateCards) {
-      const dateDoc = await db
-        .collection(DATES_COLLECTION)
-        .doc(card.dateId)
-        .get()
-      const date = dateDoc.data()
-      if (
-        date?.active &&
-        !date?.accepted &&
-        date?.end.seconds > time.now().seconds
-      )
-        checkedDates.push(card)
-    }
+    const checkedDates = await checkDateCardsActive(this.dateCards)
     logger.log('Active Date cards', checkedDates)
     this.setDateCards(checkedDates)
   }
@@ -500,48 +495,32 @@ class Meetup {
   subscribeOnDates() {
     const onDate = async (queryDates: QuerySnapshot, isWith: boolean) => {
       if (!this.isDateNight) return
-      if (!user.email) return
-      // logger.log('Fetched Dates collection update')
       let dates = queryDates.docs.filter(byActive)
-      const dateCards = await computeDateCards(dates, user.email)
+      const dateCards = await computeDateCards(dates, user.id!)
       dates = dates.filter(byAccepted(true))
       if (dates.length) logger.log('Available dates', dates.map(computeData))
       this.setDateCards(dateCards)
       this.checkUsersSubscription(dates, isWith)
     }
 
-    db.collection(DATES_COLLECTION)
-      .where('for', '==', user.email)
-      .where('end', '>', time.now())
-      .onSnapshot(d => onDate(d, false))
-    db.collection(DATES_COLLECTION)
-      .where('with', '==', user.email)
-      .where('end', '>', time.now())
-      .onSnapshot(d => onDate(d, true))
+    return subscribeOnAllDates(onDate)
   }
 
   subscribeOnProspects() {
     const onProspects = async (doc: DocumentSnapshot) => {
-      const prospectsData = doc.data()
-      const prospects = prospectsData!.prospects
-
-      const prospectsUsers = await getProspectUsersFromRefs(prospects)
+      let prospectsData = doc.data()
+      if (!prospectsData)
+        prospectsData = await checkProspectsCollection('prospects', doc.id)
+      const prospects = prospectsData.prospects
+      const prospectsUsers = await getProspectUsersFromRefs(prospects || [])
       if (prospectsUsers) this.setProspects(prospectsUsers)
     }
 
-    db.collection(PROSPECTS_COLLECTION).doc(user.id).onSnapshot(onProspects)
+    return db
+      .collection(PROSPECTS_COLLECTION)
+      .doc(user.id)
+      .onSnapshot(onProspects)
   }
-}
-
-async function getProspectUsersFromRefs(prospects: any): Promise<Prospect[]> {
-  for (const i in prospects) {
-    try {
-      prospects[i] = (await prospects[i].get()).data()
-    } catch {
-      logger.error('Something wrong with prospects Array!')
-    }
-  }
-  return prospects
 }
 
 export default new Meetup()

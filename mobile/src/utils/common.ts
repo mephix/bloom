@@ -18,9 +18,9 @@ export const byAccepted = (state: boolean) => {
   }
 }
 
-export const byFor = (email: string) => {
+export const byFor = (id: string) => {
   return (doc: DocumentData) => {
-    return doc.data()?.for === email
+    return doc.data()?.for === id
   }
 }
 

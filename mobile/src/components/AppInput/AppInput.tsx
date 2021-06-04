@@ -19,6 +19,8 @@ interface AppInputProps
   icon?: string
   small?: string
   onChangeText?: (value: string) => void
+  rangeValue?: { lower: number; upper: number }
+  onChangeRange?: (range: { lower: number; upper: number }) => void
 }
 
 interface RangeOptions {
@@ -29,6 +31,7 @@ interface RangeOptions {
 export const AppInput: FC<AppInputProps> = props => {
   const {
     onChangeText = noop,
+    onChangeRange = noop,
     small,
     date,
     full,
@@ -37,6 +40,7 @@ export const AppInput: FC<AppInputProps> = props => {
     range,
     rangeOptions,
     icon,
+    rangeValue,
     ...other
   } = props
   let input
@@ -51,15 +55,16 @@ export const AppInput: FC<AppInputProps> = props => {
   else if (range)
     input = (
       <IonRange
+        style={{ margin: '0 15px' }}
         {...rangeOptions}
         color="dark"
         pin={true}
-        value={{ lower: rangeOptions?.min || 0, upper: rangeOptions?.max || 0 }}
+        value={rangeValue}
         dualKnobs
-      >
-        <IonIcon size="small" slot="start" icon={icon} />
-        <IonIcon slot="end" icon={icon} />
-      </IonRange>
+        onIonChange={(e: any) => {
+          onChangeRange(e.detail.value)
+        }}
+      ></IonRange>
     )
   else
     input = (

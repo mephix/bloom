@@ -3,6 +3,7 @@ import { noop } from 'utils'
 import inputStylesModule from '../AppInput/AppInput.module.scss'
 import stylesModule from './AppRadio.module.scss'
 interface AppRadioProps {
+  defaultValue?: string
   values: string[]
   label?: string
   full?: boolean
@@ -12,7 +13,8 @@ interface AppRadioProps {
 export const AppRadio: FC<AppRadioProps> = ({
   label,
   values,
-  onChange = noop
+  onChange = noop,
+  defaultValue
 }) => {
   const name = useMemo(randomName, [])
 
@@ -24,6 +26,7 @@ export const AppRadio: FC<AppRadioProps> = ({
         name={name}
         value={value}
         hidden
+        defaultChecked={value === defaultValue}
       />
       <div className={stylesModule.chip}>{value}</div>
     </label>

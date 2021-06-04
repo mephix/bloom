@@ -4,9 +4,11 @@ import { Matchmaker } from 'services/matchmaker.service'
 import { isProd, Logger } from 'utils'
 import app from 'state/app'
 import user from 'state/user'
-import { MatchesService } from '../services/matches.service'
 import { isPlatform } from '@ionic/react'
 import { AndroidPermissions } from '@ionic-native/android-permissions'
+import { useHistory } from 'react-router'
+import { auth } from 'firebaseService'
+import matches from 'state/matches'
 // import {} from 'cordova-plugin-iosrtc'
 
 const logger = new Logger('Init', '#e38707')
@@ -18,28 +20,33 @@ const ANDROID_PERMISSIONS = [
 ]
 
 export const useInitWaitingRoom = () => {
+  const history = useHistory()
+
   const init = useCallback(async () => {
     try {
+      // console.log('phone number', auth().currentUser?.phoneNumber)
       if (isProd) LogRocket.init('isym43/the-zero-date')
-      await app.initParams()
-      const { matchesDisable } = getUrlParams()
-      logger.error("Dating doesn't work right now!")
-      Logger.active = true
-      if (matchesDisable) MatchesService.setDisabled(true)
-      // if (!email) throw new Error('No email provided') // ! delete
-      // await user.setUser_OLD(email) // ! delete
-      await Matchmaker.initialize()
+      logger.log('Main app initialization')
+      await app.init()
+      matches.fetchLastDateUsers()
       const havePermissons = await checkPermission()
       if (!havePermissons) return app.setNoPermissionsState()
-      user.signUser()
+      if (history.location.pathname !== '/waitingroom')
+        user.setHiddenHere(false)
       app.setWaitingRoomState()
     } catch (err) {
       logger.error('error while initializing: ' + err.message)
     }
-  }, [])
+  }, [history])
 
   useEffect(() => {
     init()
+    const historyUnsubscribe = history.listen(location => {
+      if (location.pathname === '/waitingroom') user.setHiddenHere(true)
+      else user.setHiddenHere(false)
+    })
+    const unsignUser = user.signUser()
+
     const closeHandler = () => user.setHiddenHere(false)
     const visibilityChangeHandler = () => {
       if (document.hidden) user.setHiddenHere(false)
@@ -52,17 +59,12 @@ export const useInitWaitingRoom = () => {
     return () => {
       window.removeEventListener('beforeunload', closeHandler)
       window.removeEventListener('visibilitychange', visibilityChangeHandler)
+      logger.log('Reset initialization')
+      closeHandler()
+      historyUnsubscribe()
+      unsignUser()
     }
-  }, [init])
-}
-
-function getUrlParams() {
-  const urlParams = new URLSearchParams(window.location.search)
-  // const email = urlParams.get('email') || prompt('Enter your email address')
-  return {
-    email: 'test@example.com',
-    matchesDisable: urlParams.get('matches_disable')
-  }
+  }, [init, history])
 }
 
 async function checkPermission() {

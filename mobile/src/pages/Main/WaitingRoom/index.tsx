@@ -5,7 +5,7 @@ import { useInitWaitingRoom } from 'hooks/init.waitingroom.hook'
 import { Screen } from 'wrappers/Screen'
 
 export const WaitingRoomApp = () => {
-  useInitWaitingRoom()
+  // useInitWaitingRoom()
   return (
     <Screen header color="dark">
       <WaitingRoomScreen />

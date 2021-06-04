@@ -35,7 +35,7 @@ export const ProfileInfo = observer(() => {
       <Card
         type="profile"
         user={{
-          name: user.name,
+          name: user.firstName,
           bio: user.bio,
           avatar: user.avatar
         }}

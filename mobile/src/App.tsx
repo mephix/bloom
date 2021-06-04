@@ -23,12 +23,12 @@ import './theme/variables.css'
 import { AuthRoutes, MainRoutes } from './routes'
 import { observer } from 'mobx-react-lite'
 import user from 'state/user'
-import { useInit } from 'hooks/init'
+import { useAuthState } from 'hooks/auth.state'
 import { LoaderPage } from 'pages/LoaderPage'
 import { FC } from 'react'
 
 const App: FC = () => {
-  useInit()
+  useAuthState()
   let appContext
   if (user.auth === 'unknown') appContext = <LoaderPage />
   else if (user.auth === 'authorized') appContext = <MainRoutes />

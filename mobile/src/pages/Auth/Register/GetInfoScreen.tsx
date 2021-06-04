@@ -7,7 +7,7 @@ import { useCallback, useState } from 'react'
 import user from 'state/user'
 import { Screen } from 'wrappers/Screen'
 import stylesModule from '../AuthIndex.module.scss'
-import { useErrorToast } from './error.toast.hook'
+import { useErrorToast } from 'hooks/error.toast.hook'
 
 export const GetInfoScreen = () => {
   const showError = useErrorToast()
@@ -18,22 +18,24 @@ export const GetInfoScreen = () => {
   })
 
   const saveHandler = useCallback(async () => {
-    console.log(formData.name)
     if (!formData.name) return showError('Enter your name!')
     if (!formData.birthday) return showError('Select your birthday!')
     if (!formData.gender) return showError('Select your gender!')
     const birthdayDate = DateTime.fromISO(formData.birthday)
     const dateOfMajority = DateTime.now().minus({ years: 18 })
-    console.log(dateOfMajority.toISODate())
     const difference = dateOfMajority.diff(birthdayDate)
     if (difference.milliseconds < 0)
       return showError('You must be 18 or older to join!')
     if (!user.id) return showError('Unexpected error...')
     const userRef = db.collection(USERS_COLLECTION).doc(user.id)
     await userRef.set({
-      name: formData.name,
+      firstName: formData.name,
       birthday: time.fromDate(birthdayDate.toJSDate()),
       gender: formData.gender
+    })
+    user.setUser({
+      id: user.id,
+      firstName: formData.name
     })
     user.setAuth('authorized')
   }, [formData, showError])
