@@ -1,15 +1,12 @@
 import LogRocket from 'logrocket'
 import { useCallback, useEffect } from 'react'
-import { Matchmaker } from 'services/matchmaker.service'
 import { isProd, Logger } from 'utils'
 import app from 'state/app'
 import user from 'state/user'
 import { isPlatform } from '@ionic/react'
 import { AndroidPermissions } from '@ionic-native/android-permissions'
 import { useHistory } from 'react-router'
-import { auth } from 'firebaseService'
 import matches from 'state/matches'
-// import {} from 'cordova-plugin-iosrtc'
 
 const logger = new Logger('Init', '#e38707')
 

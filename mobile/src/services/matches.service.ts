@@ -8,7 +8,6 @@ import {
 } from 'firebaseService'
 import meetup from 'state/meetup'
 import user from 'state/user'
-import { UserMatch } from 'state/utils/types'
 import { byAccepted, byActive, Logger } from 'utils'
 
 const EMPTY_MATCHES = {}

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import { Card } from 'components/Card'
 import { Toggle } from 'components/Toggle'
 import commonStyles from '../Common.module.scss'
@@ -11,7 +11,6 @@ import { PARAMS } from 'state/utils/constants'
 import { UserCard } from 'state/utils/types'
 import meetup from 'state/meetup'
 import placeholderImage from 'assets/images/placeholder.jpg'
-import { ProspectsService } from 'services/prospects.service'
 
 export const WaitingRoom = observer(() => {
   const toggleHandler = useCallback(state => user.setHere(state), [])

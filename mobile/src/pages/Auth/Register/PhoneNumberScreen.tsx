@@ -1,6 +1,6 @@
 import { AppButton } from 'components/AppButton'
 import { AppInput } from 'components/AppInput'
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Screen } from 'wrappers/Screen'
 import { isValidPhoneNumber } from 'react-phone-number-input'
 import { auth } from 'firebaseService'
@@ -15,7 +15,6 @@ export const PhoneNumberScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [loading, setLoading] = useState(false)
   const showError = useErrorToast()
-  // const context = useContext(RegisterContext)
   const history = useHistory()
 
   const sendCodeHandler = useCallback(async () => {
