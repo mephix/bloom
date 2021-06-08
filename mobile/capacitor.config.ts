@@ -1,10 +1,17 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'mobile',
+  appId: 'bloom.app.com',
+  appName: 'Bloom',
   webDir: 'build',
-  bundledWebRuntime: false
-};
+  bundledWebRuntime: false,
+  plugins: {
+    CapacitorFirebaseAuth: {
+      providers: ['phone'],
+      languageCode: 'en',
+      nativeAuth: false
+    }
+  }
+}
 
-export default config;
+export default config

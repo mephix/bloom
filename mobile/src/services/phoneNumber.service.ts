@@ -30,7 +30,7 @@ export class PhoneNumberService {
           allow: [userId]
         })
     } catch (err) {
-      console.log('fuck', err)
+      console.log('allow Phone Number error', err)
     }
   }
 }

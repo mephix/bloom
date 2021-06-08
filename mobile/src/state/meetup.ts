@@ -45,12 +45,14 @@ import { PhoneNumberService } from 'services/phoneNumber.service'
 class Meetup {
   // private dateIsFor: boolean = false
   private prospects: Prospect[] = []
+  private prospectsSize: number = 0
   private dateCards: Prospect[] = []
 
   private currentMatchingUser: string | null = null
   private matchingUsers: UsersPropsCollection = {}
   private unsubscribeUsers: UsersUnsubscribeCollection = {}
 
+  updatingProspects = false
   isDateNight = false
 
   constructor() {
@@ -78,6 +80,10 @@ class Meetup {
     if (!this.currentMatchingUser) return null
     if (!this.matchingUsers[this.currentMatchingUser]) return null
     return this.matchingUsers[this.currentMatchingUser].date
+  }
+
+  setUpdatingProspects(state: boolean) {
+    this.updatingProspects = state
   }
 
   setDateNight(state: boolean) {
@@ -366,7 +372,8 @@ class Meetup {
 
   async shiftProspects(reject = false) {
     if (!user.id) return
-    // this.prospects.shift() // ? delete
+    this.prospects.shift()
+    this.prospectsSize--
     if (reject) {
       await moveProspectTo('prospects', 'nexts', user.id)
     } else {
@@ -417,7 +424,7 @@ class Meetup {
   async getRoom(): Promise<Room | null> {
     if (!this.currentDate) return null
 
-    logger.log('!!! Current getting room Date', this.currentDate)
+    logger.log('Current getting room Date', this.currentDate)
     const currentDateRef = db
       .collection(DATES_COLLECTION)
       .doc(this.currentDate.id)
@@ -511,12 +518,25 @@ class Meetup {
 
   subscribeOnProspects() {
     const onProspects = async (doc: DocumentSnapshot) => {
+      if (this.updatingProspects) return
+      this.setUpdatingProspects(true)
       let prospectsData = doc.data()
       if (!prospectsData)
         prospectsData = await checkProspectsCollection('prospects', doc.id)
       const prospects = prospectsData.prospects
+      if (
+        prospects.length === this.prospectsSize &&
+        this.prospects.length > 1
+      ) {
+        this.setUpdatingProspects(false)
+        return logger.log('Prospects size is same. Skipping update')
+      }
+      logger.log('Update prospects')
+
+      this.prospectsSize = prospects.length
       const prospectsUsers = await getProspectUsersFromRefs(prospects || [])
       if (prospectsUsers) this.setProspects(prospectsUsers)
+      this.setUpdatingProspects(false)
     }
 
     return db

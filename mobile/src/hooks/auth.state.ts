@@ -17,6 +17,7 @@ export const useAuthState = () => {
             user.setId(userId)
             return user.setAuth('without_information')
           }
+
           user.setUser({
             id: userId,
             firstName: userData.firstName,

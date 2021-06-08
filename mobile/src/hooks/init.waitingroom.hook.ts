@@ -25,8 +25,20 @@ export const useInitWaitingRoom = () => {
   const init = useCallback(async () => {
     try {
       // console.log('phone number', auth().currentUser?.phoneNumber)
-      if (isProd) LogRocket.init('isym43/the-zero-date')
+
       logger.log('Main app initialization')
+      logger.log(`Log in as ${user.id}`)
+      if (isProd) {
+        logger.log('Initialize LogRocket')
+        LogRocket.init('isym43/the-zero-date', {
+          dom: {
+            baseHref: 'https://bloom-dating.web.app'
+          }
+        })
+        LogRocket.identify(user.id!, {
+          name: user.firstName
+        })
+      }
       await app.init()
       matches.fetchLastDateUsers()
       const havePermissons = await checkPermission()
@@ -75,7 +87,7 @@ async function checkPermission() {
         let res = await AndroidPermissions.checkPermission(perm)
         if (!res.hasPermission)
           res = await AndroidPermissions.requestPermission(perm)
-        alert(`${perm} ${JSON.stringify(res)}`)
+        // alert(`${perm} ${JSON.stringify(res)}`)
         havePermissions = !res.hasPermission && havePermissions ? false : true
       }
       return havePermissions

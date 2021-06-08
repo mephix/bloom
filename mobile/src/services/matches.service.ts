@@ -3,14 +3,12 @@ import {
   db,
   DocumentReference,
   MATCHES_COLLECTION,
-  QueryDocumentSnapshot,
   time,
   USERS_COLLECTION
 } from 'firebaseService'
-import { DateTime } from 'luxon'
 import meetup from 'state/meetup'
 import user from 'state/user'
-import { MatchType, UserMatch } from 'state/utils/types'
+import { UserMatch } from 'state/utils/types'
 import { byAccepted, byActive, Logger } from 'utils'
 
 const EMPTY_MATCHES = {}
@@ -21,41 +19,10 @@ const logger = new Logger('Matches', '#d924e3')
 
 export class MatchesService {
   private static disabled = true
-  private static matchesUsersCache: UserMatch[] = []
-  private static datesCount = 0
 
   static setDisabled(state: boolean) {
     this.disabled = state
   }
-
-  // static async getLastDateUsers() {
-  //   const twentyDaysAgo = DateTime.now().minus({ days: 20 }).toJSDate()
-  //   logger.log('Fetching matches')
-  //   const dateWithDocs = await db
-  //     .collection(DATES_COLLECTION)
-  //     .where('with', '==', user.id)
-  //     .where('end', '>', time.fromDate(twentyDaysAgo))
-  //     .get()
-  //   const dateForDocs = await db
-  //     .collection(DATES_COLLECTION)
-  //     .where('for', '==', user.id)
-  //     .where('end', '>', time.fromDate(twentyDaysAgo))
-  //     .get()
-  //   const datesCount = dateForDocs.docs.length + dateWithDocs.docs.length
-  //   if (datesCount === this.datesCount) {
-  //     logger.log('Get matches from cache')
-  //     return this.matchesUsersCache
-  //   }
-  //   this.datesCount = datesCount
-
-  //   const usersFor = await mapDatesToUsers(dateWithDocs.docs, 'for')
-  //   const usersWith = await mapDatesToUsers(dateForDocs.docs, 'with')
-  //   const users = [...usersFor, ...usersWith].sort(
-  //     (userA, userB) => userB.dateEnd.seconds - userA.dateEnd.seconds
-  //   )
-  //   this.matchesUsersCache = users
-  //   return users
-  // }
 
   static async inviteAndAcceptMatches(
     threshold: number,

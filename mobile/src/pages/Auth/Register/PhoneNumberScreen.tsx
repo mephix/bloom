@@ -5,9 +5,9 @@ import { Screen } from 'wrappers/Screen'
 import { isValidPhoneNumber } from 'react-phone-number-input'
 import { auth } from 'firebaseService'
 import stylesModule from '../AuthIndex.module.scss'
-import { RegisterContext } from './RegisterContext'
 import { useHistory } from 'react-router'
 import { useErrorToast } from '../../../hooks/error.toast.hook'
+import register from 'state/register'
 
 const SEND_CODE_BUTTON_ID = 'send-code'
 
@@ -15,7 +15,7 @@ export const PhoneNumberScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [loading, setLoading] = useState(false)
   const showError = useErrorToast()
-  const context = useContext(RegisterContext)
+  // const context = useContext(RegisterContext)
   const history = useHistory()
 
   const sendCodeHandler = useCallback(async () => {
@@ -28,14 +28,14 @@ export const PhoneNumberScreen = () => {
         phoneNumber,
         recapchaVerifier
       )
-      context.confirmationResult = confirmationResult
-      context.phone = phoneNumber
+      register.setConfirmationResult(confirmationResult)
+      register.setPhone(phoneNumber)
       history.push('/register/code')
     } catch {
       setLoading(false)
       showError('Oops, something went wrong. Try again later!')
     }
-  }, [phoneNumber, showError, context, history])
+  }, [phoneNumber, showError, history])
 
   return (
     <Screen>

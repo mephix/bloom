@@ -11,36 +11,17 @@ import { PARAMS } from 'state/utils/constants'
 import { UserCard } from 'state/utils/types'
 import meetup from 'state/meetup'
 import placeholderImage from 'assets/images/placeholder.jpg'
-import { TabContext } from 'routes'
+import { ProspectsService } from 'services/prospects.service'
 
 export const WaitingRoom = observer(() => {
   const toggleHandler = useCallback(state => user.setHere(state), [])
-  const [disabled, setDisabled] = useState<boolean>(false)
-  // const { hideTabs } = useContext(TabContext)
-  // useEffect(() => {
-  //   hideTabs()
-  // }, [hideTabs])
 
-  const resolveHandler = useCallback(async () => {
-    if (disabled) return console.log('action button disabled')
-    try {
-      setDisabled(true)
-      await meetup.shiftCards()
-      setDisabled(false)
-    } catch {
-      setDisabled(false)
-    }
-  }, [disabled])
-  const rejectHandler = useCallback(async () => {
-    if (disabled) return console.log('action button disabled')
-    try {
-      setDisabled(true)
-      await meetup.shiftCards(true)
-      setDisabled(false)
-    } catch {
-      setDisabled(false)
-    }
-  }, [disabled, setDisabled])
+  const resolveHandler = useCallback(() => {
+    if (!meetup.updatingProspects) meetup.shiftCards()
+  }, [])
+  const rejectHandler = useCallback(() => {
+    if (!meetup.updatingProspects) meetup.shiftCards(true)
+  }, [])
 
   const getType = (card: UserCard) => {
     if (card.isDate) return user.here ? 'join' : 'join'
@@ -94,6 +75,9 @@ export const WaitingRoom = observer(() => {
 
   return (
     <div className={classes(commonStyles.container, moduleStyles.container)}>
+      {/* <button onClick={() => ProspectsService.addTestingProspects(25)}>
+        add prospects
+      </button> */}
       {content}
     </div>
   )

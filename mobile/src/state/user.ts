@@ -81,7 +81,6 @@ class User {
     this.avatar = user.avatar || this.avatar
     this.meetGender = user.meetGender || this.meetGender
     this.meetAges = user.meetAges || this.meetAges
-
     this.updateUser({
       finished: user.finished
     })

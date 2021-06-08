@@ -53,14 +53,20 @@ class Matches {
 
   subscribeOnMatches() {
     const onMatches = async (dates: QuerySnapshot, isWith: boolean) => {
-      if (!this.matchesUsers.length) return
+      let newMatchesUsers = this.matchesUsers
       for (const dateDoc of dates.docs) {
         const date = dateDoc.data()
         if (date.active) continue
-        if (date.blocked) continue
-        const currentUserMatch = this.matchesUsers.find(
+        const currentUserMatch = newMatchesUsers.find(
           match => match.dateId === dateDoc.id
         )
+        if (date.blocked && currentUserMatch) {
+          newMatchesUsers = newMatchesUsers.filter(
+            match => match.dateId !== dateDoc.id
+          )
+          continue
+        }
+        if (date.blocked) continue
         const affiliation = isWith ? 'with' : 'for'
         const otherAffiliation = affiliation === 'for' ? 'with' : 'for'
 
@@ -71,9 +77,11 @@ class Matches {
             affiliation,
             otherAffiliation
           )
-          if (!matchesUser) continue
-          const matchesUsers = [...this.matchesUsers, matchesUser].sort(byDesc)
-          this.setMatchesUsers(matchesUsers)
+          if (!matchesUser) {
+            continue
+          }
+          const matchesUsers = [...newMatchesUsers, matchesUser].sort(byDesc)
+          newMatchesUsers = matchesUsers
           continue
         }
 
@@ -81,14 +89,13 @@ class Matches {
           date.rate[affiliation].heart,
           date.rate[otherAffiliation].heart
         )
-        const newMatchesUsers = this.matchesUsers.map(user => {
+        newMatchesUsers = this.matchesUsers.map(user => {
           if (user.dateId === dateDoc.id) return { ...user, type }
           return user
         })
-        this.setMatchesUsers(newMatchesUsers)
       }
-      // console.log(isWith)
-      logger.log('update...')
+      this.setMatchesUsers(newMatchesUsers)
+      logger.log('Update matches...')
     }
     const twentyDaysAgo = DateTime.now().minus({ days: 20 }).toJSDate()
 
@@ -145,20 +152,7 @@ export async function mapDatesToUsers(
   for (const dateDoc of dateDocs) {
     const date = dateDoc.data()
     if (date.blocked) continue
-
-    // if (!date.rate?.[affiliation]) continue
-    // if (!date.rate?.[otherAffiliation]) continue
-    // const userDoc = await db
-    //   .collection(USERS_COLLECTION)
-    //   .doc(date[affiliation])
-    //   .get()
-    // const user = userDoc.data()
-    // if (!user) continue
-
-    // const type = getMatchType(
-    //   date.rate?.[affiliation].heart,
-    //   date.rate?.[otherAffiliation].heart
-    // )
+    if (date.active) continue
 
     const matchesUser = await convertDateToUser(
       dateDoc.id,

@@ -83,21 +83,22 @@ export async function computeDateCards(dates: DocumentSnapshot[], id: string) {
   return cards
 }
 
-const PROSPECTS_LIMIT = 3
+const PROSPECTS_LIMIT = 5
 
 export async function getProspectUsersFromRefs(
   prospects: any[]
 ): Promise<Prospect[]> {
   const prospectsFetchLimit =
     prospects.length >= PROSPECTS_LIMIT ? PROSPECTS_LIMIT : prospects.length
+  const newProspects = []
   for (let i = 0; i < prospectsFetchLimit; i++) {
     try {
-      prospects[i] = (await prospects[i].get()).data()
+      newProspects[i] = (await prospects[i].get()).data()
     } catch {
       logger.error('Something wrong with prospects Array!')
     }
   }
-  return prospects
+  return newProspects
 }
 
 export const dateDocToUsersDate = (

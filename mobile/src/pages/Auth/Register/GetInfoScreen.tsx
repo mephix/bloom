@@ -3,19 +3,53 @@ import { AppInput } from 'components/AppInput'
 import { AppRadio } from 'components/AppRadio'
 import { db, time, USERS_COLLECTION } from 'firebaseService'
 import { DateTime } from 'luxon'
-import { useCallback, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import user from 'state/user'
 import { Screen } from 'wrappers/Screen'
 import stylesModule from '../AuthIndex.module.scss'
 import { useErrorToast } from 'hooks/error.toast.hook'
-
-export const GetInfoScreen = () => {
+import { useIonAlert } from '@ionic/react'
+// import { RegisterContext } from './RegisterContext'
+import { useHistory } from 'react-router'
+import register from 'state/register'
+import { observer } from 'mobx-react-lite'
+const formDataInitial = {
+  name: '',
+  birthday: '',
+  gender: ''
+}
+export const GetInfoScreen = observer(() => {
   const showError = useErrorToast()
-  const [formData, setFormData] = useState({
-    name: '',
-    birthday: '',
-    gender: ''
-  })
+
+  const [formData, setFormData] = useState(formDataInitial)
+
+  //#region Restore Account
+  const [present] = useIonAlert()
+  const history = useHistory()
+  const [restoreUserState, setRestoreUserState] = useState(false)
+  const restoreUser = register.restoreUser
+
+  useEffect(() => {
+    if (!restoreUser && typeof restoreUser !== 'number')
+      return present({
+        message: 'Would you like to try to restore your old account?',
+        buttons: [
+          { text: "No, I didn't have" },
+          {
+            text: 'Yes, let me try!',
+            handler: () => {
+              history.push('/register/restore')
+            }
+          }
+        ]
+      })
+    else if (!restoreUserState) {
+      setRestoreUserState(true)
+      setFormData({ ...formDataInitial, name: restoreUser?.firstName || '' })
+    }
+  }, [history, present, restoreUser, restoreUserState])
+
+  //#endregion
 
   const saveHandler = useCallback(async () => {
     if (!formData.name) return showError('Enter your name!')
@@ -37,8 +71,14 @@ export const GetInfoScreen = () => {
       id: user.id,
       firstName: formData.name
     })
+    if (restoreUser) {
+      user.updateUserData({
+        bio: restoreUser?.bio || '',
+        avatar: restoreUser?.face || ''
+      })
+    }
     user.setAuth('authorized')
-  }, [formData, showError])
+  }, [formData, showError, restoreUser])
 
   return (
     <Screen>
@@ -65,4 +105,4 @@ export const GetInfoScreen = () => {
       </div>
     </Screen>
   )
-}
+})
