@@ -1,7 +1,6 @@
 import { IonContent, IonPage } from '@ionic/react'
 import { Header } from 'components/Header'
-import { FC, useContext, useEffect } from 'react'
-import { TabContext } from 'routes'
+import { FC } from 'react'
 
 interface ScreenProps {
   color?: string

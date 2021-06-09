@@ -12,6 +12,7 @@ export class ProspectsService {
     const userRefs = []
     for (let i = 0; i < quantity; i++) {
       for (const id of ids) {
+        if (id === user.id) continue
         const userRef = db.collection(USERS_COLLECTION).doc(id)
         userRefs.push(userRef)
       }

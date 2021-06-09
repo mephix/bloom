@@ -3,7 +3,7 @@ import { Card } from 'components/Card'
 import { Toggle } from 'components/Toggle'
 import commonStyles from '../Common.module.scss'
 import moduleStyles from './WaitingRoom.module.scss'
-import { classes } from 'utils/common'
+import { classes, isProd } from 'utils/common'
 import { observer } from 'mobx-react-lite'
 import user from 'state/user'
 import app from 'state/app'
@@ -11,6 +11,7 @@ import { PARAMS } from 'state/utils/constants'
 import { UserCard } from 'state/utils/types'
 import meetup from 'state/meetup'
 import placeholderImage from 'assets/images/placeholder.jpg'
+import { ProspectsService } from 'services/prospects.service'
 
 export const WaitingRoom = observer(() => {
   const toggleHandler = useCallback(state => user.setHere(state), [])
@@ -62,7 +63,6 @@ export const WaitingRoom = observer(() => {
   ) : (
     <div className={moduleStyles.finished}>{app.params[PARAMS.FINISHED]}</div>
   )
-
   const content = meetup.isDateNight ? (
     <>
       {toggle}
@@ -74,9 +74,11 @@ export const WaitingRoom = observer(() => {
 
   return (
     <div className={classes(commonStyles.container, moduleStyles.container)}>
-      {/* <button onClick={() => ProspectsService.addTestingProspects(25)}>
-        add prospects
-      </button> */}
+      {!isProd && (
+        <button onClick={() => ProspectsService.addTestingProspects(25)}>
+          add prospects
+        </button>
+      )}
       {content}
     </div>
   )

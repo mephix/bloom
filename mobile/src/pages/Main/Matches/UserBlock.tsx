@@ -19,6 +19,7 @@ interface UserBlockProps {
   avatar?: string
   onBlock?: Function
   onAction?: (type: MatchType) => void
+  onClick?: () => void
 }
 
 export const UserBlock: FC<UserBlockProps> = ({
@@ -27,7 +28,8 @@ export const UserBlock: FC<UserBlockProps> = ({
   avatar,
   type,
   onBlock = noop,
-  onAction = noop
+  onAction = noop,
+  onClick = noop
 }) => {
   const typeIcon =
     type === 'both' ? (
@@ -57,7 +59,7 @@ export const UserBlock: FC<UserBlockProps> = ({
     )
   return (
     <div className={stylesModule.blockContainer}>
-      <div className={stylesModule.user}>
+      <div className={stylesModule.user} onClick={onClick}>
         <AppImage
           defaultSrc={placeholderImage}
           className={stylesModule.avatar}

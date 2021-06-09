@@ -10,6 +10,7 @@ export interface CardProps {
   width?: number
   height?: number
   background?: string
+  buttonText?: string
 }
 
 export type ButtonType = 'join' | 'like' | 'invite' | 'profile' | undefined

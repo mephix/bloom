@@ -61,8 +61,7 @@ export const PhoneNumberScreen = () => {
 
 const verifyWithRecaptcha = () => {
   const recapchaVerifier = new auth.RecaptchaVerifier(SEND_CODE_BUTTON_ID, {
-    size: 'invisible',
-    callback: (res: any) => console.log('verified', res)
+    size: 'invisible'
   })
 
   return { recapchaVerifier }

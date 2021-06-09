@@ -43,7 +43,6 @@ import { DateTime } from 'luxon'
 import { PhoneNumberService } from 'services/phoneNumber.service'
 
 class Meetup {
-  // private dateIsFor: boolean = false
   private prospects: Prospect[] = []
   private prospectsSize: number = 0
   private dateCards: Prospect[] = []
@@ -60,7 +59,6 @@ class Meetup {
   }
 
   get currentAffiliation() {
-    console.log('Current date while currentAffiliation', this.currentDate)
     return this.currentDate?.dateIsWith ? 'with' : 'for'
   }
 
@@ -200,6 +198,15 @@ class Meetup {
     }
     delete this.matchingUsers[lastUserId]
     this.resetCurrentMatchingUser()
+  }
+
+  checkAvailabilityAfterCountdown() {
+    logger.log(
+      'Matching user after countdown',
+      JSON.stringify(this.currentMatchingUserData)
+    )
+    if (!this.currentMatchingUserData?.here) return false
+    else return true
   }
 
   // todo: refactor
@@ -504,8 +511,13 @@ class Meetup {
 
   subscribeOnDates() {
     const onDate = async (queryDates: QuerySnapshot, isWith: boolean) => {
-      if (!this.isDateNight) return
+      // console.log('hah?', this.isDateNight)
+      // if (!this.isDateNight) return
       let dates = queryDates.docs.filter(byActive)
+      logger.log(
+        'Active dates',
+        dates.map(date => date.data())
+      )
       const dateCards = await computeDateCards(dates, user.id!)
       dates = dates.filter(byAccepted(true))
       if (dates.length) logger.log('Available dates', dates.map(computeData))

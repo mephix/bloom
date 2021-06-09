@@ -1,7 +1,7 @@
 import { AppButton } from 'components/AppButton'
 import { AppInput } from 'components/AppInput'
 import { AppRadio } from 'components/AppRadio'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useHistory } from 'react-router'
 import user, { Gender } from 'state/user'
 import { Screen } from 'wrappers/Screen'

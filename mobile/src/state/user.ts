@@ -109,7 +109,8 @@ class User {
   signUser() {
     const meUnsubscribe = this.subscribeOnMe()
     this.setDateWith(null)
-    this.updateUserState({ free: true, here: this.here })
+    this.setFree(true)
+    this.setHere(true)
     const datesUnsubscribe = meetup.subscribeOnDates()
     const prospectsUnsubscribe = meetup.subscribeOnProspects()
     const matchesUnsubscribe = matches.subscribeOnMatches()

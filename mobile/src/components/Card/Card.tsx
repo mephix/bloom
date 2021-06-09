@@ -17,7 +17,8 @@ export const Card: FC<CardProps> = ({
   user = initialUser,
   type = 'join',
   onResolve = noop,
-  onReject = noop
+  onReject = noop,
+  buttonText
 }) => {
   const actionHandler = useCallback(
     type => {
@@ -27,7 +28,7 @@ export const Card: FC<CardProps> = ({
     [onResolve, onReject]
   )
 
-  const buttonsContext = getButtonContext(type, actionHandler)
+  const buttonsContext = getButtonContext(type, actionHandler, buttonText)
 
   return (
     <div className={stylesModule.card}>
@@ -50,13 +51,14 @@ export const Card: FC<CardProps> = ({
 
 function getButtonContext(
   type: CardType,
-  actionHandler: (type?: ButtonType) => void
+  actionHandler: (type?: ButtonType) => void,
+  text = 'Logout'
 ) {
   if (type === 'profile')
     return (
       <div className={stylesModule.buttonWrapper}>
         <AppButton onClick={() => actionHandler('profile')} color="light" full>
-          Logout
+          {text}
         </AppButton>
       </div>
     )

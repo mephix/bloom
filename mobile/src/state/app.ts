@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { db, PARAMETERS_COLLECTION } from 'firebaseService'
-import { FACE_DISPLAY, PARAMS } from './utils/constants'
+import { PARAMS } from './utils/constants'
 import { StringDictionary } from './utils/types'
 import { Matchmaker } from 'services/matchmaker.service'
 

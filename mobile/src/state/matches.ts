@@ -176,7 +176,7 @@ async function convertDateToUser(
   if (!date.rate?.[otherAffiliation]) return null
   const userDoc = await db
     .collection(USERS_COLLECTION)
-    .doc(date[affiliation])
+    .doc(date[otherAffiliation])
     .get()
   const user = userDoc.data()
   if (!user) return null

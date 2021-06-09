@@ -6,7 +6,7 @@ import {
   IonTabs
 } from '@ionic/react'
 import { WaitingRoomApp } from 'pages/Main/WaitingRoom'
-import { Redirect, Route, useHistory } from 'react-router-dom'
+import { Redirect, Route } from 'react-router-dom'
 import { AuthIndex } from 'pages/Auth/AuthIndex'
 import { Register } from 'pages/Auth/Register'
 import { useStatusBar } from 'hooks/status-bar.hook'
@@ -15,7 +15,7 @@ import { heartOutline, home, personOutline } from 'ionicons/icons'
 
 import { Profile } from 'pages/Main/Profile'
 import { Matches } from 'pages/Main/Matches'
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useState } from 'react'
 import { useInitWaitingRoom } from 'hooks/init.waitingroom.hook'
 
 export const AuthRoutes = () => {

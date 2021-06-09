@@ -3,8 +3,7 @@ import stylesModule from './AppInput.module.scss'
 import PhoneInput from 'react-phone-number-input/input'
 import { noop } from 'utils'
 import { DateInput } from './DateInput'
-import { IonIcon, IonRange } from '@ionic/react'
-import { person } from 'ionicons/icons'
+import { IonRange } from '@ionic/react'
 interface AppInputProps
   extends DetailedHTMLProps<
     InputHTMLAttributes<HTMLInputElement>,
