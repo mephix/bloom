@@ -22,6 +22,7 @@ module.exports = addAdaloProfile
   adaloUser['Here'] = firebaseUser['here']
   adaloUser['Free'] = firebaseUser['free']
   adaloUser['Finished'] = firebaseUser['finished']
+  adaloUser['devId'] = firebaseUser['id']
   // Convert to string because `sortByPriority` converts from strings to
   // Dates.
   let jsdate

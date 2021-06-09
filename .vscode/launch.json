@@ -77,8 +77,8 @@
             ],
         },
         {
-            "name": "run Fire Date Engine",
-            "program": "${workspaceFolder}/nocode/dates/runFireDateEngine.js",
+            "name": "run Fire Date Engine Dev",
+            "program": "${workspaceFolder}/nocode/dates/runFireDateEngineDev.js",
             "type": "pwa-node",
             "request": "launch",
             "skipFiles": [

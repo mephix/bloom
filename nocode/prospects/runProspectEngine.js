@@ -1,7 +1,7 @@
 /*
  * Key parameters to set
  */
-const today = '2021-05-31' // (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
+const today = '2021-06-07' // (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
 
 // File to load users from and store prospects:
 const loadFromLocalFile = `./nocode/output/Users ${today}.json`

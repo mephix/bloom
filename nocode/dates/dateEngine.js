@@ -23,6 +23,8 @@ function dateEngine (people, matches) {
       dates.push({
         id1: people[i].id,
         id2: people[j].id,
+        devId1: people[i]?.devId || null,
+        devId2: people[j]?.devId || null,
         name1: people[i]['First Name'],
         name2: people[j]['First Name'],
         email1: people[i]['Email'],
