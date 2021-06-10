@@ -535,7 +535,7 @@ class Meetup {
       let prospectsData = doc.data()
       if (!prospectsData)
         prospectsData = await checkProspectsCollection('prospects', doc.id)
-      const prospects = prospectsData.prospects
+      const prospects = prospectsData.prospects || []
       if (
         prospects.length === this.prospectsSize &&
         this.prospects.length > 1

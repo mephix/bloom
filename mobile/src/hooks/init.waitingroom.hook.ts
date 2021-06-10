@@ -77,8 +77,12 @@ export const useInitWaitingRoom = () => {
 }
 
 async function checkPermission() {
-  if (isPlatform('android') || isPlatform('ios')) {
+  if (
+    (isPlatform('android') || isPlatform('ios')) &&
+    !isPlatform('mobileweb')
+  ) {
     try {
+      logger.log('mobile')
       let havePermissions = true
       for (const perm of ANDROID_PERMISSIONS) {
         let res = await AndroidPermissions.checkPermission(perm)
@@ -88,20 +92,11 @@ async function checkPermission() {
         havePermissions = !res.hasPermission && havePermissions ? false : true
       }
       return havePermissions
-    } catch {
+    } catch (err) {
+      logger.log('error', err)
       return false
     }
   }
-
-  if (!('mediaDevices' in navigator)) return false
-  try {
-    const AudioStream = await navigator.mediaDevices.getUserMedia({
-      audio: true
-    })
-    AudioStream.getTracks().forEach(track => track.stop())
-    return true
-  } catch (err) {
-    alert('Error while getting permissions ' + err.message)
-    return false
-  }
+  logger.log('web')
+  return true
 }

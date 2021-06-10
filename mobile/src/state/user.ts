@@ -34,20 +34,20 @@ interface UserData {
   here?: boolean
   free?: boolean
   finished?: boolean
-  meetGender?: Gender
-  meetAges?: MeetAges
+  genderPreference?: Gender
+  agePreferences?: MeetAges
 }
 
 interface MeetAges {
-  from: number
-  to: number
+  low: number
+  high: number
 }
 
 interface UserDataUpdate {
   bio?: string
   avatar?: string
-  meetGender?: Gender
-  meetAges?: MeetAges
+  genderPreference?: Gender
+  agePreferences?: MeetAges
 }
 
 class User {
@@ -56,8 +56,8 @@ class User {
   firstName: string = ''
   bio: string = ''
   avatar: string = ''
-  meetGender: Gender = ''
-  meetAges: MeetAges = { from: 18, to: 99 }
+  genderPreference: Gender = ''
+  agePreferences: MeetAges = { low: 18, high: 99 }
 
   here = false
   free = true
@@ -79,8 +79,8 @@ class User {
     this.firstName = user.firstName
     this.bio = user.bio || this.bio
     this.avatar = user.avatar || this.avatar
-    this.meetGender = user.meetGender || this.meetGender
-    this.meetAges = user.meetAges || this.meetAges
+    this.genderPreference = user.genderPreference || this.genderPreference
+    this.agePreferences = user.agePreferences || this.agePreferences
     this.updateUser({
       finished: user.finished
     })
@@ -170,8 +170,8 @@ class User {
   updateUserData(user: UserDataUpdate) {
     this.bio = user.bio || this.bio
     this.avatar = user.avatar || this.avatar
-    this.meetGender = user.meetGender || this.meetGender
-    this.meetAges = user.meetAges || this.meetAges
+    this.genderPreference = user.genderPreference || this.genderPreference
+    this.agePreferences = user.agePreferences || this.agePreferences
     return db.collection(USERS_COLLECTION).doc(this.id).update(user)
   }
 

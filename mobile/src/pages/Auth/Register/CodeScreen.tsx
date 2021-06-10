@@ -1,6 +1,6 @@
 import { AppButton } from 'components/AppButton'
 import { AppInput } from 'components/AppInput'
-import { db, USERS_COLLECTION } from 'firebaseService'
+import { db, RESTORE_USERS_COLLECTION, USERS_COLLECTION } from 'firebaseService'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
@@ -22,9 +22,35 @@ export const CodeScreen = observer(() => {
     setLoading(true)
     const result = await register.confirmationResult.confirm(code)
     const userId = result.user?.uid!
-    const userDoc = await db.collection(USERS_COLLECTION).doc(userId).get()
+    const userRef = db.collection(USERS_COLLECTION).doc(userId)
+    const userDoc = await userRef.get()
     const userData = userDoc.data()
     if (userData) return user.setAuth('authorized')
+    const restoreUserQuery = await db
+      .collection(RESTORE_USERS_COLLECTION)
+      .where('phone', '==', register.phone.trim())
+      .get()
+    const [restoreUserDoc] = restoreUserQuery.docs
+    if (restoreUserDoc) {
+      const restoreUser = restoreUserDoc.data()
+      await userRef.set({
+        firstName: restoreUser.firstName,
+        age: restoreUser.age,
+        gender: restoreUser.gender
+      })
+      user.setUser({
+        id: userId,
+        firstName: restoreUser.firstName
+      })
+      user.updateUserData({
+        bio: restoreUser.bio || '',
+        avatar: restoreUser.avatar || '',
+        genderPreference: restoreUser.genderPreference,
+        agePreferences: restoreUser.agePreferences
+      })
+      return user.setAuth('authorized')
+    }
+    // console.log('query', restoreUserQuery.docs)
     user.setId(userId)
     history.push('/register/get-info')
   }, [history, code])

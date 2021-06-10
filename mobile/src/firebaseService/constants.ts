@@ -1,5 +1,6 @@
 export const USERS_COLLECTION = 'Users-dev'
 export const OLD_USERS_COLLECTION = 'Users'
+export const RESTORE_USERS_COLLECTION = 'RestoreUsers'
 export const DATES_COLLECTION = 'Dates-dev'
 export const PROSPECTS_COLLECTION = 'Prospects-dev'
 export const PARAMETERS_COLLECTION = 'Parameters'

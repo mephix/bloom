@@ -64,7 +64,7 @@ export const MainRoutes = () => {
         </IonRouterOutlet>
         <IonTabBar hidden={tabHidden} color="primary" slot="bottom">
           <IonTabButton tab="matches" href="/matches">
-            <IonIcon style={{ fontSize: '26px' }} icon={heartOutline} />
+            <IonIcon icon={heartOutline} />
           </IonTabButton>
           <IonTabButton tab="waitingroom" href="/waitingroom">
             <IonIcon icon={home} />

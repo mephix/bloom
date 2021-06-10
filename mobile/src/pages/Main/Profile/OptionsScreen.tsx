@@ -9,18 +9,18 @@ import stylesModule from './Profile.module.scss'
 
 export const OptionsScreen = () => {
   const history = useHistory()
-  const [gender, setGender] = useState<Gender>(user.meetGender)
+  const [gender, setGender] = useState<Gender>(user.genderPreference)
   const [ageRange] = useState({
-    lower: user.meetAges.from,
-    upper: user.meetAges.to
+    lower: user.agePreferences.low,
+    upper: user.agePreferences.high
   })
   const [loading, setLoading] = useState(false)
 
   const doneHandler = useCallback(async () => {
     setLoading(true)
     await user.updateUserData({
-      meetGender: gender,
-      meetAges: { from: ageRange.lower, to: ageRange.upper }
+      genderPreference: gender,
+      agePreferences: { low: ageRange.lower, high: ageRange.upper }
     })
     history.goBack()
   }, [history, gender, ageRange])

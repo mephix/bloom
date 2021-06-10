@@ -74,11 +74,11 @@ export const WaitingRoom = observer(() => {
 
   return (
     <div className={classes(commonStyles.container, moduleStyles.container)}>
-      {!isProd && (
+      {/* {!isProd && (
         <button onClick={() => ProspectsService.addTestingProspects(25)}>
           add prospects
         </button>
-      )}
+      )} */}
       {content}
     </div>
   )

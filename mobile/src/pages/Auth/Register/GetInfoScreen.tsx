@@ -1,15 +1,15 @@
 import { AppButton } from 'components/AppButton'
 import { AppInput } from 'components/AppInput'
 import { AppRadio } from 'components/AppRadio'
-import { db, time, USERS_COLLECTION } from 'firebaseService'
+import { db, USERS_COLLECTION } from 'firebaseService'
 import { DateTime } from 'luxon'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import user from 'state/user'
 import { Screen } from 'wrappers/Screen'
 import stylesModule from '../AuthIndex.module.scss'
 import { useErrorToast } from 'hooks/error.toast.hook'
-import { useIonAlert } from '@ionic/react'
-import { useHistory } from 'react-router'
+// import { useIonAlert } from '@ionic/react'
+// import { useHistory } from 'react-router'
 import register from 'state/register'
 import { observer } from 'mobx-react-lite'
 const formDataInitial = {
@@ -23,30 +23,30 @@ export const GetInfoScreen = observer(() => {
   const [formData, setFormData] = useState(formDataInitial)
 
   //#region Restore Account
-  const [present] = useIonAlert()
-  const history = useHistory()
-  const [restoreUserState, setRestoreUserState] = useState(false)
+  // const [present] = useIonAlert()
+  // const history = useHistory()
+  // const [restoreUserState, setRestoreUserState] = useState(false)
   const restoreUser = register.restoreUser
 
-  useEffect(() => {
-    if (!restoreUser && typeof restoreUser !== 'number')
-      return present({
-        message: 'Would you like to try to restore your old account?',
-        buttons: [
-          { text: "No, I didn't have" },
-          {
-            text: 'Yes, let me try!',
-            handler: () => {
-              history.push('/register/restore')
-            }
-          }
-        ]
-      })
-    else if (!restoreUserState) {
-      setRestoreUserState(true)
-      setFormData({ ...formDataInitial, name: restoreUser?.firstName || '' })
-    }
-  }, [history, present, restoreUser, restoreUserState])
+  // useEffect(() => {
+  // if (!restoreUser && typeof restoreUser !== 'number')
+  //   return present({
+  //     message: 'Would you like to try to restore your old account?',
+  //     buttons: [
+  //       { text: "No, I didn't have" },
+  //       {
+  //         text: 'Yes, let me try!',
+  //         handler: () => {
+  //           history.push('/register/restore')
+  //         }
+  //       }
+  //     ]
+  //   })
+  // else if (!restoreUserState) {
+  //   setRestoreUserState(true)
+  //   setFormData({ ...formDataInitial, name: restoreUser?.firstName || '' })
+  // }
+  // }, [history, present, restoreUser, restoreUserState])
 
   //#endregion
 
@@ -55,15 +55,13 @@ export const GetInfoScreen = observer(() => {
     if (!formData.birthday) return showError('Select your birthday!')
     if (!formData.gender) return showError('Select your gender!')
     const birthdayDate = DateTime.fromISO(formData.birthday)
-    const dateOfMajority = DateTime.now().minus({ years: 18 })
-    const difference = dateOfMajority.diff(birthdayDate)
-    if (difference.milliseconds < 0)
-      return showError('You must be 18 or older to join!')
+    const age = Math.floor(Math.abs(birthdayDate.diffNow('years').years))
+    if (age < 18) return showError('You must be 18 or older to join!')
     if (!user.id) return showError('Unexpected error...')
     const userRef = db.collection(USERS_COLLECTION).doc(user.id)
     await userRef.set({
       firstName: formData.name,
-      birthday: time.fromDate(birthdayDate.toJSDate()),
+      age: age,
       gender: formData.gender
     })
     user.setUser({

@@ -19,10 +19,14 @@ const placeholderSkeleton = {
   background: 'white',
   animation: 'linear 2s infinite blink',
   width: '100%',
-  height: '100%'
+  height: '100%',
+  borderRadius: '50%'
 }
 
-const mountedStyle = { animation: 'inAnimation 250ms ease-in' }
+const mountedStyle = {
+  // animation: 'inAnimation 250ms ease-in',
+  overflow: 'hidden'
+}
 const unmountedStyle = {
   animation: 'outAnimation 270ms ease-out',
   animationFillMode: 'forwards'
@@ -43,13 +47,22 @@ export const AppImage: FC<AppImageProps> = ({ defaultSrc, src, ...rest }) => {
 
   return (
     <>
-      <img
-        ref={img}
+      {/* <img
+        // ref={img}
         src={src}
-        style={{ ...styles, display: !loaded ? 'none' : 'inline-block' }}
+        // style={{ ...styles, display: !loaded ? 'none' : 'inline-block' }}
         alt={rest.alt}
         {...rest}
-      />
+      /> */}
+      <div
+        // {...rest}
+        style={{
+          ...styles,
+          display: !loaded ? 'none' : 'inline-block'
+        }}
+      >
+        <img {...rest} ref={img} src={src} alt={rest.alt} />
+      </div>
 
       {!loaded && (
         <div {...rest} style={{ overflow: 'hidden' }}>

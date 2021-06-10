@@ -24,8 +24,8 @@ export const useAuthState = () => {
             bio: userData.bio,
             avatar: userData.avatar,
             finished: userData.finished,
-            meetGender: userData.meetGender,
-            meetAges: userData.meetAges
+            genderPreference: userData.genderPreference,
+            agePreferences: userData.agePreferences
           })
           user.setAuth('authorized')
         } else user.setAuth('unauthorized')
