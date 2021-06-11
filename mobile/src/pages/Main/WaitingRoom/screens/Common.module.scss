@@ -11,7 +11,8 @@ body {
   .fullScreen {
     position: fixed;
     top: 0;
-    height: 100vh !important;
+    height: 100% !important;
     width: 100%;
+    // transform: translate3d(0, 0, 200px);
   }
 }

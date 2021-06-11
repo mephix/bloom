@@ -46,6 +46,7 @@ export const AppInput: FC<AppInputProps> = props => {
   if (phone)
     input = (
       <PhoneInput
+        {...other}
         className={stylesModule.input}
         onChange={(value: string) => onChangeText(value)}
       />

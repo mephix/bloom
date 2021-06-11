@@ -32,6 +32,7 @@ export const ProfileInfo = observer(() => {
 
   return (
     <Screen header color="dark">
+      {/* <div className={stylesModule.container}></div> */}
       <Card
         type="profile"
         user={{

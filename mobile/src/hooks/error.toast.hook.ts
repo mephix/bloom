@@ -4,11 +4,11 @@ import { useCallback } from 'react'
 export const useErrorToast = () => {
   const [present] = useIonToast()
   const show = useCallback(
-    message =>
+    (message, sec = 3) =>
       present({
         message,
         color: 'danger',
-        duration: 3 * 1000,
+        duration: sec * 1000,
         position: 'top'
       }),
     [present]

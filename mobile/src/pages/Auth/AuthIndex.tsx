@@ -20,7 +20,7 @@ export const AuthIndex: FC = () => {
           onClick={() => history.push('/register')}
           color="primary"
           full
-          style={{ marginBottom: '60px' }}
+          style={{ marginBottom: '60px', minHeight: '42px' }}
         >
           Let's go
         </AppButton>

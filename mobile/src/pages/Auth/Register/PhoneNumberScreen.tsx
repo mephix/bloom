@@ -12,7 +12,7 @@ import register from 'state/register'
 const SEND_CODE_BUTTON_ID = 'send-code'
 
 export const PhoneNumberScreen = () => {
-  const [phoneNumber, setPhoneNumber] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('+1')
   const [loading, setLoading] = useState(false)
   const showError = useErrorToast()
   const history = useHistory()

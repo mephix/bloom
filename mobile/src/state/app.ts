@@ -4,7 +4,13 @@ import { PARAMS } from './utils/constants'
 import { StringDictionary } from './utils/types'
 import { Matchmaker } from 'services/matchmaker.service'
 
-export type AppState = 'WAITING' | 'VIDEO' | 'RATING' | 'NO_PERMISSIONS' | null
+export type AppState =
+  | 'WAITING'
+  | 'VIDEO'
+  | 'RATING'
+  | 'NO_PERMISSIONS'
+  | 'NOT_SAFARI'
+  | null
 
 class App {
   state: AppState = null
@@ -35,12 +41,12 @@ class App {
     this.params[param] = value
   }
 
-  // setFaceDisplay(fd: string) {
-  //   this.faceDisplay = fd
-  // }
-
   setNoPermissionsState() {
     this.state = 'NO_PERMISSIONS'
+  }
+
+  setNotSafariState() {
+    this.state = 'NOT_SAFARI'
   }
 
   setWaitingRoomState() {

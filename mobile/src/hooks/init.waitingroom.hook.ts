@@ -22,7 +22,6 @@ export const useInitWaitingRoom = () => {
   const init = useCallback(async () => {
     try {
       // console.log('phone number', auth().currentUser?.phoneNumber)
-
       logger.log('Main app initialization')
       logger.log(`Log in as ${user.id}`)
       if (isProd) {
@@ -38,6 +37,7 @@ export const useInitWaitingRoom = () => {
       }
       await app.init()
       matches.fetchLastDateUsers()
+      if (isPlatform('ios') && !isSafari()) return app.setNotSafariState()
       const havePermissons = await checkPermission()
       if (!havePermissons) return app.setNoPermissionsState()
       if (history.location.pathname !== '/waitingroom')
@@ -52,7 +52,10 @@ export const useInitWaitingRoom = () => {
     init()
     const historyUnsubscribe = history.listen(location => {
       if (location.pathname === '/waitingroom') user.setHiddenHere(true)
-      else user.setHiddenHere(false)
+      else {
+        if (app.state === 'VIDEO') app.setWaitingRoomState()
+        user.setHiddenHere(false)
+      }
     })
     const unsignUser = user.signUser()
 
@@ -99,4 +102,12 @@ async function checkPermission() {
   }
   logger.log('web')
   return true
+}
+
+function isSafari() {
+  return (
+    navigator?.vendor?.indexOf('Apple') > -1 &&
+    navigator?.userAgent?.indexOf('CriOS') === -1 &&
+    navigator?.userAgent?.indexOf('FxiOS') === -1
+  )
 }

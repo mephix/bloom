@@ -62,7 +62,6 @@ export const MatchesList: FC<MatchesListProps> = observer(
     )
     const blockHandler = useCallback(
       (dateId, name) => {
-        // console.log('block', dateId)
         present(`Are you sure you want to permanently unmatch with ${name}?`, [
           { text: 'Cancel' },
           {
@@ -98,7 +97,7 @@ export const MatchesList: FC<MatchesListProps> = observer(
           </div>
         </div>
 
-        <div className={stylesModule.usersBlockContauner}>
+        <div className={stylesModule.usersBlockContainer}>
           {users.map(user => (
             <UserBlock
               onClick={() => {
