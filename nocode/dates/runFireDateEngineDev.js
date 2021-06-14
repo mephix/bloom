@@ -1,12 +1,12 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-06-08'
-let HOUR = '11'
+let DAY = '2021-06-14'
+let HOUR = '08'
 let SLOT = 1
 let RERUN = false        // Only do reruns after the slot starts.
 let CUTOFF = 0.00       // >0 makes the dateEngine more picky.
-let useTestIds = true   // `false` for real rounds.
+let useTestIds = false   // `false` for real rounds.
 
 // Less frequently changed params.
 // Timezone offset switches between 07:00 and 08:00 with daylight saving.
@@ -71,13 +71,14 @@ async function runFireDateEngine() {
   let querySnapshot
   let docs
   let people
+  let usersHere
   if (useTestIds) {
     // Only use this option for testing.
     const collection = 'Users-dev'
     people = [
-      { devId: 'cdzZgOwNC5dZmSaGDcu9mYiEN4Y2', email: 'john.prins@gmail.com' },
+      // { devId: '4IizDnXG2WfJsAT8gbZUDVL78S42', email: 'john.prins@gmail.com' },
       { devId: '0y1GhawWDnOlIGdGM3dLKRiPaBh1', email: 'amel.assioua@gmail.com' },
-      { devId: 'P1AXzbNy6aUWc2zmmwTluscdUPo2', email: 'female_straight_25_SF@bloom.com' },
+      // { devId: 'P1AXzbNy6aUWc2zmmwTluscdUPo2', email: 'female_straight_25_SF@bloom.com' },
       { devId: 'XLGfiiKXTvYa87tAhx5U43Jroz42', email: 'glenntheblack@gmail.com' },
       // 'john.prins@gmail.com',
       // 'amel.assioua@gmail.com',
@@ -90,15 +91,25 @@ async function runFireDateEngine() {
     // "id":836,"Email":"female_straight_25_SF@bloom.com","First Name":"Anastasia"
     // "id":837,"Email":"female_straight_33_LA@bloom.com","First Name":"Christine"
     docs = await Promise.all(people.map(({ devId }) => db.collection(collection).doc(devId).get()))
+    usersHere = docs.map(doc => {
+      return { id: doc.id, email: people.filter(p => p.devId===doc.id)[0].email, ...doc.data() }
+    })
   } else {
     // A real round should always use this option.
-    querySnapshot = await db.collection('Users').where('here', '==', true).get()
+    querySnapshot = await db.collection('Users-dev')
+      .where('here', '==', true)
+      // .where('finished', '!=', true)
+      .get()
     docs = querySnapshot.docs
+    usersHere = docs.map(doc => {
+      return { id: doc.id, ...doc.data() }
+    })
+    usersHere = usersHere.filter(u => !u.finished)
   }
-  let usersHere = docs.map(doc => {
-    return { id: doc.id, email: people.filter(p => p.devId===doc.id)[0].email, ...doc.data() }
-  })
-  if (usersHere) console.log(`${usersHere.length} people are Here.`)
+  if (usersHere) {
+    console.log(`${usersHere.length} people are Here.`)
+    console.log(`${usersHere.map(u => u.firstName).join(', ')}`)
+  }
 
   // Connect people to their Adalo profiles.
   let usersInAdalo = JSON.parse(fs.readFileSync(TODAYS_USERS_FILE, 'utf8'))

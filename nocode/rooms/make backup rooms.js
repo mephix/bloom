@@ -1,7 +1,7 @@
 /*
  * Key parameters to set
  */
-let DAY = '2021-06-07'
+let DAY = '2021-06-12'
 let HOUR = 19
 let nRooms = 3
 let slots = [0,1,2,3,4,5,6]

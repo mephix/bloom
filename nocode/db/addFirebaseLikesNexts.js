@@ -18,7 +18,8 @@ const fireUsersFile = `./nocode/output/Users ${today} from firebase.json`
 let fireUsers = JSON.parse(fs.readFileSync(fireUsersFile, 'utf8'))
 
 // Match Firebase to Adalo ids.
-let idMap = mapFirebaseToAdaloIds(adaloUsers, fireUsers)
+const mapFirebaseToAdaloIds = require('./mapFirebaseToAdaloIds.js')
+let { idMap } = mapFirebaseToAdaloIds(adaloUsers, fireUsers)
 
 // Add Likes and Nexts.
 addLikesAndNexts()
@@ -44,24 +45,4 @@ async function addLikesAndNexts() {
 
     // Save updated Adalo user file.
     fs.writeFile(adaloUsersOutputFile, JSON.stringify(adaloUsers), fserr)
-}
-
-// Helper function.
-// For each Firebase user, get their email, find the Adalo user with that email, and return the Adalo id.
-function mapFirebaseToAdaloIds(adaloUsers, fireUsers) {
-    let idMap = []
-    fireUsers.forEach(u => {
-        let adaloMatches = adaloUsers.filter(a => a.Email === u.email)
-        if (adaloMatches.length === 0) {
-            console.warn(`No Adalo match found for user ${u.id} (${u.firstName})`)
-        } else if (adaloMatches.length > 1) {
-            console.warn(`Multiple Adalo matches found for user ${u.id} (${u.firstName}):`)
-            adaloMatches.forEach(m => console.log(`${m.Email} (${m["First Name"]})`))
-        } else {
-            // Otherwise, if there is a unique match, add it
-            let uniqueAdaloMatch = adaloMatches[0]
-            idMap[u.id] = uniqueAdaloMatch.id
-        }
-    })
-    return idMap 
 }
