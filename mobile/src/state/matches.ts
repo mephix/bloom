@@ -53,20 +53,31 @@ class Matches {
 
   subscribeOnMatches() {
     const onMatches = async (dates: QuerySnapshot, isWith: boolean) => {
+      if (this.loading) return
+      logger.log('Update matches...')
       let newMatchesUsers = this.matchesUsers
       for (const dateDoc of dates.docs) {
         const date = dateDoc.data()
-        if (date.active) continue
+        logger.log('Match user date id', dateDoc.id)
+        if (date.active) {
+          logger.log('Continue: this date is currently active')
+          continue
+        }
         const currentUserMatch = newMatchesUsers.find(
           match => match.dateId === dateDoc.id
         )
+        logger.log('currentUserMatch', currentUserMatch)
         if (date.blocked && currentUserMatch) {
           newMatchesUsers = newMatchesUsers.filter(
             match => match.dateId !== dateDoc.id
           )
+          logger.log('Continue(deleting): this date is blocked')
           continue
         }
-        if (date.blocked) continue
+        if (date.blocked) {
+          logger.log('Continue: this date is blocked')
+          continue
+        }
         const affiliation = isWith ? 'with' : 'for'
         const otherAffiliation = affiliation === 'for' ? 'with' : 'for'
 
@@ -82,6 +93,7 @@ class Matches {
           }
           const matchesUsers = [...newMatchesUsers, matchesUser].sort(byDesc)
           newMatchesUsers = matchesUsers
+          logger.log('Continue: created new user')
           continue
         }
 
@@ -89,13 +101,14 @@ class Matches {
           date.rate[affiliation].heart,
           date.rate[otherAffiliation].heart
         )
-        newMatchesUsers = this.matchesUsers.map(user => {
+        logger.log('Change type to', type)
+
+        newMatchesUsers = newMatchesUsers.map(user => {
           if (user.dateId === dateDoc.id) return { ...user, type }
           return user
         })
       }
       this.setMatchesUsers(newMatchesUsers)
-      logger.log('Update matches...')
     }
     const twentyDaysAgo = DateTime.now().minus({ days: 20 }).toJSDate()
 

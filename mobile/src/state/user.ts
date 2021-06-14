@@ -48,6 +48,7 @@ interface UserDataUpdate {
   avatar?: string
   genderPreference?: Gender
   agePreferences?: MeetAges
+  email?: string
 }
 
 class User {
@@ -125,6 +126,7 @@ class User {
   updateUser({ here, finished, free }: UpdateUserProps) {
     if (typeof here === 'boolean') this.here = this.hiddenHere = here
     if (typeof finished === 'boolean') this.finished = finished
+
     if (typeof free === 'boolean') this.free = free
   }
 
@@ -162,7 +164,7 @@ class User {
         finished: user.finished,
         free: user.free
       })
-      if (user.finished) this.updateUserState({ here: false })
+      if (user.finished) this.setHere(false)
     }
     return db.collection(USERS_COLLECTION).doc(this.id).onSnapshot(onUser)
   }

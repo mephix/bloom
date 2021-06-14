@@ -39,6 +39,7 @@ export const MatchesList: FC<MatchesListProps> = observer(
 
     const actionHandler = useCallback(
       async (userId: string, dateId: string, type: MatchType) => {
+        console.log('match action', dateId)
         switch (type) {
           case 'both': {
             const phoneNumber = await PhoneNumberService.getUserPhoneNumber(
@@ -66,7 +67,10 @@ export const MatchesList: FC<MatchesListProps> = observer(
           { text: 'Cancel' },
           {
             text: 'Yes',
-            handler: () => matches.blockDate(dateId)
+            handler: () => {
+              console.log('block action', dateId)
+              matches.blockDate(dateId)
+            }
           }
         ])
       },

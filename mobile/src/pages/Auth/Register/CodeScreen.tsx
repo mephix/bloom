@@ -11,7 +11,6 @@ import { Screen } from 'wrappers/Screen'
 import stylesModule from '../AuthIndex.module.scss'
 
 export const CodeScreen = observer(() => {
-  // const context = useContext(RegisterContext)
   const showError = useErrorToast()
   const history = useHistory()
   const [code, setCode] = useState('')
@@ -50,11 +49,11 @@ export const CodeScreen = observer(() => {
           bio: restoreUser.bio || '',
           avatar: restoreUser.avatar || '',
           genderPreference: restoreUser.genderPreference,
-          agePreferences: restoreUser.agePreferences
+          agePreferences: restoreUser.agePreferences,
+          email: restoreUserDoc.id
         })
         return user.setAuth('authorized')
       }
-      // console.log('query', restoreUserQuery.docs)
       user.setId(userId)
       history.push('/register/get-info')
     } catch {
