@@ -1,5 +1,12 @@
 const { db } = require('./firebase')
-const ids = ['P1AXzbNy6aUWc2zmmwTluscdUPo2', '0y1GhawWDnOlIGdGM3dLKRiPaBh1']
+const ids = [
+  'P1AXzbNy6aUWc2zmmwTluscdUPo2',
+  '0y1GhawWDnOlIGdGM3dLKRiPaBh1',
+  'XLGfiiKXTvYa87tAhx5U43Jroz42',
+  'EeRHy6rsMvNRMS97gQJLQtDWm472',
+  '1tI4GAXeJVdCsGiFjVAwDHa9D3C2',
+  '9Z3PHTpJWOhxi2YAnpapP3hHL652'
+]
 
 const PROSPECTS_COLLECTION = 'Prospects-dev'
 const USERS_COLLECTION = 'Users-dev'
