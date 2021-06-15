@@ -3,6 +3,15 @@ import ReactDOM from 'react-dom'
 import App from './App'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 import reportWebVitals from './reportWebVitals'
+import LogRocket from 'logrocket'
+import { isProd } from 'utils'
+
+if (isProd)
+  LogRocket.init('isym43/the-zero-date', {
+    dom: {
+      baseHref: 'https://bloom-dating.web.app'
+    }
+  })
 
 ReactDOM.render(
   <React.StrictMode>

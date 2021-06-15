@@ -26,11 +26,6 @@ export const useInitWaitingRoom = () => {
       logger.log(`Log in as ${user.id}`)
       if (isProd) {
         logger.log('Initialize LogRocket')
-        LogRocket.init('isym43/the-zero-date', {
-          dom: {
-            baseHref: 'https://bloom-dating.web.app'
-          }
-        })
         LogRocket.identify(user.id!, {
           name: user.firstName
         })
