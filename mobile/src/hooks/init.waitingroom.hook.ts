@@ -75,10 +75,7 @@ export const useInitWaitingRoom = () => {
 }
 
 async function checkPermission() {
-  if (
-    (isPlatform('android') || isPlatform('ios')) &&
-    !isPlatform('mobileweb')
-  ) {
+  if (isPlatform('hybrid')) {
     try {
       logger.log('mobile')
       let havePermissions = true

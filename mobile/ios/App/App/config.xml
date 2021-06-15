@@ -6,6 +6,11 @@
     <param name="ios-package" value="DatePicker"/>
   </feature>
 
+  <feature name="FirebaseAuthentication">
+    <param name="ios-package" value="FirebaseAuthenticationPlugin"/>
+    <param name="onload" value="false"/>
+  </feature>
+
   <feature name="iosrtcPlugin">
     <param name="ios-package" value="iosrtcPlugin"/>
     <param name="onload" value="true"/>

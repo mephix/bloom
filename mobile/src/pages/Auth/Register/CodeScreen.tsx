@@ -1,6 +1,11 @@
 import { AppButton } from 'components/AppButton'
 import { AppInput } from 'components/AppInput'
-import { db, RESTORE_USERS_COLLECTION, USERS_COLLECTION } from 'firebaseService'
+import {
+  auth,
+  db,
+  RESTORE_USERS_COLLECTION,
+  USERS_COLLECTION
+} from 'firebaseService'
 import { useErrorToast } from 'hooks/error.toast.hook'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useState } from 'react'
@@ -9,6 +14,8 @@ import register from 'state/register'
 import user from 'state/user'
 import { Screen } from 'wrappers/Screen'
 import stylesModule from '../AuthIndex.module.scss'
+import { FirebaseAuthentication } from '@ionic-native/firebase-authentication'
+import { isPlatform } from '@ionic/react'
 
 export const CodeScreen = observer(() => {
   const showError = useErrorToast()
@@ -16,15 +23,27 @@ export const CodeScreen = observer(() => {
   const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
   useEffect(() => {
-    if (!register.confirmationResult) return history.replace('/register')
+    if (!register.confirmationResult && !register.verificationId)
+      return history.replace('/register')
   }, [history])
   const checkCodeHandler = useCallback(async () => {
-    if (!register.confirmationResult) return history.replace('/register')
     if (!code) return showError('Code is required!')
     setLoading(true)
     try {
-      const result = await register.confirmationResult.confirm(code)
-      const userId = result.user?.uid!
+      let userId: string = ''
+      if (isPlatform('hybrid')) {
+        if (!register.verificationId) return history.replace('/register')
+        const credential = auth.PhoneAuthProvider.credential(
+          register.verificationId,
+          code
+        )
+        const result = await auth().signInWithCredential(credential)
+        userId = result.user?.uid!
+      } else {
+        if (!register.confirmationResult) return history.replace('/register')
+        const result = await register.confirmationResult.confirm(code)
+        userId = result.user?.uid!
+      }
       const userRef = db.collection(USERS_COLLECTION).doc(userId)
       const userDoc = await userRef.get()
       const userData = userDoc.data()

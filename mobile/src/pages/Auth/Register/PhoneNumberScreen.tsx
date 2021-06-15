@@ -1,13 +1,15 @@
 import { AppButton } from 'components/AppButton'
 import { AppInput } from 'components/AppInput'
 import { useCallback, useState } from 'react'
+import { FirebaseAuthentication } from '@ionic-native/firebase-authentication'
 import { Screen } from 'wrappers/Screen'
 import { isValidPhoneNumber } from 'react-phone-number-input'
 import { auth } from 'firebaseService'
 import stylesModule from '../AuthIndex.module.scss'
 import { useHistory } from 'react-router'
-import { useErrorToast } from '../../../hooks/error.toast.hook'
+import { useErrorToast } from 'hooks/error.toast.hook'
 import register from 'state/register'
+import { isPlatform } from '@ionic/react'
 
 const SEND_CODE_BUTTON_ID = 'send-code'
 
@@ -21,18 +23,29 @@ export const PhoneNumberScreen = () => {
     try {
       if (!phoneNumber || !isValidPhoneNumber(phoneNumber))
         return showError('Invalid phone number!')
-      const { recapchaVerifier } = verifyWithRecaptcha()
-      setLoading(true)
-      const confirmationResult = await auth().signInWithPhoneNumber(
-        phoneNumber,
-        recapchaVerifier
-      )
-      register.setConfirmationResult(confirmationResult)
+
+      if (isPlatform('hybrid')) {
+        console.log('hybrid auth')
+        const verificationId = await FirebaseAuthentication.verifyPhoneNumber(
+          phoneNumber,
+          0
+        )
+        register.setVerifictionId(verificationId)
+      } else {
+        console.log('web auth')
+        const { recapchaVerifier } = verifyWithRecaptcha()
+        const confirmationResult = await auth().signInWithPhoneNumber(
+          phoneNumber,
+          recapchaVerifier
+        )
+        register.setConfirmationResult(confirmationResult)
+      }
       register.setPhone(phoneNumber)
       history.push('/register/code')
-    } catch {
+    } catch (err) {
       setLoading(false)
       showError('Oops, something went wrong. Try again later!')
+      console.error('auth error', err)
     }
   }, [phoneNumber, showError, history])
 
