@@ -4,14 +4,7 @@ const config: CapacitorConfig = {
   appId: 'bloom.app.com',
   appName: 'Bloom',
   webDir: 'build',
-  bundledWebRuntime: false,
-  plugins: {
-    CapacitorFirebaseAuth: {
-      providers: ['phone'],
-      languageCode: 'en',
-      nativeAuth: false
-    }
-  }
+  bundledWebRuntime: false
 }
 
 export default config

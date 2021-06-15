@@ -14,7 +14,6 @@ import register from 'state/register'
 import user from 'state/user'
 import { Screen } from 'wrappers/Screen'
 import stylesModule from '../AuthIndex.module.scss'
-import { FirebaseAuthentication } from '@ionic-native/firebase-authentication'
 import { isPlatform } from '@ionic/react'
 
 export const CodeScreen = observer(() => {
