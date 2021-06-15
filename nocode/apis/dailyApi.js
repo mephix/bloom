@@ -97,7 +97,7 @@ async function makeRoom ({ nbf, exp }) {
         eject_at_room_exp: true,
         autojoin: true,
         enable_screenshare: false,
-        enable_chat: false,
+        enable_chat: true,
       },
     }
   })

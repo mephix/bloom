@@ -1,11 +1,11 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-06-12'
+let DAY = '2021-06-14'
 let HOUR = 19
-let SLOT = 2
+let SLOT = 7
 let RERUN = false
-let CUTOFF = 0.00      // >0 makes the dateEngine more picky.
+let CUTOFF = 0      // >0 makes the dateEngine more picky.
 let useTestIds = false   // `false` for real rounds.
 
 // `seqOrPar` should be "parallel" unless there is a dire 503 error when

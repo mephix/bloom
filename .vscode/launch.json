@@ -59,15 +59,6 @@
             ],
         },
         {
-            "name": "download users from Firebase",
-            "program": "${workspaceFolder}/nocode/db/download users from Firebase.js",
-            "type": "pwa-node",
-            "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-        },
-        {
             "name": "add Firebase Likes Nexts",
             "program": "${workspaceFolder}/nocode/db/addFirebaseLikesNexts.js",
             "type": "pwa-node",
@@ -79,6 +70,15 @@
         {
             "name": "run Fire Match Engine",
             "program": "${workspaceFolder}/nocode/matches/runFireMatchEngine.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
+        {
+            "name": "download users from Firebase",
+            "program": "${workspaceFolder}/nocode/db/download users from Firebase.js",
             "type": "pwa-node",
             "request": "launch",
             "skipFiles": [
