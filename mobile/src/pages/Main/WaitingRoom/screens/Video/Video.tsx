@@ -29,8 +29,12 @@ export const Video = () => {
   }, [dailyObj])
 
   const countDownEnd = useCallback(async () => {
-    if (!dailyObj) return
-    const availability = await meetup.checkAvailabilityAfterCountdown()
+    logger.log('CountDown end')
+    if (!dailyObj) {
+      logger.error('No dailyObj!')
+      return app.setWaitingRoomState()
+    }
+    const availability = meetup.checkAvailabilityAfterCountdown()
     if (!availability) return app.setWaitingRoomState()
     setVisibleCountDown(false)
     dailyObj.setLocalAudio(true)
