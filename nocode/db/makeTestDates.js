@@ -1,9 +1,15 @@
-const firestore = require('../apis/firestoreApi.js')
+// You can replace this with your own './firebase'
+const { db } = require('../apis/firestoreApi.js')
+// in dailyApi.js line 3, replace:
+// const { daily_api_key } = require('../DO_NOT_COMMIT.js')
+// with:
+// daily_api_key = process.env.DAILY_API_KEY
 const daily = require('../apis/dailyApi.js')
+// This package is just used to give date IDs uniqueness.
 const nanoid = require('nanoid')
 
 async function main() {
-    let query = await firestore.db.collection('Users-dev')
+    let query = await db.collection('Users-dev')
         .where('here', '==', true)
         .get()
     let usersHere = query.docs
@@ -26,7 +32,7 @@ async function main() {
     const exp = daily.calcExp({ endTime })
     const { data: { url }} = await daily.makeRoom({ nbf, exp })
     // 'nanoid' is just used to make these date ids be unique despite being descriptive.
-    const dateRef = firestore.db.collection('Dates-dev').doc(`${startTime.toISOString()}_${nameFor}_${nameWith}_${nanoid.nanoid()}`)
+    const dateRef = db.collection('Dates-dev').doc(`${startTime.toISOString()}_${nameFor}_${nameWith}_${nanoid.nanoid()}`)
     const date = {
         for: userFor.id,
         with: userWith.id,
@@ -36,7 +42,7 @@ async function main() {
         active: true,
         accepted: true,
     }
-    const batch = firestore.db.batch()
+    const batch = db.batch()
     batch.set(dateRef, date)
     // Now set both users' 'dateWith' field.
     batch.update(userFor.ref, { dateWith: userWith.id }, { merge: true })
