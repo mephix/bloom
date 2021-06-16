@@ -1,7 +1,7 @@
 /*
  * Key parameters to set
  */
-const today = '2021-06-14'
+const today = '2021-06-15'
 
 // File to load users from and store prospects:
 // const localUsersFile = `./nocode/output/Users ${today}.json`
@@ -31,9 +31,10 @@ runFireProspectEngine()
 async function runFireProspectEngine() {
   consoleColorLog(`Starting Fire Prospect Engine...`)
 
-  // Get Adalo users.
+  // Get Adalo users. Use the updated file to incorporate Firebase likes/nexts.
   const adaloUsersInputFile = `./nocode/output/Users ${today}.json`
   // const adaloUsersOutputFile = `./nocode/output/Users ${today} updated.json`
+
   const fs = require('fs')
   const fserr = err => {if (err) return console.log(err)}
   let adaloUsers = JSON.parse(fs.readFileSync(adaloUsersInputFile, 'utf8'))

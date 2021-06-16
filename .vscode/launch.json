@@ -77,6 +77,15 @@
             ],
         },
         {
+            "name": "transfer old users",
+            "program": "${workspaceFolder}/nocode/db/transferOldUsers.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
+        {
             "name": "download users from Firebase",
             "program": "${workspaceFolder}/nocode/db/download users from Firebase.js",
             "type": "pwa-node",

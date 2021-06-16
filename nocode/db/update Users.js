@@ -3,8 +3,8 @@
  */
 let collectionName = 'Users' // 'Dates' // 
 let cleanSlate = false
-let existingFileDate = '2021-06-14'
-const today = '2021-06-14'
+let existingFileDate = '2021-06-15'
+const today = '2021-06-15'
 // watch out, this might change to tomorrows date in the evening
 // const today = (new Date()).toISOString().substring(0,(new Date()).toISOString().indexOf('T'))
 

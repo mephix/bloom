@@ -1,5 +1,5 @@
 // Parameter to update.
-const today = '2021-06-14'
+const today = '2021-06-15'
 const dev = '-dev' // '' // 
 
 // Other parameters.
@@ -14,4 +14,5 @@ async function getFireUsers() {
     const query = await firestoreApi.db.collection('Users' + dev).get()
     let fireUsers = query.docs.map(doc => { return { id: doc.id, ...doc.data() }})
     fs.writeFile(fireUsersFile, JSON.stringify(fireUsers), fserr)
+    console.log(`Downloaded ${fireUsers.length} users from firebase`)
 } 
