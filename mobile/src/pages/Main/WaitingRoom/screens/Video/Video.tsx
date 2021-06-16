@@ -11,19 +11,20 @@ import { Logger } from 'utils'
 import { TabContext } from 'routes'
 import commonStyles from '../Common.module.scss'
 
-const minute = Date.now() + 60 * 60 * 1000
 const logger = new Logger('Video', 'red')
 
 const COUNT_DOWN = 10
 
 export const Video = () => {
+  const defaultEndDateTime = Date.now() + 10 * 60 * 60 * 1000
   const videoFrameRef = useRef<HTMLIFrameElement>(null)
   const [dailyObj, setDailyObj] = useState<DailyCall | null>(null)
-  const [endDateTime, setEndDateTime] = useState(minute)
+  const [endDateTime, setEndDateTime] = useState(defaultEndDateTime)
   const [visibleCountDown, setVisibleCountDown] = useState(true)
   const [timeout] = useState(Date.now() + COUNT_DOWN * 1000)
   const { hideTabs } = useContext(TabContext)
   const endDate = useCallback(() => {
+    // alert('end date')
     if (!dailyObj) return app.setRaitingState()
     dailyObj.leave()
   }, [dailyObj])
@@ -61,6 +62,7 @@ export const Video = () => {
       daily.setLocalAudio(false)
     })
     daily.on('left-meeting', () => {
+      // alert('left why?')
       app.setRaitingState()
       meetup.setLeftTime()
     })

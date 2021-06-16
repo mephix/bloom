@@ -206,6 +206,7 @@ class Meetup {
       JSON.stringify(this.currentMatchingUserData)
     )
     if (!this.currentMatchingUserData?.here) return false
+    if (!user.hiddenHere) return false
     else return true
   }
 
