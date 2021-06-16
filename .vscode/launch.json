@@ -77,6 +77,15 @@
             ],
         },
         {
+            "name": "make test dates",
+            "program": "${workspaceFolder}/nocode/db/makeTestDates.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
+        {
             "name": "transfer old users",
             "program": "${workspaceFolder}/nocode/db/transferOldUsers.js",
             "type": "pwa-node",
