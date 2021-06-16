@@ -53,25 +53,56 @@ export const useInitWaitingRoom = () => {
       }
     })
     const unsignUser = user.signUser()
+    const onlineUnsubscribe = onlineSubscriber()
 
     const closeHandler = () => user.setHiddenHere(false)
-    const visibilityChangeHandler = () => {
-      if (document.hidden) user.setHiddenHere(false)
-      else {
-        user.setHiddenHere(true)
-      }
-    }
-    window.addEventListener('beforeunload', closeHandler)
-    window.addEventListener('visibilitychange', visibilityChangeHandler)
+
     return () => {
-      window.removeEventListener('beforeunload', closeHandler)
-      window.removeEventListener('visibilitychange', visibilityChangeHandler)
+      onlineUnsubscribe()
       logger.log('Reset initialization')
       closeHandler()
       historyUnsubscribe()
       unsignUser()
     }
   }, [init, history])
+}
+
+function onlineSubscriber() {
+  let unsubscribe: () => void = () => {}
+  if (isPlatform('ios') || isPlatform('android')) {
+    const blurHandler = () => {
+      user.setHiddenHere(false)
+    }
+    const focusHandler = () => {
+      user.setHiddenHere(true)
+    }
+    window.addEventListener('pageshow', focusHandler)
+    window.addEventListener('pagehide', blurHandler)
+    window.addEventListener('beforeunload', blurHandler)
+    window.addEventListener('blur', blurHandler)
+    window.addEventListener('focus', focusHandler)
+
+    unsubscribe = () => {
+      window.removeEventListener('pageshow', focusHandler)
+      window.removeEventListener('pagehide', blurHandler)
+      window.removeEventListener('beforeunload', blurHandler)
+      window.removeEventListener('blur', blurHandler)
+      window.removeEventListener('focus', focusHandler)
+    }
+  } else {
+    const closeHandler = () => user.setHiddenHere(false)
+    const visibilityChangeHandler = () => {
+      if (document.hidden) user.setHiddenHere(false)
+      else user.setHiddenHere(true)
+    }
+    window.addEventListener('beforeunload', closeHandler)
+    window.addEventListener('visibilitychange', visibilityChangeHandler)
+    unsubscribe = () => {
+      window.removeEventListener('beforeunload', closeHandler)
+      window.removeEventListener('visibilitychange', visibilityChangeHandler)
+    }
+  }
+  return unsubscribe
 }
 
 async function checkPermission() {
