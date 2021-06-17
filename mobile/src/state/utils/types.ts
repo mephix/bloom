@@ -54,7 +54,7 @@ export type RateToggles =
   | 'interesting'
   | 'creative'
   | 'goodListener'
-  | 'asksInterestingQuestion'
+  | 'asksInterestingQuestions'
   | 'heart'
 
 export type MatchType = 'both' | 'me' | 'unknown'

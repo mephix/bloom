@@ -20,7 +20,7 @@ export const Raiting = () => {
     interesting: false,
     creative: false,
     goodListener: false,
-    asksInterestingQuestion: false,
+    asksInterestingQuestions: false,
     heart: false
   })
   const [modal, setModal] = useState(false)
@@ -107,8 +107,8 @@ export const Raiting = () => {
         />
         <ButtonToggle
           onToggle={setRateValue}
-          title="asks interesting question"
-          value="asksInterestingQuestion"
+          title="asks interesting questions"
+          value="asksInterestingQuestions"
         />
       </div>
       <div>

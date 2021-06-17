@@ -1,4 +1,4 @@
-import { IonRouterOutlet } from '@ionic/react'
+import { IonPage, IonRouterOutlet } from '@ionic/react'
 import { Route } from 'react-router-dom'
 import { Screen } from 'wrappers/Screen'
 import { CodeScreen } from './CodeScreen'
@@ -9,7 +9,7 @@ import { RestoreAccount } from './RestoreAccount'
 
 export const Register = () => {
   return (
-    <Screen>
+    <IonPage>
       <IonRouterOutlet mode="ios">
         <Route exact path="/register">
           <PhoneNumberScreen />
@@ -24,6 +24,6 @@ export const Register = () => {
           <RestoreAccount />
         </Route>
       </IonRouterOutlet>
-    </Screen>
+    </IonPage>
   )
 }

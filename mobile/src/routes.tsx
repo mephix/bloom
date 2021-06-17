@@ -1,5 +1,6 @@
 import {
   IonIcon,
+  IonPage,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
@@ -21,15 +22,17 @@ import { useInitWaitingRoom } from 'hooks/init.waitingroom.hook'
 export const AuthRoutes = () => {
   useStatusBar(Style.Light)
   return (
-    <IonRouterOutlet mode="ios">
-      <Route exact path="/">
-        <AuthIndex />
-      </Route>
-      <Route path="/register">
-        <Register />
-      </Route>
-      <Redirect to="/" />
-    </IonRouterOutlet>
+    <IonPage>
+      <IonRouterOutlet mode="ios">
+        <Route exact path="/">
+          <AuthIndex />
+        </Route>
+        <Route path="/register">
+          <Register />
+        </Route>
+        <Redirect to="/" />
+      </IonRouterOutlet>
+    </IonPage>
   )
 }
 

@@ -2,7 +2,7 @@ import { IonTextarea } from '@ionic/react'
 import { AppButton } from 'components/AppButton'
 import { PhotoPicker } from 'components/PhotoPicker'
 import { storage } from 'firebaseService'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useHistory } from 'react-router'
 import user from 'state/user'
 import { Screen } from 'wrappers/Screen'
@@ -13,6 +13,7 @@ export const EditScreen = () => {
   const [bio, setBio] = useState(user.bio)
   const [avatar, setAvatar] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
+  const textareaRef = useRef<HTMLIonTextareaElement>(null)
   const history = useHistory()
 
   const fileChangeHandler = useCallback((file: File) => setAvatar(file), [])
@@ -58,11 +59,19 @@ export const EditScreen = () => {
           </div>
           {!hideTextarea && (
             <IonTextarea
+              ref={textareaRef}
               onIonChange={bioChangeHandler}
               value={bio}
               autoGrow
               placeholder="Enter Text"
               className={stylesModule.textareaInput}
+              onFocus={() => {
+                console.log('focus')
+                setTimeout(() => {
+                  console.log(textareaRef.current)
+                  textareaRef.current?.scrollIntoView()
+                }, 1000)
+              }}
             />
           )}
         </div>
