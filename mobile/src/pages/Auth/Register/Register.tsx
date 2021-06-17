@@ -1,6 +1,5 @@
 import { IonPage, IonRouterOutlet } from '@ionic/react'
 import { Route } from 'react-router-dom'
-import { Screen } from 'wrappers/Screen'
 import { CodeScreen } from './CodeScreen'
 import { GetInfoScreen } from './GetInfoScreen'
 import { PhoneNumberScreen } from './PhoneNumberScreen'

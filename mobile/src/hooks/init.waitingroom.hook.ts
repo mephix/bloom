@@ -22,6 +22,7 @@ export const useInitWaitingRoom = () => {
   const init = useCallback(async () => {
     try {
       // console.log('phone number', auth().currentUser?.phoneNumber)
+
       logger.log('Main app initialization')
       logger.log(`Log in as ${user.id}`)
       if (isProd) {

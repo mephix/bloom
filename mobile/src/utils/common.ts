@@ -1,5 +1,6 @@
 import { DocumentData, DocumentSnapshot } from '../firebaseService'
 import classnames from 'classnames'
+import React from 'react'
 
 export const px = (num: number) => `${num}px`
 export const noop = () => {}
@@ -25,3 +26,8 @@ export const byFor = (id: string) => {
 }
 
 export const isProd = process.env.NODE_ENV === 'production'
+
+export const onEnterKey = (callback: () => void) => {
+  return (event: React.KeyboardEvent<HTMLInputElement>) =>
+    event.key === 'Enter' && callback()
+}

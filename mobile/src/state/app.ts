@@ -3,6 +3,7 @@ import { db, PARAMETERS_COLLECTION } from 'firebaseService'
 import { PARAMS } from './utils/constants'
 import { StringDictionary } from './utils/types'
 import { Matchmaker } from 'services/matchmaker.service'
+import { Logger } from 'utils'
 
 export type AppState =
   | 'WAITING'
@@ -11,6 +12,8 @@ export type AppState =
   | 'NO_PERMISSIONS'
   | 'NOT_SAFARI'
   | null
+
+const logger = new Logger('AppState', '#2e2b24')
 
 class App {
   state: AppState = null
@@ -23,7 +26,9 @@ class App {
   init() {
     return new Promise(resolve => {
       db.collection(PARAMETERS_COLLECTION).onSnapshot(async () => {
+        logger.log('Get settings params')
         await this.getParams()
+        logger.log('Start initializing Matchmaker')
         await Matchmaker.initialize()
         resolve && resolve(null)
       })
@@ -42,22 +47,32 @@ class App {
   }
 
   setNoPermissionsState() {
+    logger.log('Set NO_PERMISSIONS state')
+
     this.state = 'NO_PERMISSIONS'
   }
 
   setNotSafariState() {
+    logger.log('Set NOT_SAFARI state')
+
     this.state = 'NOT_SAFARI'
   }
 
   setWaitingRoomState() {
+    logger.log('Set WAITING state')
+
     this.state = 'WAITING'
   }
 
   setVideoState() {
+    logger.log('Set VIDEO state')
+
     this.state = 'VIDEO'
   }
 
   setRaitingState() {
+    logger.log('Set RATING state')
+
     this.state = 'RATING'
   }
 }

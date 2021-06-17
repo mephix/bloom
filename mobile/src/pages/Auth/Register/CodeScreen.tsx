@@ -15,6 +15,7 @@ import user from 'state/user'
 import { Screen } from 'wrappers/Screen'
 import stylesModule from '../AuthIndex.module.scss'
 import { isPlatform } from '@ionic/react'
+import { onEnterKey } from 'utils'
 
 export const CodeScreen = observer(() => {
   const showError = useErrorToast()
@@ -73,7 +74,7 @@ export const CodeScreen = observer(() => {
         return user.setAuth('authorized')
       }
       user.setId(userId)
-      history.push('/register/get-info')
+      history.replace('/register/get-info')
     } catch {
       showError(
         'Wrong code! Please try again or contact hello@thezerodate.com for help',
@@ -93,6 +94,7 @@ export const CodeScreen = observer(() => {
             if (!num && num !== 0) return setCode('')
             setCode(text)
           }}
+          onKeyPress={onEnterKey(() => checkCodeHandler())}
           label={`Enter the code sent to ${register.phone} below`}
           type="number"
           pattern="[0-9]*"

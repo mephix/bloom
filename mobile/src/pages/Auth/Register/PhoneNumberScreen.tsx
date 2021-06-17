@@ -10,6 +10,7 @@ import { useHistory } from 'react-router'
 import { useErrorToast } from 'hooks/error.toast.hook'
 import register from 'state/register'
 import { isPlatform } from '@ionic/react'
+import { onEnterKey } from 'utils'
 
 const SEND_CODE_BUTTON_ID = 'send-code'
 
@@ -23,6 +24,7 @@ export const PhoneNumberScreen = () => {
     try {
       if (!phoneNumber || !isValidPhoneNumber(phoneNumber))
         return showError('Invalid phone number!')
+      setLoading(true)
 
       if (isPlatform('hybrid')) {
         console.log('hybrid auth')
@@ -41,7 +43,7 @@ export const PhoneNumberScreen = () => {
         register.setConfirmationResult(confirmationResult)
       }
       register.setPhone(phoneNumber)
-      history.push('/register/code')
+      history.replace('/register/code')
     } catch (err) {
       setLoading(false)
       showError('Oops, something went wrong. Try again later!')
@@ -55,6 +57,7 @@ export const PhoneNumberScreen = () => {
         <AppInput
           value={phoneNumber}
           onChangeText={phone => setPhoneNumber(phone)}
+          onKeyPress={onEnterKey(() => sendCodeHandler())}
           label="What's your phone number?"
           small="We will send you a text with a verification code."
           phone

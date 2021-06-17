@@ -1,6 +1,5 @@
 import { IonPage, IonRouterOutlet } from '@ionic/react'
 import { Route } from 'react-router-dom'
-import { Screen } from 'wrappers/Screen'
 import { EditScreen } from './EditScreen'
 import { OptionsScreen } from './OptionsScreen'
 import { ProfileInfo } from './ProfileInfo'
