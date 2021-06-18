@@ -1,7 +1,7 @@
 /*
  * Key parameters to set
  */
-const today = '2021-06-15'
+const today = '2021-06-17'
 
 // File to load users from and store prospects:
 // const localUsersFile = `./nocode/output/Users ${today}.json`

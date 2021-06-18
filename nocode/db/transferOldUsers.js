@@ -1,4 +1,4 @@
-const today = '2021-06-15'
+const today = '2021-06-17'
 
 const { db } = require('../apis/firestoreApi.js')
 const RestoreUsersData = require(`../output/Users ${today}.json`)
@@ -7,7 +7,8 @@ const RESTORE_USERS_COLLECTION = 'RestoreUsers'
 async function main() {
     const batch = db.batch()
     // Max batch size is 500.
-    let users = RestoreUsersData.slice(1065,)
+    // Most recently used: 1066.
+    let users = RestoreUsersData.slice(1066,)
     for (const user of users) {
         console.log('Creating ' + user['Email'])
         const ref = db.collection(RESTORE_USERS_COLLECTION).doc(user['Email'])
