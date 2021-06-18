@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 
 export const useStatusBar = (style: Style) => {
   useEffect(() => {
-    if (!isPlatform('ios') || isPlatform('mobileweb')) return
+    if (!isPlatform('ios') && !isPlatform('hybrid')) return
     StatusBar.setStyle({ style })
   }, [style])
 }
