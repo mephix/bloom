@@ -1,15 +1,6 @@
 {
-	"appId": "bloom.app.com",
-	"appName": "Bloom",
+	"appId": "com.thezerodate.ios",
+	"appName": "The Zero Date",
 	"webDir": "build",
-	"bundledWebRuntime": false,
-	"plugins": {
-		"CapacitorFirebaseAuth": {
-			"providers": [
-				"phone"
-			],
-			"languageCode": "en",
-			"nativeAuth": false
-		}
-	}
+	"bundledWebRuntime": false
 }
