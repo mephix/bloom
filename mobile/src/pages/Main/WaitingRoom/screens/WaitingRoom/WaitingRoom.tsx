@@ -11,9 +11,12 @@ import { PARAMS } from 'state/utils/constants'
 import { UserCard } from 'state/utils/types'
 import meetup from 'state/meetup'
 import placeholderImage from 'assets/images/placeholder.jpg'
+import { DateNightCountdown } from 'components/DateNightCountdown'
+import { DateClockService } from 'services/dateClock.service'
 
 export const WaitingRoom = observer(() => {
   const toggleHandler = useCallback(state => user.setHere(state), [])
+  const timeTilNextDateNight = DateClockService.timeTilNextDateNight()
 
   const resolveHandler = useCallback(() => {
     if (!meetup.updatingProspects) meetup.shiftCards()
@@ -68,16 +71,14 @@ export const WaitingRoom = observer(() => {
       {card}
     </>
   ) : (
-    <div>{app.params[PARAMS.WAITING_FOR_DATE_NIGTH]}</div>
+    <>
+      <div>{app.params[PARAMS.WAITING_FOR_DATE_NIGTH]}</div>
+      <DateNightCountdown timeTilNextDateNight={timeTilNextDateNight} />
+    </>
   )
 
   return (
     <div className={classes(commonStyles.container, moduleStyles.container)}>
-      {/* {!isProd && (
-        <button onClick={() => ProspectsService.addTestingProspects(25)}>
-          add prospects
-        </button>
-      )} */}
       {content}
     </div>
   )
