@@ -1,11 +1,12 @@
 .header {
-  height: 64px;
+  height: calc(64px + var(--ion-safe-area-top)) ;
   box-sizing: border-box;
   border-bottom: 1px solid white;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: var(--ion-safe-area-top);
+  // margin-top: calc(-1 * var(--ion-safe-area-top));
+  padding-top: var(--ion-safe-area-top);
   width: 100%;
 }
 
