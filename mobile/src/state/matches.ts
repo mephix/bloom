@@ -10,7 +10,7 @@ import {
 import { DateTime } from 'luxon'
 import { makeAutoObservable } from 'mobx'
 import { PhoneNumberService } from 'services/phoneNumber.service'
-import { Logger } from 'utils'
+import { Logger, LogGroup } from 'utils'
 import user from './user'
 import { MatchType, UserMatch } from './utils/types'
 
@@ -55,27 +55,29 @@ class Matches {
     const onMatches = async (dates: QuerySnapshot, isWith: boolean) => {
       if (this.loading) return
       logger.log('Update matches...')
+      const matchesLogGroup = new LogGroup('Updated matches', logger)
+
       let newMatchesUsers = this.matchesUsers
       for (const dateDoc of dates.docs) {
         const date = dateDoc.data()
-        logger.log('Match user date id', dateDoc.id)
+        matchesLogGroup.add('Match user date id', dateDoc.id)
         if (date.active) {
-          logger.log('Continue: this date is currently active')
+          matchesLogGroup.add('Continue: this date is currently active')
           continue
         }
         const currentUserMatch = newMatchesUsers.find(
           match => match.dateId === dateDoc.id
         )
-        logger.log('currentUserMatch', currentUserMatch)
+        matchesLogGroup.add('currentUserMatch', currentUserMatch)
         if (date.blocked && currentUserMatch) {
           newMatchesUsers = newMatchesUsers.filter(
             match => match.dateId !== dateDoc.id
           )
-          logger.log('Continue(deleting): this date is blocked')
+          matchesLogGroup.add('Continue(deleting): this date is blocked')
           continue
         }
         if (date.blocked) {
-          logger.log('Continue: this date is blocked')
+          matchesLogGroup.add('Continue: this date is blocked')
           continue
         }
         const affiliation = isWith ? 'with' : 'for'
@@ -93,7 +95,7 @@ class Matches {
           }
           const matchesUsers = [...newMatchesUsers, matchesUser].sort(byDesc)
           newMatchesUsers = matchesUsers
-          logger.log('Continue: created new user')
+          matchesLogGroup.add('Continue: created new user')
           continue
         }
 
@@ -101,13 +103,14 @@ class Matches {
           date.rate[affiliation].heart,
           date.rate[otherAffiliation].heart
         )
-        logger.log('Change type to', type)
+        matchesLogGroup.add('Change type to', type)
 
         newMatchesUsers = newMatchesUsers.map(user => {
           if (user.dateId === dateDoc.id) return { ...user, type }
           return user
         })
       }
+      matchesLogGroup.apply()
       this.setMatchesUsers(newMatchesUsers)
     }
     const twentyDaysAgo = DateTime.now().minus({ days: 20 }).toJSDate()

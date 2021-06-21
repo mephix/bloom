@@ -14,7 +14,7 @@ const EMPTY_MATCHES = {}
 
 type Matches = { [key: string]: number }
 
-const logger = new Logger('Matches', '#d924e3')
+const logger = new Logger('MatchesService', '#d924e3')
 
 export class MatchesService {
   private static disabled = true

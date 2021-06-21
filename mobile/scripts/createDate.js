@@ -2,7 +2,7 @@ const { DateTime } = require('luxon')
 const { db, time } = require('./firebase')
 const DATES_COLLECTION = 'Dates-dev'
 
-const users = ['9Z3PHTpJWOhxi2YAnpapP3hHL652', 'KmxkM0BSBgb63y0lqxswe4q0J4v1']
+const users = ['9Z3PHTpJWOhxi2YAnpapP3hHL652', 'sltYAEsWs8hHIS3M208foDWMoQm2']
 
 const DURATION_MIN = 10
 
