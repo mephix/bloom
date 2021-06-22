@@ -1,17 +1,46 @@
-import { FC } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import Countdown from 'react-countdown'
 import stylesModule from './DateNightCountdown.module.scss'
 import AnimatedNumber from 'react-animated-numbers'
+import { useLocation } from 'react-router'
 interface DateNightCountdownProps {
   timeTilNextDateNight: number
 }
 
 const zero = (num: number) => (num < 10 ? <span>0</span> : '')
 
+interface CountdownNumberProps {
+  num: number
+  disabled: boolean
+}
+
+const CountdownNumber: FC<CountdownNumberProps> = ({ num, disabled }) => {
+  if (disabled) return <>00</>
+
+  return (
+    <>
+      {zero(num)}
+      <AnimatedNumber animationType="calm" animateToNumber={num} />
+    </>
+  )
+}
+
 export const DateNightCountdown: FC<DateNightCountdownProps> = ({
   timeTilNextDateNight
 }) => {
-  const dateNight = Date.now() + timeTilNextDateNight
+  const [disabled, setDisable] = useState(false)
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.pathname === '/waitingroom') setDisable(false)
+    else setDisable(true)
+  }, [location])
+
+  const dateNight = useMemo(
+    () => Date.now() + timeTilNextDateNight,
+    [timeTilNextDateNight]
+  )
+
   return (
     <Countdown
       date={dateNight}
@@ -19,20 +48,16 @@ export const DateNightCountdown: FC<DateNightCountdownProps> = ({
         return (
           <div className={stylesModule.countdownContainer}>
             <div className={stylesModule.box}>
-              {zero(days)}
-              <AnimatedNumber animationType="calm" animateToNumber={days} />
+              <CountdownNumber num={days} disabled={disabled} />
             </div>
             <div className={stylesModule.box}>
-              {zero(hours)}
-              <AnimatedNumber animationType="calm" animateToNumber={hours} />
+              <CountdownNumber num={hours} disabled={disabled} />
             </div>
             <div className={stylesModule.box}>
-              {zero(minutes)}
-              <AnimatedNumber animationType="calm" animateToNumber={minutes} />
+              <CountdownNumber num={minutes} disabled={disabled} />
             </div>
             <div className={stylesModule.box}>
-              {zero(seconds)}
-              <AnimatedNumber animationType="calm" animateToNumber={seconds} />
+              <CountdownNumber num={seconds} disabled={disabled} />
             </div>
           </div>
         )
