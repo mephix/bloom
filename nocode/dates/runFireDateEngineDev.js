@@ -1,9 +1,9 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-06-17'
-let HOUR = '16'
-let SLOT = 6
+let DAY = '2021-06-21'
+let HOUR = '13'
+let SLOT = 9
 let RERUN = false        // Only do reruns after the slot starts.
 let CUTOFF = 0.00       // >0 makes the dateEngine more picky.
 let useTestIds = false   // `false` for real rounds.
