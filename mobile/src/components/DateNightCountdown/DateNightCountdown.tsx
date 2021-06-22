@@ -20,10 +20,7 @@ export const DateNightCountdown: FC<DateNightCountdownProps> = ({
           <div className={stylesModule.countdownContainer}>
             <div className={stylesModule.box}>
               {zero(days)}
-              <AnimatedNumber
-                animationType="calm"
-                animateToNumber={days}
-              />{' '}
+              <AnimatedNumber animationType="calm" animateToNumber={days} />
             </div>
             <div className={stylesModule.box}>
               {zero(hours)}
