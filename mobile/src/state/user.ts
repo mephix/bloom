@@ -3,6 +3,7 @@ import { makeAutoObservable } from 'mobx'
 import {
   db,
   DocumentSnapshot,
+  messaging,
   time,
   USERS_COLLECTION
 } from '../firebaseService'
@@ -49,6 +50,7 @@ interface UserDataUpdate {
   genderPreference?: Gender
   agePreferences?: MeetAges
   email?: string
+  notificationToken?: string
 }
 
 class User {
@@ -85,6 +87,17 @@ class User {
     this.updateUser({
       finished: user.finished
     })
+    this.setupNotifications()
+  }
+
+  async setupNotifications() {
+    try {
+      const token = await messaging.getToken()
+      console.log('Notifications token', token)
+      this.updateUserData({ notificationToken: token })
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   async setUser_OLD(email: string) {

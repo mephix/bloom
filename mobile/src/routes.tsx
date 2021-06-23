@@ -18,6 +18,7 @@ import { Profile } from 'pages/Main/Profile'
 import { Matches } from 'pages/Main/Matches'
 import { createContext, useState } from 'react'
 import { useInitWaitingRoom } from 'hooks/init.waitingroom.hook'
+import { useInitNotifications } from 'hooks/init.notifications'
 
 export const AuthRoutes = () => {
   useStatusBar(Style.Light)
@@ -45,6 +46,7 @@ export const MainRoutes = () => {
   const [tabHidden, setTabHidden] = useState(false)
   useStatusBar(Style.Dark)
   useInitWaitingRoom()
+  useInitNotifications()
   return (
     <TabContext.Provider
       value={{
