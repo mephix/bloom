@@ -12,6 +12,7 @@ import { useErrorToast } from 'hooks/error.toast.hook'
 // import { useHistory } from 'react-router'
 import register from 'state/register'
 import { observer } from 'mobx-react-lite'
+import { PhoneNumberService } from 'services/phoneNumber.service'
 const formDataInitial = {
   name: '',
   birthday: '',
@@ -22,33 +23,7 @@ export const GetInfoScreen = observer(() => {
 
   const [formData, setFormData] = useState(formDataInitial)
 
-  //#region Restore Account
-  // const [present] = useIonAlert()
-  // const history = useHistory()
-  // const [restoreUserState, setRestoreUserState] = useState(false)
   const restoreUser = register.restoreUser
-
-  // useEffect(() => {
-  // if (!restoreUser && typeof restoreUser !== 'number')
-  //   return present({
-  //     message: 'Would you like to try to restore your old account?',
-  //     buttons: [
-  //       { text: "No, I didn't have" },
-  //       {
-  //         text: 'Yes, let me try!',
-  //         handler: () => {
-  //           history.push('/register/restore')
-  //         }
-  //       }
-  //     ]
-  //   })
-  // else if (!restoreUserState) {
-  //   setRestoreUserState(true)
-  //   setFormData({ ...formDataInitial, name: restoreUser?.firstName || '' })
-  // }
-  // }, [history, present, restoreUser, restoreUserState])
-
-  //#endregion
 
   const saveHandler = useCallback(async () => {
     if (!formData.name) return showError('Enter your name!')
@@ -74,6 +49,7 @@ export const GetInfoScreen = observer(() => {
         avatar: restoreUser?.face || ''
       })
     }
+    await PhoneNumberService.setupPhoneNumberObject()
     user.setAuth('authorized')
   }, [formData, showError, restoreUser])
 

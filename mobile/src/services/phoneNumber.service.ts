@@ -13,6 +13,15 @@ export class PhoneNumberService {
       return null
     }
   }
+  static async setupPhoneNumberObject() {
+    const phoneNumberObjectRef = db
+      .collection(PHONE_NUMBERS_COLLECTION)
+      .doc(user.id)
+    await phoneNumberObjectRef.set({
+      phone: auth().currentUser!.phoneNumber,
+      allow: []
+    })
+  }
   static async allowMyPhoneNumber(userId: string) {
     try {
       const phoneNumberObjectRef = db
