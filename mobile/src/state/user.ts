@@ -3,7 +3,7 @@ import { makeAutoObservable } from 'mobx'
 import {
   db,
   DocumentSnapshot,
-  messaging,
+  // messaging,
   time,
   USERS_COLLECTION
 } from '../firebaseService'
@@ -92,9 +92,9 @@ class User {
 
   async setupNotifications() {
     try {
-      const token = await messaging.getToken()
-      console.log('Notifications token', token)
-      this.updateUserData({ notificationToken: token })
+      // const token = await messaging.getToken()
+      // console.log('Notifications token', token)
+      // this.updateUserData({ notificationToken: token })
     } catch (err) {
       console.error(err)
     }
