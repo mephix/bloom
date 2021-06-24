@@ -1,31 +1,36 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './App'
-import * as serviceWorkerRegistration from './serviceWorkerRegistration'
-import reportWebVitals from './reportWebVitals'
-import LogRocket from 'logrocket'
-import { isProd } from 'utils'
+import { App } from './App'
+import { store } from './store'
+import { Provider } from 'react-redux'
+import { GlobalStyle } from './GlobalStyle'
+import {ThemeProvider} from 'styled-components'
+import * as serviceWorker from './serviceWorkerRegistration'
+import { THEME } from 'theme/theme'
 
-if (isProd)
-  LogRocket.init('isym43/the-zero-date', {
-    dom: {
-      baseHref: 'https://bloom-dating.web.app'
-    }
-  })
+/* Ionic styles */
+import '@ionic/react/css/core.css'
+import '@ionic/react/css/normalize.css'
+import '@ionic/react/css/structure.css'
+import '@ionic/react/css/typography.css'
+import '@ionic/react/css/padding.css'
+import '@ionic/react/css/float-elements.css'
+import '@ionic/react/css/text-alignment.css'
+import '@ionic/react/css/text-transformation.css'
+import '@ionic/react/css/flex-utils.css'
+import '@ionic/react/css/display.css'
+import './theme/variables.css'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <ThemeProvider theme={THEME}>
+        <GlobalStyle />
+        <App />
+      </ThemeProvider>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 )
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://cra.link/PWA
-serviceWorkerRegistration.register()
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals()
+serviceWorker.unregister()

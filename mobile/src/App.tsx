@@ -1,38 +1,16 @@
 import { IonApp } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
-
-/* Core CSS required for Ionic components to work properly */
-import '@ionic/react/css/core.css'
-
-/* Basic CSS for apps built with Ionic */
-import '@ionic/react/css/normalize.css'
-import '@ionic/react/css/structure.css'
-import '@ionic/react/css/typography.css'
-
-/* Optional CSS utils that can be commented out */
-import '@ionic/react/css/padding.css'
-import '@ionic/react/css/float-elements.css'
-import '@ionic/react/css/text-alignment.css'
-import '@ionic/react/css/text-transformation.css'
-import '@ionic/react/css/flex-utils.css'
-import '@ionic/react/css/display.css'
-
-/* Theme variables */
-import './scss/App.scss'
-import './theme/variables.css'
-import { AuthRoutes, MainRoutes } from './routes'
-import { observer } from 'mobx-react-lite'
-import user from 'state/user'
-import { useAuthState } from 'hooks/auth.state'
+import { useAuth } from 'hooks/auth.hook'
+import { useRenderLog } from 'hooks/render.log.temp.hook'
 import { LoaderPage } from 'pages/LoaderPage'
-import { FC } from 'react'
+import { AuthStatus } from 'store/user/types'
+import { Screen } from 'wrappers/Screen'
+import { AuthRoutes } from 'routes'
 
-const App: FC = () => {
-  useAuthState()
-  let appContext
-  if (user.auth === 'unknown') appContext = <LoaderPage />
-  else if (user.auth === 'authorized') appContext = <MainRoutes />
-  else appContext = <AuthRoutes />
+export const App = () => {
+  useRenderLog('App')
+  const auth = useAuth()
+  const appContext = defineContext(auth)
   return (
     <IonApp>
       <IonReactRouter>{appContext}</IonReactRouter>
@@ -40,4 +18,13 @@ const App: FC = () => {
   )
 }
 
-export default observer(App)
+function defineContext(auth: AuthStatus) {
+  switch (auth) {
+    case 'unknown':
+      return <LoaderPage />
+    case 'authorized':
+      return <Screen>MainRoutes</Screen>
+    default:
+      return <AuthRoutes />
+  }
+}

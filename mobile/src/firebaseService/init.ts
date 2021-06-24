@@ -16,8 +16,10 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig)
 
-export const db = firebase.firestore()
-export const time = firebase.firestore.Timestamp
-export const auth = firebase.auth
-export const storage = firebase.storage()
-export const messaging = firebase.messaging()
+export const FirebaseService = {
+  db: firebase.firestore(),
+  time: firebase.firestore.Timestamp,
+  auth: firebase.auth,
+  storage: firebase.storage(),
+  messaging: firebase.messaging()
+}

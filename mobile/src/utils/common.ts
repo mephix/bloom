@@ -1,10 +1,10 @@
-import { DocumentData, DocumentSnapshot } from '../firebaseService'
-import classnames from 'classnames'
+import { DocumentData, DocumentSnapshot } from 'firebaseService/types'
+// import classnames from 'classnames'
 import React from 'react'
 
 export const px = (num: number) => `${num}px`
 export const noop = () => {}
-export const classes = classnames
+// export const classes = classnames
 export const computeData = (doc: DocumentSnapshot) => {
   return { ...doc.data(), id: doc.id }
 }

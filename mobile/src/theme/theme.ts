@@ -1,5 +1,5 @@
 export const THEME = {
-  DARK: 'black',
-  LIGHT: 'white',
-  PRIMARY: '#cfb9ff'
+  dark: 'black',
+  light: 'white',
+  primary: '#cfb9ff'
 }

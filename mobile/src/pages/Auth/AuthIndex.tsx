@@ -1,30 +1,35 @@
-import { FC, useEffect } from 'react'
+import { FC, useCallback } from 'react'
 import { useHistory } from 'react-router'
-import user from 'state/user'
-import { classes } from 'utils'
-import { AppButton } from '../../components/AppButton'
-import { Screen } from '../../wrappers/Screen'
-import stylesModule from './AuthIndex.module.scss'
+import styled from 'styled-components'
+import { Screen } from 'wrappers/Screen'
+import { AuthContainer } from './styled'
+import { AppButton } from 'components/AppButton'
+// @ts-ignore
+import logo from 'assets/images/logo.jpeg'
+
+const LogoImage = styled.div`
+  height: 624px;
+  background: url(${logo}) no-repeat center top;
+`
+
+const StyledAppButton = styled(AppButton)`
+  margin-bottom: 60px !important;
+  min-height: 42px;
+`
 
 export const AuthIndex: FC = () => {
   const history = useHistory()
-  useEffect(() => {
-    if (user.auth === 'without_information')
-      history.replace('/register/get-info')
-  }, [history])
   return (
     <Screen color="dark">
-      <div className={stylesModule.image}></div>
-      <div className={classes(stylesModule.container, stylesModule.index)}>
-        <AppButton
-          onClick={() => history.push('/register')}
-          color="primary"
+      <LogoImage />
+      <AuthContainer index>
+        <StyledAppButton
+          onClick={useCallback(() => history.push('/register'), [history])}
           full
-          style={{ marginBottom: '60px', minHeight: '42px' }}
         >
           Let's go
-        </AppButton>
-      </div>
+        </StyledAppButton>
+      </AuthContainer>
     </Screen>
   )
 }
