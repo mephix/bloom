@@ -6,12 +6,13 @@ import { isValidPhoneNumber } from 'react-phone-number-input'
 import { RegisterState } from './register.state.hook'
 import { Screen } from 'wrappers/Screen'
 import { AuthContainer } from '../styled'
-import { AppInput } from 'components/AppInput/AppInput'
+import { AppInput } from 'components/AppInput'
 import { onEnterKey } from 'utils'
 import { AppButton } from 'components/AppButton'
 import { FirebaseService } from 'firebaseService'
 import { isPlatform } from '@ionic/react'
 import firebase from 'firebase'
+import { useAuthWithoutInfo } from '../AuthIndex'
 
 interface PhoneNumberScreenProps {
   register: RegisterState
@@ -26,6 +27,8 @@ export const PhoneNumberScreen: FC<PhoneNumberScreenProps> = ({ register }) => {
   const history = useHistory()
   const [recapchaVerifier, setRecapchaVerifier] =
     useState<firebase.auth.RecaptchaVerifier | null>(null)
+
+  useAuthWithoutInfo()
 
   const getRecaptchaVerifier = useCallback(() => {
     if (recapchaVerifier) return recapchaVerifier

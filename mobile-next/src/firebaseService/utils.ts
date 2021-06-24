@@ -1,16 +1,6 @@
 import { isPlatform } from "@ionic/react"
 import { RegisterState } from "pages/Auth/Register/register.state.hook"
-import { USERS_COLLECTION } from "./constants"
 import { FirebaseService } from "./init"
-
-export async function fetchUserById(id: string) {
-  const userDoc = await FirebaseService.db
-    .collection(USERS_COLLECTION)
-    .doc(id)
-    .get()
-  const userData = userDoc.data()
-  return userData
-}
 
 export async function authUserByCode(
   register: RegisterState,

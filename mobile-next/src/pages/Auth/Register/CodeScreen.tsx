@@ -1,11 +1,13 @@
 import { AppButton } from 'components/AppButton'
-import { AppInput } from 'components/AppInput/AppInput'
+import { AppInput } from 'components/AppInput'
 import { authUserByCode } from 'firebaseService/utils'
 import { useToast } from 'hooks/toast.hook'
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
+import { useHistory } from 'react-router'
 
 import { onEnterKey } from 'utils'
 import { Screen } from 'wrappers/Screen'
+import { useAuthWithoutInfo } from '../AuthIndex'
 import { AuthContainer } from '../styled'
 import { RegisterState } from './register.state.hook'
 
@@ -17,6 +19,13 @@ export const CodeScreen: FC<CodeScreenProps> = ({ register }) => {
   const [showError] = useToast('error')
   const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
+  const history = useHistory()
+
+  useAuthWithoutInfo()
+  useEffect(() => {
+    if (!register.confirmationResult && !register.verificationId)
+      return history.replace('/register')
+  }, [history, register])
 
   const checkCodeHandler = useCallback(() => {
     setLoading(true)
