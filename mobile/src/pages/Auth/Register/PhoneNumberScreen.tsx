@@ -1,56 +1,59 @@
-import { useToast } from 'hooks/toast.hook'
-import { FC, useCallback, useState } from 'react'
-import { FirebaseAuthentication } from '@ionic-native/firebase-authentication'
-import { useHistory } from 'react-router'
-import { isValidPhoneNumber } from 'react-phone-number-input'
-import { RegisterState } from './register.state.hook'
-import { Screen } from 'wrappers/Screen'
-import { AuthContainer } from '../styled'
-import { AppInput } from 'components/AppInput/AppInput'
-import { onEnterKey } from 'utils'
 import { AppButton } from 'components/AppButton'
-import { FirebaseService } from 'firebaseService'
+import { AppInput } from 'components/AppInput'
+import { useCallback, useState } from 'react'
+import { FirebaseAuthentication } from '@ionic-native/firebase-authentication'
+import { Screen } from 'wrappers/Screen'
+import { isValidPhoneNumber } from 'react-phone-number-input'
+import { auth } from 'firebaseService'
+import stylesModule from '../AuthIndex.module.scss'
+import { useHistory } from 'react-router'
+import { useErrorToast } from 'hooks/error.toast.hook'
+import register from 'state/register'
 import { isPlatform } from '@ionic/react'
-import firebase from 'firebase'
-
-interface PhoneNumberScreenProps {
-  register: RegisterState
-}
+import { onEnterKey } from 'utils'
 
 const SEND_CODE_BUTTON_ID = 'send-code'
 
-export const PhoneNumberScreen: FC<PhoneNumberScreenProps> = ({ register }) => {
+export const PhoneNumberScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('+1')
   const [loading, setLoading] = useState(false)
-  const [showError] = useToast('error')
+  const showError = useErrorToast()
   const history = useHistory()
-  const [recapchaVerifier, setRecapchaVerifier] =
-    useState<firebase.auth.RecaptchaVerifier | null>(null)
-
-  const getRecaptchaVerifier = useCallback(() => {
-    if (recapchaVerifier) return recapchaVerifier
-    const createdRecapchaVerifier = createRecaptchaVerifier()
-    setRecapchaVerifier(createdRecapchaVerifier)
-    return createdRecapchaVerifier
-  }, [recapchaVerifier])
 
   const sendCodeHandler = useCallback(async () => {
     try {
       if (!phoneNumber || !isValidPhoneNumber(phoneNumber))
         return showError('Invalid phone number!')
       setLoading(true)
-      await sendVerificationCode(phoneNumber, register, getRecaptchaVerifier)
+
+      if (isPlatform('hybrid')) {
+        console.log('hybrid auth')
+        const verificationId = await FirebaseAuthentication.verifyPhoneNumber(
+          phoneNumber,
+          0
+        )
+        register.setVerifictionId(verificationId)
+      } else {
+        console.log('web auth')
+        const { recapchaVerifier } = verifyWithRecaptcha()
+        const confirmationResult = await auth().signInWithPhoneNumber(
+          phoneNumber,
+          recapchaVerifier
+        )
+        register.setConfirmationResult(confirmationResult)
+      }
+      register.setPhone(phoneNumber)
       history.replace('/register/code')
     } catch (err) {
       setLoading(false)
       showError('Oops, something went wrong. Try again later!')
       console.error('auth error', err)
     }
-  }, [phoneNumber, showError, history, register, getRecaptchaVerifier])
+  }, [phoneNumber, showError, history])
 
   return (
     <Screen>
-      <AuthContainer>
+      <div className={stylesModule.container}>
         <AppInput
           value={phoneNumber}
           onChangeText={phone => setPhoneNumber(phone)}
@@ -59,48 +62,23 @@ export const PhoneNumberScreen: FC<PhoneNumberScreenProps> = ({ register }) => {
           small="We will send you a text with a verification code."
           phone
         />
-
         <AppButton
           id={SEND_CODE_BUTTON_ID}
           onClick={sendCodeHandler}
+          color="primary"
           loading={loading}
         >
           Send code
         </AppButton>
-      </AuthContainer>
+      </div>
     </Screen>
   )
 }
 
-async function sendVerificationCode(
-  phoneNumber: string,
-  register: RegisterState,
-  getRecaptchaVerifier: () => firebase.auth.RecaptchaVerifier
-) {
-  if (isPlatform('hybrid')) {
-    const verificationId = await FirebaseAuthentication.verifyPhoneNumber(
-      phoneNumber,
-      0
-    )
-    register.setVerificationId(verificationId)
-  } else {
-    const recapchaVerifier = getRecaptchaVerifier()
-    const confirmationResult =
-      await FirebaseService.auth().signInWithPhoneNumber(
-        phoneNumber,
-        recapchaVerifier
-      )
-    register.setConfirmationResult(confirmationResult)
-  }
-  register.setPhone(phoneNumber)
-}
+const verifyWithRecaptcha = () => {
+  const recapchaVerifier = new auth.RecaptchaVerifier(SEND_CODE_BUTTON_ID, {
+    size: 'invisible'
+  })
 
-function createRecaptchaVerifier() {
-  const recapchaVerifier = new FirebaseService.auth.RecaptchaVerifier(
-    SEND_CODE_BUTTON_ID,
-    {
-      size: 'invisible'
-    }
-  )
-  return recapchaVerifier
+  return { recapchaVerifier }
 }

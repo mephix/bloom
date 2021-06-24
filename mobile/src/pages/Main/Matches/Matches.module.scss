@@ -1,0 +1,20 @@
+.sectionsContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 50px;
+}
+
+.section {
+  padding: 5px 10px;
+  border-radius: 25px;
+  border: 2px solid black;
+  width: 180px;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.3s;
+  &.selected {
+    background: #cfb9ff;
+  }
+}

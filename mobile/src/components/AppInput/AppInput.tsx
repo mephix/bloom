@@ -1,21 +1,14 @@
-import { FC } from 'react'
+import React, { DetailedHTMLProps, FC, InputHTMLAttributes } from 'react'
+import stylesModule from './AppInput.module.scss'
+import PhoneInput from 'react-phone-number-input/input'
 import { noop } from 'utils'
 import { DateInput } from './DateInput'
 import { IonRange } from '@ionic/react'
-import {
-  LabelSpan,
-  LabelWrapper,
-  SmallText,
-  StyledInput,
-  StyledPhoneInput
-} from './styled'
-
-interface RangeOptions {
-  min: number
-  max: number
-}
-
-interface AppInputProps {
+interface AppInputProps
+  extends DetailedHTMLProps<
+    InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  > {
   label?: string
   full?: boolean
   phone?: boolean
@@ -29,23 +22,12 @@ interface AppInputProps {
   onChangeRange?: (range: { lower: number; upper: number }) => void
 }
 
-export const AppInput: FC<
-  AppInputProps & React.InputHTMLAttributes<HTMLInputElement>
-> = props => {
-  const { full, small, label } = props
-  const input = defineInputType(props)
-  return (
-    <LabelWrapper full={full}>
-      <LabelSpan>{label}</LabelSpan>
-      {input}
-      {small && <SmallText>{small}</SmallText>}
-    </LabelWrapper>
-  )
+interface RangeOptions {
+  min: number
+  max: number
 }
 
-function defineInputType(
-  props: AppInputProps & React.InputHTMLAttributes<HTMLInputElement>
-) {
+export const AppInput: FC<AppInputProps> = props => {
   const {
     onChangeText = noop,
     onChangeRange = noop,
@@ -60,17 +42,18 @@ function defineInputType(
     rangeValue,
     ...other
   } = props
-
+  let input
   if (phone)
-    return (
-      <StyledPhoneInput
+    input = (
+      <PhoneInput
         {...other}
+        className={stylesModule.input}
         onChange={(value: string) => onChangeText(value)}
       />
     )
-  else if (date) return <DateInput onChangeText={onChangeText} />
+  else if (date) input = <DateInput onChangeText={onChangeText} />
   else if (range)
-    return (
+    input = (
       <IonRange
         style={{ margin: '0 15px' }}
         {...rangeOptions}
@@ -84,7 +67,22 @@ function defineInputType(
       ></IonRange>
     )
   else
-    return (
-      <StyledInput onChange={e => onChangeText(e.target.value)} {...other} />
+    input = (
+      <input
+        className={stylesModule.input}
+        onChange={e => onChangeText(e.target.value)}
+        {...other}
+      />
     )
+
+  return (
+    <label
+      className={stylesModule.wrapper}
+      style={{ width: full ? '100%' : '' }}
+    >
+      <span className={stylesModule.label}>{label}</span>
+      {input}
+      {small && <small className={stylesModule.smallText}>{small}</small>}
+    </label>
+  )
 }
