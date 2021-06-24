@@ -20,6 +20,6 @@ export const FirebaseService = {
   db: firebase.firestore(),
   time: firebase.firestore.Timestamp,
   auth: firebase.auth,
-  storage: firebase.storage(),
-  messaging: firebase.messaging()
+  storage: firebase.storage()
+  // messaging: firebase.messaging()
 }

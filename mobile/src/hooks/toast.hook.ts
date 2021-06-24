@@ -5,14 +5,14 @@ type ToastType = 'info' | 'error'
 
 export const useToast = (
   type: ToastType = 'info'
-): [(message: string) => void, () => void] => {
+): [(message: string, sec?: number) => void, () => void] => {
   const [present, dismiss] = useIonToast()
   const show = useCallback(
-    message =>
+    (message, sec = 3) =>
       present({
         message,
         color: defineToastColor(type),
-        duration: 3 * 1000,
+        duration: sec * 1000,
         position: 'top'
       }),
     [present, type]

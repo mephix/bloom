@@ -18,7 +18,7 @@ export const AppButton: FC<
 
   return (
     <StyledButton {...other} disabled={loading} color={color} full={full}>
-      {loading ? <Loader /> : children}
+      {loading ? <Loader small /> : children}
     </StyledButton>
   )
 }

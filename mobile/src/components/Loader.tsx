@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components'
 
 interface LoaderProps {
   color?: string
+  small?: boolean
 }
 
 const spin = keyframes`
@@ -20,20 +21,20 @@ export const LoaderContainer = styled.div`
   height: 100%;
 `
 
-const LoaderRings = styled.div`
+const LoaderRings = styled('div')<{ small?: boolean }>`
   display: inline-block;
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: ${({ small }) => (small ? '38px' : '80px')};
+  height: ${({ small }) => (small ? '38px' : '80px')};
 
   & div {
     box-sizing: border-box;
     display: block;
     position: absolute;
-    width: 64px;
-    height: 64px;
-    margin: 8px;
-    border: 8px solid #fff;
+    width: ${({ small }) => (small ? '30px' : '64px')};
+    height: ${({ small }) => (small ? '30px' : '64px')};
+    margin: ${({ small }) => (small ? '4px' : '8px')};
+    border: ${({ small }) => (small ? '4px' : '8px')} solid #fff;
     border-radius: 50%;
     animation: ${spin} 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
     border-color: #fff transparent transparent transparent;
@@ -53,8 +54,8 @@ const Ring = styled.div`
   border-color: ${props => props.color} transparent transparent transparent;
 `
 
-export const Loader: FC<LoaderProps> = ({ color = '#fff' }) => (
-  <LoaderRings>
+export const Loader: FC<LoaderProps> = ({ color = '#fff', small }) => (
+  <LoaderRings small={small}>
     <Ring color={color} />
     <Ring color={color} />
     <Ring color={color} />
