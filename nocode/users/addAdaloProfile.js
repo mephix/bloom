@@ -3,16 +3,21 @@ const consoleColorLog = require('../utils/consoleColorLog.js')
 module.exports = addAdaloProfile
 
  function addAdaloProfile(firebaseUser, adaloUserArray) {
+  let adaloUser = {}
   if (adaloUserArray.length === 0) {
-    consoleColorLog(`${firebaseUser.id} has no profile in Adalo`, 'yellow')
-    return firebaseUser
-  }
-  if (adaloUserArray.length > 1) {
+    consoleColorLog(`${firebaseUser.firstName} (${firebaseUser.id}) has no profile in Adalo`, 'yellow')
+    adaloUser['Age'] = firebaseUser['age']
+    adaloUser['Gender'] = firebaseUser['gender'].toUpperCase()
+    adaloUser['id'] = firebaseUser['id']
+    adaloUser['First Name'] = firebaseUser['firstName']
+  } else if (adaloUserArray.length > 1) {
     consoleColorLog(`${firebaseUser.id} has more than one profile in Adalo`, 'yellow')
     // The first associated profile will be used.
+    // Convert it from array.
+    adaloUser = adaloUserArray[0]
+  } else {
+    adaloUser = adaloUserArray[0]
   }
-  // Convert it from array.
-  let adaloUser = adaloUserArray[0]
   /*
   'Here': 'here',
   'Free': 'free',

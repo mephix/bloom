@@ -18,7 +18,7 @@ exports.posivibes = posivibes
 
 function notself(p,q) {
   // If not checked for a missing id will cause notself to return false.
-  if (!p.id || !q.id) throw new Error(`${p.name} or ${q.name} does not have an id`)
+  if (!p.id || !q.id) throw new Error(`${p['First Name']} or ${q['First Name']} does not have an id`)
   return p.id !== q.id
 }
 

@@ -1,12 +1,12 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-06-21'
-let HOUR = '13'
-let SLOT = 9
+let DAY = '2021-06-23'
+let HOUR = '16'
+let SLOT = 11
 let RERUN = false        // Only do reruns after the slot starts.
 let CUTOFF = 0.00       // >0 makes the dateEngine more picky.
-let useTestIds = false   // `false` for real rounds.
+let useTestIds = true   // `false` for real rounds.
 
 // Less frequently changed params.
 // Timezone offset switches between 07:00 and 08:00 with daylight saving.
@@ -76,10 +76,12 @@ async function runFireDateEngine() {
     // Only use this option for testing.
     const collection = 'Users-dev'
     people = [
+      { devId: 'xupkN6qW4DPw0G2Xk2oIzFqnwZt1', email: undefined },
+      { devId: 'j4tshEWQaoW7qj5GqR60GmS2hOi1', email: undefined },
       // { devId: '4IizDnXG2WfJsAT8gbZUDVL78S42', email: 'john.prins@gmail.com' },
-      { devId: '0y1GhawWDnOlIGdGM3dLKRiPaBh1', email: 'amel.assioua@gmail.com' },
+      // { devId: '0y1GhawWDnOlIGdGM3dLKRiPaBh1', email: 'amel.assioua@gmail.com' },
       // { devId: 'P1AXzbNy6aUWc2zmmwTluscdUPo2', email: 'female_straight_25_SF@bloom.com' },
-      { devId: 'XLGfiiKXTvYa87tAhx5U43Jroz42', email: 'glenntheblack@gmail.com' },
+      // { devId: 'XLGfiiKXTvYa87tAhx5U43Jroz42', email: 'glenntheblack@gmail.com' },
       // 'john.prins@gmail.com',
       // 'amel.assioua@gmail.com',
       // 'hklucy25@gmail.com',
