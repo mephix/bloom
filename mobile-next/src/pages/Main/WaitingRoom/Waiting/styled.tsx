@@ -1,0 +1,25 @@
+import styled from 'styled-components'
+import { WaitingContainer } from '../styled'
+
+export const WaitingRoomContainer = styled(WaitingContainer)`
+  height: 100%;
+
+  > div {
+    text-align: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+`
+export const CountdownContainer = styled.div`
+  display: flex;
+  margin: 20px;
+`
+
+export const CountdownBox = styled.div`
+  font-size: 1.6rem;
+  display: flex;
+  margin: 0 10px;
+  padding: 10px;
+  border: 2px solid white;
+  border-radius: 5px;
+`

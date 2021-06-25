@@ -4,8 +4,7 @@ import { useAuth } from 'hooks/auth.hook'
 import { useRenderLog } from 'hooks/render.log.temp.hook'
 import { LoaderPage } from 'pages/LoaderPage'
 import { AuthStatus } from 'store/user/types'
-import { Screen } from 'wrappers/Screen'
-import { AuthRoutes } from 'routes'
+import { AuthRoutes, MainRoutes } from 'routes'
 
 export const App = () => {
   useRenderLog('App')
@@ -23,7 +22,7 @@ function defineContext(auth: AuthStatus) {
     case 'unknown':
       return <LoaderPage />
     case 'authorized':
-      return <Screen>MainRoutes</Screen>
+      return <MainRoutes />
     default:
       return <AuthRoutes />
   }

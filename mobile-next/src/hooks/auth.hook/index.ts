@@ -1,8 +1,8 @@
 import { FirebaseService } from 'firebaseService'
 import { useEffect } from 'react'
-import { UserService } from 'services/UserService'
+import { UserService } from 'services/user.service'
 import { useAppDispatch, useAppSelector } from 'store'
-import { selectAuth, setAuth, setId, setUserData } from 'store/user'
+import { selectAuth, setAuth, setId, updateUserData } from 'store/user'
 import { mapUserToUserData } from './utils'
 
 export const useAuth = () => {
@@ -21,7 +21,7 @@ export const useAuth = () => {
         }
 
         const userData = mapUserToUserData(user)
-        dispatch(setUserData(userData))
+        dispatch(updateUserData(userData))
         dispatch(setAuth('authorized'))
       } else dispatch(setAuth('unauthorized'))
     })

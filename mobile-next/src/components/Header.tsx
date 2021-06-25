@@ -9,6 +9,10 @@ const StyledHeader = styled.header`
   align-items: center;
   padding-top: var(--ion-safe-area-top);
   width: 100%;
+  background: black;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
 `
 
 const LogoWrapper = styled.div`

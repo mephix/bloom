@@ -1,17 +1,14 @@
 import { AppButton } from 'components/AppButton'
 import { AppInput } from 'components/AppInput'
 import { AppRadio } from 'components/AppRadio'
-import { FirebaseService } from 'firebaseService'
-import { USERS_COLLECTION } from 'firebaseService/constants'
 import { mapUserToUserData } from 'hooks/auth.hook/utils'
 import { useToast } from 'hooks/toast.hook'
 import { DateTime } from 'luxon'
 import { FC, useCallback, useState } from 'react'
-import { PhoneNumberService } from 'services/PhoneNumberService'
-import { UserService } from 'services/UserService'
+import { PhoneNumberService } from 'services/phone.number.service'
+import { UserService } from 'services/user.service'
 import { useAppDispatch, useAppSelector } from 'store'
-import { selectUserId, setAuth, setUserData } from 'store/user'
-import { UserData } from 'store/user/types'
+import { selectUserId, setAuth, updateUserData } from 'store/user'
 import { Screen } from 'wrappers/Screen'
 import { AuthContainer } from '../styled'
 
@@ -31,11 +28,11 @@ export const GetInfoScreen: FC = () => {
   const saveHandler = useCallback(async () => {
     try {
       setLoading(true)
-      const [error, userData] = validateFormData(formData)
+      const [error, user] = validateFormData(formData)
       if (error) return showError(error)
-      await UserService.createUser(userData!)
-      const storeUserData = mapUserToUserData(userData)
-      dispatch(setUserData(storeUserData))
+      await UserService.createUser(user!)
+      const userData = mapUserToUserData(user)
+      dispatch(updateUserData(userData))
       await PhoneNumberService.setupPhoneNumberObject(userId)
       dispatch(setAuth('authorized'))
     } catch (err) {
@@ -83,5 +80,3 @@ function validateFormData(
   if (age < 18) return ['You must be 18 or older to join!', null]
   return [null, { firstName: formData.name, age, gender: formData.gender }]
 }
-
-// async function updateUserInformation(id: string, userData: UserData) {}

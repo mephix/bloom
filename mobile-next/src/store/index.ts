@@ -1,9 +1,13 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
 import userReducer from './user'
+import meetupReducer from './meetup'
+import appReducer from './app'
 
 export const store = configureStore({
   reducer: {
-    user: userReducer
+    user: userReducer,
+    meetup: meetupReducer,
+    app: appReducer
   }
 })
 

@@ -19,3 +19,12 @@ export interface UserData {
   genderPreference: Gender
   agePreferences: Ages
 }
+
+export interface UpdateUserData {
+  firstName?: string
+  bio?: string
+  avatar?: string
+  finished?: boolean
+  genderPreference?: Gender
+  agePreferences?: Ages
+}

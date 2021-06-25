@@ -1,11 +1,4 @@
-import {
-  IonIcon,
-  IonPage,
-  IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
-  IonTabs
-} from '@ionic/react'
+import { IonPage, IonRouterOutlet } from '@ionic/react'
 import { Redirect, Route } from 'react-router-dom'
 import { Style } from '@capacitor/status-bar'
 import { useStatusBar } from 'hooks/status-bar.hook'

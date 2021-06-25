@@ -23,14 +23,14 @@ export const StyledButton = styled('button')<StyledButtonProps>`
   &:active {
     opacity: 0.6;
   }
-  ${({ disabled }) =>
+  ${({ disabled, full }) =>
     disabled &&
     css`
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 0;
-      width: 60px;
+      width: ${full ? '100%' : '60px'};
       height: 50px;
     `}
 `

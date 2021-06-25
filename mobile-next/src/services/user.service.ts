@@ -1,12 +1,29 @@
 import { FirebaseService } from 'firebaseService'
 import { USERS_COLLECTION } from 'firebaseService/constants'
+import { Timestamp } from 'firebaseService/types'
 import { store } from 'store'
+import { setHere, updateUserData } from 'store/user'
+import { Ages, Gender } from 'store/user/types'
 // import store from 'store'
 
 interface InitUser {
   firstName: string
   age: number
   gender: string
+}
+
+interface UserDataUpdate {
+  bio?: string
+  avatar?: string
+  genderPreference?: Gender
+  agePreferences?: Ages
+}
+
+interface UserState {
+  free?: boolean
+  here?: boolean
+  waitStartTime?: Timestamp
+  dateWith?: string | null
 }
 
 export class UserService {
@@ -28,6 +45,39 @@ export class UserService {
       ...data
     })
   }
+  static async updateAvatar(image: File): Promise<void> {
+    const storageRef = FirebaseService.storage.ref()
+    const [, type] = image.type.split('/')
+    const avatarFileRef = storageRef.child(`${this.id}.${type}`)
+    await avatarFileRef.put(image)
+    const avatarUrl = await avatarFileRef.getDownloadURL()
+    this.updateUserData({ avatar: avatarUrl })
+  }
+
+  static updateUserData(data: UserDataUpdate) {
+    store.dispatch(updateUserData(data))
+    return FirebaseService.db
+      .collection(USERS_COLLECTION)
+      .doc(this.id)
+      .update(data)
+  }
+
+  static setHere(state: boolean) {
+    store.dispatch(setHere(state))
+    this.updateUserState({ here: state })
+  }
+
+  static setHiddenHere(state: boolean) {
+    this.updateUserState({ here: state })
+  }
+
+  static async updateUserState(state: UserState) {
+    await FirebaseService.db
+      .collection(USERS_COLLECTION)
+      .doc(this.id)
+      .update(state)
+  }
+
   static tryRestoreUser() {}
 }
 

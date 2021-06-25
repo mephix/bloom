@@ -37,7 +37,6 @@ const LoaderRings = styled('div')<{ small?: boolean }>`
     border: ${({ small }) => (small ? '4px' : '8px')} solid #fff;
     border-radius: 50%;
     animation: ${spin} 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    border-color: #fff transparent transparent transparent;
   }
   & div:nth-child(1) {
     animation-delay: -0.45s;
@@ -51,7 +50,7 @@ const LoaderRings = styled('div')<{ small?: boolean }>`
 `
 
 const Ring = styled.div`
-  border-color: ${props => props.color} transparent transparent transparent;
+  border-color: ${props => props.color} transparent transparent transparent !important;
 `
 
 export const Loader: FC<LoaderProps> = ({ color = '#fff', small }) => (
