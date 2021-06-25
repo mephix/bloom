@@ -35,15 +35,11 @@ function postDateToFirebase(date) {
   }
   const date1 = { ...commonFields, ...for1, }
 
-  // Add the Date and their Room in a batch.
+  // Post the Date and update both people's 'dateWith'.
   const batch = firestoreApi.db.batch()
   batch.set(refDate1, date1)
-
-  // Now set both people's 'dateWith'
   batch.update(firestoreApi.db.collection('Users-dev').doc(date1.for), { dateWith: date1.with }, { merge: true })
   batch.update(firestoreApi.db.collection('Users-dev').doc(date1.with), { dateWith: date1.for }, { merge: true })
-
-  // Commit
   return batch.commit()
 }
 

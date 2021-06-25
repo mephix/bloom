@@ -1,17 +1,18 @@
 /*
-SET THESE PARAMS
-*/
-let DAY = '2021-06-01'
-let HOUR = '07'
-let SLOT = 9
-let RERUN = false        // Only do reruns after the slot starts.
-let CUTOFF = 0.00       // >0 makes the dateEngine more picky.
+ * SET THESE PARAMS
+ */
+let DAY = '2021-06-23'
+let HOUR = '16'
+let SLOT = 11
+let DURING_SLOT = false   // If running during the slot, only match free people.
+                        // If running before the slot, match everyone.
 let useTestIds = true   // `false` for real rounds.
 
-// Less frequently changed params.
-// Timezone offset switches between 07:00 and 08:00 with daylight saving.
+/*
+ * Length of dates.
+ * Timezone offset switches between 07:00 and 08:00 with daylight saving.
+ */
 const TIMEZONE_OFFSET = '-07:00'
-// let ROUND_ID = 1
 const SLOT_PREENTRY = 1
 const SLOT_STARTS = {
   0:  HOUR + ':00',
@@ -41,104 +42,84 @@ const SLOT_ENDS = {
   10: HOUR + ':55',
   11: HOUR + ':59',
 }
+
 // Dependencies.
 const firestoreApi = require('../apis/firestoreApi.js')
 const db = firestoreApi.db
-const fs = require('fs')
-const addAdaloProfile = require('../users/addAdaloProfile.js')
+// const fs = require('fs')
+// const addAdaloProfile = require('../users/addAdaloProfile.js')
 const setProfileDefaults = require('../users/setProfileDefaults.js')
-const addTodaysDates = require('../users/addTodaysDates.js')
-const sortByPriority = require('../users/sortByPriority.js')
+// const addTodaysDates = require('../users/addTodaysDates.js')
+const sortByFirePriority = require('../users/sortByFirePriority.js')
 const matchEngine = require('../matches/matchEngine.js')
 const subsetScores = require('../scores/subsetScores.js')
-const dateEngine = require('./dateEngine.js')
-const displayPretty = require('./displayPretty.js')
+const fireDateEngine = require('./fireDateEngine.js')
+const fireDisplayPretty = require('./fireDisplayPretty.js')
 const addRoom = require('../rooms/addRoom.js')
-const { writeToCsv } = require('../utils/csv.js')
-const postDateToFirebase = require('./postDateToFirebase.js')
-const consoleColorLog = require('../utils/consoleColorLog.js')
+const { readCsv, writeToCsv } = require('../utils/csv.js')
+const postDatesToFirebase = require('./postDatesToFirebase.js')
 
 // No need to set these params.
 let TODAYS_DATES_FILE = `./nocode/output/Dates ${DAY}T${HOUR}.csv`
-let TODAYS_USERS_FILE = `./nocode/output/Users ${DAY}.json`
+// let TODAYS_USERS_FILE = `./nocode/output/Users ${DAY}.json`
 
 runFireDateEngine()
 
 async function runFireDateEngine() {
 
   // Get users here.
-  let querySnapshot
   let docs
   if (useTestIds) {
-    // Only use this option for testing.
-    const emails = [
-      // 'john.prins@gmail.com',
-      // 'amel.assioua@gmail.com',
-      'hklucy25@gmail.com',
-      'glenntheblack@gmail.com',
-      'female_straight_25_SF@bloom.com',
-      'female_straight_33_LA@bloom.com',
-    ] 
-    // "id":4,"Email":"amel.assioua@gmail.com","First Name":"Amel"
-    // "id":836,"Email":"female_straight_25_SF@bloom.com","First Name":"Anastasia"
-    // "id":837,"Email":"female_straight_33_LA@bloom.com","First Name":"Christine"
-    docs = await Promise.all(emails.map(e => db.collection('Users').doc(e).get()))
-  } else {
     // A real round should always use this option.
-    querySnapshot = await db.collection('Users').where('here', '==', true).get()
+    let querySnapshot = await db.collection('Users-dev').where('here', '==', true).get()
     docs = querySnapshot.docs
+  } else {
+    // Only use this option for testing.
+    testIds = [
+      'xupkN6qW4DPw0G2Xk2oIzFqnwZt1', // who?
+      'j4tshEWQaoW7qj5GqR60GmS2hOi1', // who?
+    ]
+    docs = await Promise.all(testIds.map((id => db.collection(collection).doc(id).get())))
   }
-  let usersHere = docs.map(doc => {
-    return { id: doc.id, ...doc.data() }
-  })
-  if (usersHere) console.log(`${usersHere.length} people are Here.`)
+  let usersHere = docs.map(doc => { return { id: doc.id, ...doc.data() } })
 
-  // Connect people to their Adalo profiles.
-  let usersInAdalo = JSON.parse(fs.readFileSync(TODAYS_USERS_FILE, 'utf8'))
-  let idsOfUsersHere = usersHere.map(u => u.id)
-  let usersInAdaloHere = usersInAdalo.filter(u => idsOfUsersHere.includes(u.Email))
-  usersHere = usersHere.map(u => addAdaloProfile(u, usersInAdaloHere.filter(v => v.Email === u.id)))
+  // Filter out users who are finished.
+  usersHere = usersHere.filter(u => !u.finished)
+  if (usersHere) {
+    console.log(`${usersHere.length} people are Here:`)
+    console.log(`${usersHere.map(u => u.firstName).join(', ')}`)
+  }
 
   // Fill in missing profile fields with best guesses.
+  // !! FIX THIS LATER !!
   usersHere = usersHere.map(setProfileDefaults)
 
-  // Load today's dates in case Users were loaded locally.
-  // Today's dates file saved locally will avoid double-dates.
-  // Updates Start Time of users who had a date.
-  // Set people who have a date already in this slot to Not-Free
-  // (regardless of whether they left it early and became free again).
-  let notFreeSlot = SLOT // usersUpdated ? -1 : SLOT
-  let todaysDates
-  [usersHere, todaysDates] = addTodaysDates(usersHere, TODAYS_DATES_FILE, notFreeSlot)
+  // !! add Dated, Liked and Nexted !!
 
-  // During reruns, filter out people who aren't free.
-  // This will be people who are actually in a date, plus anyone who was in
-  // a date during this slot already. So they can't get a second date in
-  // the slot.
-  // This means we *dont* want to do a rerun before the slot starts (as
-  // people will be not free due to their date in the current slot).
- if (RERUN) {
+  // If running during the slot, filter for only people who are free.
+  // These will be people who are already in a date.
+  // This means we *dont* want to filter this way if running before the slot starts.
+  // (as people will be not free due to their date in the current slot).
+ if (DURING_SLOT) {
     console.log(`Out of ${usersHere.length} people Here,`)
-    usersHere = usersHere.filter(u => u['Free'])
+    usersHere = usersHere.filter(u => u.free)
     console.log(`${usersHere.length} people are Free.`)
   }
 
-  // Prioritize Users Here in some way (wait start time, posivibes...)
-  usersHere = sortByPriority(usersHere)
+  // Prioritize Users (by waitStartTime and posivibes).
+  console.log(`Prioritizing people.`)
+  usersHere = sortByFirePriority(usersHere)
   
-  // Match Users in real time.
-  // Keep subScores so we can inspect them.
-  console.log(`Matching people in real-time.`)
+  // Find matches for Users.
+  // (keep subScores so we can inspect them).
+  console.log(`Matching people.`)
   let { score, subScores } = matchEngine(usersHere)
   matches = subsetScores(score, { above: CUTOFF })
 
-  // Make dates for them in the order they are sorted.
+  // Find dates for Users.
   console.log(`Finding dates for people.`)
-  let dates = dateEngine(usersHere, matches)
-  console.log(`\n${dates.length} dates created.`)
-  console.log(``)
-  displayPretty(dates, usersHere)
-  console.log(``)
+  let dates = fireDateEngine(usersHere, matches)
+  fireDisplayPretty(dates, usersHere)
 
   if (dates.length > 0) {
 
@@ -148,15 +129,15 @@ async function runFireDateEngine() {
     await Promise.all(dates.map(date => addRoom(date, params)))
 
     // Save the Dates locally
-    writeToCsv([...todaysDates, ...dates], TODAYS_DATES_FILE)
+    let existingDates = readCsv(TODAYS_DATES_FILE)
+    writeToCsv([...existingDates, ...dates], TODAYS_DATES_FILE)
 
     // Post the Dates to Firebase.
-    const rs = await Promise.all(dates.map(date => postDateToFirebase(date)))
-    const wts = rs[rs.length-1].map(r => r.writeTime.toDate())
-    const wt = `${wts[0].getHours()}:${wts[0].getMinutes()}`
-    consoleColorLog(`${rs.length} dates posted to Firebase at ${wt}`, 'green', 'bold')
+    await postDatesToFirebase(dates)
     
   } else {
+
     console.log(`No dates created. Exiting`)
+    
   }
 }
