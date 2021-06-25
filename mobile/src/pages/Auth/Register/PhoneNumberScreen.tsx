@@ -26,7 +26,7 @@ export const PhoneNumberScreen = () => {
         return showError('Invalid phone number!')
       setLoading(true)
 
-      if (isPlatform('hybrid')) {
+      if (isPlatform('hybrid') && !isPlatform('android')) {
         console.log('hybrid auth')
         const verificationId = await FirebaseAuthentication.verifyPhoneNumber(
           phoneNumber,

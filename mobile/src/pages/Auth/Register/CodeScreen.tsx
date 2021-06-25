@@ -31,7 +31,7 @@ export const CodeScreen = observer(() => {
     setLoading(true)
     try {
       let userId: string = ''
-      if (isPlatform('hybrid')) {
+      if (isPlatform('hybrid') && !isPlatform('android')) {
         if (!register.verificationId) return history.replace('/register')
         const credential = auth.PhoneAuthProvider.credential(
           register.verificationId,
