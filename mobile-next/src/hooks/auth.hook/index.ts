@@ -14,8 +14,11 @@ export const useAuth = () => {
       if (firebaseUser) {
         const userId = firebaseUser.uid
         dispatch(setId(userId))
-        const user = await UserService.getUserById()
-        if (!user) return dispatch(setAuth('without_information'))
+        const user = await UserService.getUser()
+        if (!user) {
+          // const userData =
+          return dispatch(setAuth('without_information'))
+        }
 
         const userData = mapUserToUserData(user)
         dispatch(setUserData(userData))

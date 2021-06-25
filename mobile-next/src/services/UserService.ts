@@ -14,8 +14,7 @@ export class UserService {
     return store.getState().user.id
   }
 
-  static async getUserById() {
-    console.log(store.getState())
+  static async getUser() {
     const userDoc = await FirebaseService.db
       .collection(USERS_COLLECTION)
       .doc(this.id)
@@ -24,10 +23,35 @@ export class UserService {
     return userData
   }
   static async createUser(data: InitUser) {
-    store.getState()
     const userRef = FirebaseService.db.collection(USERS_COLLECTION).doc(this.id)
     await userRef.set({
       ...data
     })
   }
+  static tryRestoreUser() {}
 }
+
+// const restoreUserQuery = await db
+//         .collection(RESTORE_USERS_COLLECTION)
+//         .where('phone', '==', register.phone.trim())
+//         .get()
+//       const [restoreUserDoc] = restoreUserQuery.docs
+//       if (restoreUserDoc) {
+//         const restoreUser = restoreUserDoc.data()
+//         await userRef.set({
+//           firstName: restoreUser.firstName,
+//           age: restoreUser.age,
+//           gender: restoreUser.gender
+//         })
+//         user.setUser({
+//           id: userId,
+//           firstName: restoreUser.firstName
+//         })
+//         user.updateUserData({
+//           bio: restoreUser.bio || '',
+//           avatar: restoreUser.avatar || '',
+//           genderPreference: restoreUser.genderPreference,
+//           agePreferences: restoreUser.agePreferences,
+//           email: restoreUserDoc.id
+//         })
+//         return user.setAuth('authorized')

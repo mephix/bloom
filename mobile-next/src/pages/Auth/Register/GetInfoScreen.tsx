@@ -8,6 +8,7 @@ import { useToast } from 'hooks/toast.hook'
 import { DateTime } from 'luxon'
 import { FC, useCallback, useState } from 'react'
 import { PhoneNumberService } from 'services/PhoneNumberService'
+import { UserService } from 'services/UserService'
 import { useAppDispatch, useAppSelector } from 'store'
 import { selectUserId, setAuth, setUserData } from 'store/user'
 import { UserData } from 'store/user/types'
@@ -30,15 +31,13 @@ export const GetInfoScreen: FC = () => {
   const saveHandler = useCallback(async () => {
     try {
       setLoading(true)
-      const [error, user] = validateFormData(formData)
+      const [error, userData] = validateFormData(formData)
       if (error) return showError(error)
-      console.log(userId, formData)
-      const userData = mapUserToUserData(user)
-      console.log(userData)
-      // await updateUserInformation(userId, userData)
-      // dispatch(setUserData(userData))
-      // await PhoneNumberService.setupPhoneNumberObject(userId)
-      // dispatch(setAuth('authorized'))
+      await UserService.createUser(userData!)
+      const storeUserData = mapUserToUserData(userData)
+      dispatch(setUserData(storeUserData))
+      await PhoneNumberService.setupPhoneNumberObject(userId)
+      dispatch(setAuth('authorized'))
     } catch (err) {
       setLoading(false)
       showError('Oops.. Something went wrong! Try again later')
