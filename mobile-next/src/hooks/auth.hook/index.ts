@@ -16,6 +16,7 @@ export const useAuth = () => {
         dispatch(setId(userId))
         const user = await UserService.getUser()
         if (!user) {
+          // TODO: Restoring users
           // const userData =
           return dispatch(setAuth('without_information'))
         }
