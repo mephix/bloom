@@ -86,6 +86,15 @@
             ],
         },
         {
+            "name": "delete test dates",
+            "program": "${workspaceFolder}/nocode/db/delete test dates.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
+        {
             "name": "transfer old users",
             "program": "${workspaceFolder}/nocode/db/transferOldUsers.js",
             "type": "pwa-node",
@@ -115,6 +124,24 @@
         {
             "name": "run Fire Date Engine Dev",
             "program": "${workspaceFolder}/nocode/dates/runFireDateEngineDev.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
+        {
+            "name": "set all here false",
+            "program": "${workspaceFolder}/nocode/dates/setAllHereFalse.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
+        {
+            "name": "run Fire Date Engine",
+            "program": "${workspaceFolder}/nocode/dates/runFireDateEngine.js",
             "type": "pwa-node",
             "request": "launch",
             "skipFiles": [

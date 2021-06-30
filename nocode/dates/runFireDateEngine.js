@@ -1,12 +1,23 @@
 /*
  * SET THESE PARAMS
  */
-let DAY = '2021-06-23'
+let DAY = '2021-06-29'
 let HOUR = '16'
-let SLOT = 11
-let DURING_SLOT = false   // If running during the slot, only match free people.
+let SLOT = 3
+let DURING_SLOT = true  // If running during the slot, only match free people.
                         // If running before the slot, match everyone.
-let useTestIds = true   // `false` for real rounds.
+let useTestIds = false  // `false` for real rounds.
+
+let UPDATE_LIKES_LIVE = true
+
+// Give people a second chance on dates that didn't actually work.
+let ONLY_COUNT_DATES_THEY_BOTH_JOINED = false
+
+// Use the local dates file as a safeguard.
+let UPDATE_DATED_FROM_OUTPUT_FILE = true
+
+// Matches are scored 0-100.
+let CUTOFF = 0
 
 /*
  * Length of dates.
@@ -42,22 +53,24 @@ const SLOT_ENDS = {
   10: HOUR + ':55',
   11: HOUR + ':59',
 }
+const params = { DAY, HOUR, SLOT, TIMEZONE_OFFSET, SLOT_PREENTRY, SLOT_STARTS, SLOT_ENDS }
 
 // Dependencies.
 const firestoreApi = require('../apis/firestoreApi.js')
 const db = firestoreApi.db
-// const fs = require('fs')
-// const addAdaloProfile = require('../users/addAdaloProfile.js')
-const setProfileDefaults = require('../users/setProfileDefaults.js')
-// const addTodaysDates = require('../users/addTodaysDates.js')
+const setFireProfileDefaults = require('../users/setFireProfileDefaults.js')
+const addLikesNextsDatesLive = require('./addLikesNextsDatesLive.js')
+const addLikesNextsDatesLocally = require('./addLikesNextsDatesLocally.js')
 const sortByFirePriority = require('../users/sortByFirePriority.js')
-const matchEngine = require('../matches/matchEngine.js')
+const fireMapFieldNames = require('./fireMapFieldNames.js')
+const fireMatchEngine = require('../matches/fireMatchEngine.js')
 const subsetScores = require('../scores/subsetScores.js')
 const fireDateEngine = require('./fireDateEngine.js')
 const fireDisplayPretty = require('./fireDisplayPretty.js')
 const addRoom = require('../rooms/addRoom.js')
 const { readCsv, writeToCsv } = require('../utils/csv.js')
 const postDatesToFirebase = require('./postDatesToFirebase.js')
+const consoleColorLog = require('../utils/consoleColorLog.js')
 
 // No need to set these params.
 let TODAYS_DATES_FILE = `./nocode/output/Dates ${DAY}T${HOUR}.csv`
@@ -69,17 +82,17 @@ async function runFireDateEngine() {
 
   // Get users here.
   let docs
-  if (useTestIds) {
+  if (!useTestIds) {
     // A real round should always use this option.
     let querySnapshot = await db.collection('Users-dev').where('here', '==', true).get()
     docs = querySnapshot.docs
   } else {
     // Only use this option for testing.
     testIds = [
-      'xupkN6qW4DPw0G2Xk2oIzFqnwZt1', // who?
-      'j4tshEWQaoW7qj5GqR60GmS2hOi1', // who?
+      'rENCRuRmF6gBxAQsS4E1qqna23L2', // Amel
+      '4IizDnXG2WfJsAT8gbZUDVL78S42', // John
     ]
-    docs = await Promise.all(testIds.map((id => db.collection(collection).doc(id).get())))
+    docs = await Promise.all(testIds.map((id => db.collection('Users-dev').doc(id).get())))
   }
   let usersHere = docs.map(doc => { return { id: doc.id, ...doc.data() } })
 
@@ -91,10 +104,25 @@ async function runFireDateEngine() {
   }
 
   // Fill in missing profile fields with best guesses.
-  // !! FIX THIS LATER !!
-  usersHere = usersHere.map(setProfileDefaults)
+  usersHere = usersHere.map(setFireProfileDefaults)
 
-  // !! add Dated, Liked and Nexted !!
+  // add Dated, Liked and Nexted.
+  if (UPDATE_LIKES_LIVE) {
+    usersHere = await addLikesNextsDatesLive(db, usersHere, ONLY_COUNT_DATES_THEY_BOTH_JOINED)
+  } else {
+    usersHere = addLikesNextsDatesLocally(usersHere, DAY)
+  }
+
+  // As a backup, read dates already created during this date night from the csv file.
+  let existingDates = readCsv(TODAYS_DATES_FILE)
+  if (UPDATE_DATED_FROM_OUTPUT_FILE) {
+    existingDates.forEach(d => {
+      let userFor  = usersHere.filter(u => u.id === d.for)[0]
+      let userWith = usersHere.filter(u => u.id === d.with)[0]
+      if (userFor) userFor.dated ? userFor.dated.push(d.with) : userFor.dated = [d.with]
+      if (userWith) userWith.dated ? userWith.dated.push(d.for) : userWith.dated = [d.for]
+    })
+  }
 
   // If running during the slot, filter for only people who are free.
   // These will be people who are already in a date.
@@ -113,31 +141,27 @@ async function runFireDateEngine() {
   // Find matches for Users.
   // (keep subScores so we can inspect them).
   console.log(`Matching people.`)
-  let { score, subScores } = matchEngine(usersHere)
+  let usersHereOldFieldNames = fireMapFieldNames(usersHere)
+  let { score, subScores } = fireMatchEngine(usersHereOldFieldNames)
   matches = subsetScores(score, { above: CUTOFF })
 
   // Find dates for Users.
   console.log(`Finding dates for people.`)
-  let dates = fireDateEngine(usersHere, matches)
+  let usersById = {}
+  usersHere.map(({ id, ...data }) => usersById[id] = data)
+  let dates = fireDateEngine(usersById, matches)
   fireDisplayPretty(dates, usersHere)
 
   if (dates.length > 0) {
-
-    // Add videochat Rooms to Dates.
-    console.log(`Adding Daily rooms to Dates...`)
-    const params = { DAY, HOUR, SLOT, TIMEZONE_OFFSET, SLOT_PREENTRY, SLOT_STARTS, SLOT_ENDS }
-    await Promise.all(dates.map(date => addRoom(date, params)))
-
     // Save the Dates locally
-    let existingDates = readCsv(TODAYS_DATES_FILE)
     writeToCsv([...existingDates, ...dates], TODAYS_DATES_FILE)
 
     // Post the Dates to Firebase.
-    await postDatesToFirebase(dates)
+    postDatesToFirebase(dates, params)
     
   } else {
 
-    console.log(`No dates created. Exiting`)
-    
+    consoleColorLog(`No dates created. Exiting`, 'red')
+
   }
 }

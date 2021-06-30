@@ -1,10 +1,10 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-06-21'
+let DAY = '2021-06-28'
 let HOUR = 19
-let SLOT = 5
-let RERUN = false
+let SLOT = 6
+let RERUN = true
 let CUTOFF = 0.00      // >0 makes the dateEngine more picky.
 let useTestIds = false   // `false` for real rounds.
 
@@ -122,7 +122,6 @@ async function runDateEngine() {
   console.log(`\n${dates.length} dates created.`)
   console.log(``)
   displayPretty(dates, usersHere)
-  console.log(``)
 
   if (dates.length > 0) {
 

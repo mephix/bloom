@@ -17,8 +17,8 @@ function fireMatchEngine (users) {
     'dated': { transform: z => !z, weight: 1, score: [] },
     // Match more with someone they've liked.
     'both_liked': { transform: z => z ? 1 : 0.5, weight: 1, score: [] },
-    // Don't match if either person nexted.
-    'either_nexted': { transform: z => z ? 0 : 1, weight: 1, score: [] },
+    // Downweight if either person nexted.
+    'either_nexted': { transform: z => z ? 0.1 : 1, weight: 1, score: [] },
     // For matches, the closer, the better.
     'location': { transform: z => z, weight: 1, score: [] },
     // Don't show someone themself.

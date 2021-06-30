@@ -1,4 +1,5 @@
 const fs = require('fs')
+const consoleColorLog = require('./consoleColorLog.js')
 
 exports.readCsv = readCsv
 exports.writeToCsv = writeToCsv
@@ -6,7 +7,7 @@ exports.writeToCsv = writeToCsv
 function readCsv(fileName) {
   let rows = []
   try { rows = fs.readFileSync(fileName, 'utf8').split('\n') }
-  catch (e) { console.warn(`${fileName} does not exist.`) }
+  catch (e) { consoleColorLog(`${fileName} does not exist.`, 'yellow') }
   let arr = []
   if (rows.length > 0) {
     const fields = rows[0].split(',')

@@ -14,13 +14,20 @@ function fireDateEngine (people, matches) {
     M[i] = []
     P[i] = []
     for (let j=0; j<rows.length; j++) {
+
       // Get match scores.
+      // Divide by 100 once because both match scores are scaled 0-100.
       let mij = matches[ids[i]]?.[ids[j]] || 0
       let mji = matches[ids[j]]?.[ids[i]] || 0
-      M[i][j] = mij * mji
+      M[i][j] = mij * mji / 100
+
+      // Get priority scores
+      let pi = people[ids[i]].priority
+      let pj = people[ids[j]].priority
+
       // Match benefit is the (symmetric) match score weighted by priorities.
       // Minus sign converts benefits to costs.
-      P[i][j] = - M[i][j] * people[ids[i]].priority * people[ids[j]].priority
+      P[i][j] = - M[i][j] * pi * pj
     }
   }
 
@@ -37,10 +44,11 @@ function fireDateEngine (people, matches) {
   // Each pair will be found twice, as [i,j] and [j,i], because the matrix is symmetric. 
   // Also some people may be matched with themselves ([i,i]) if they dont have a better date.
   // So keep only once each pair of distinct people with match score > 0.
-  pairs.filter(p => (p[0] < p[1] && P[i][j] !== 0))
+  pairs = pairs.filter(p => (p[0] < p[1] && P[p[0]][p[1]] !== 0))
 
   // Create dates from pairs
-  pairs.forEach((i,j) => {
+  pairs.forEach(([i,j]) => {
+
     // The date is 'with' the gentleman and 'for' the lady.
     let [f, w] = people[ids[i]].gender === 'f' ? [i,j] : [j,i]
     dates.push({
@@ -48,13 +56,10 @@ function fireDateEngine (people, matches) {
       with: ids[w],
       forName: people[ids[f]].firstName,
       withName: people[ids[w]].firstName,
+
       // Keep the component parts of the match-benefit matrix for reference.
-      score: {
-        match: M[f][w],
-        benefit: -P[f][w],
-        priorityFor: people[ids[f]].priority,
-        priorityWith: people[ids[w]].priority,
-      }
+      matchscore: M[f][w],
+      priority: `${people[ids[f]].priority.toPrecision(2)}, ${people[ids[w]].priority.toPrecision(2)}`,
     })    
   })
 
