@@ -1,5 +1,6 @@
 const postDateToFirebase = require('./postDateToFirebase.js')
 const consoleColorLog = require('../utils/consoleColorLog.js')
+const addRoom = require('../rooms/addRoom.js')
 
 module.exports = postDatesToFirebase
 

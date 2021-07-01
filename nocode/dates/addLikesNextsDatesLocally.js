@@ -1,13 +1,14 @@
 const fs = require('fs')
 const consoleColorLog = require('../utils/consoleColorLog.js')
+const loadLocally = require('../db/loadLocally.js')
 
 module.exports = addLikesNextsDatesLocally
 
 function addLikesNextsDatesLocally(usersHere, today) {
   // Get latest downloaded collections.
-  let likes = loadLocally('Likes', today)
-  let nexts = loadLocally('Nexts', today)
-  let dates = loadLocally('Dates', today)
+  let likes = loadLocally('Likes-dev', today)
+  let nexts = loadLocally('Nexts-dev', today)
+  let dates = loadLocally('Dates-dev', today)
 
   usersHere.forEach(u => {
     // Likes & Nexts:
@@ -20,20 +21,10 @@ function addLikesNextsDatesLocally(usersHere, today) {
     // Get dates both for and with.
     // Only count dates both people actually joined.
     u.dated = [... new Set([
-      ...dates.filter(d => d.for===u.id && d.timeJoined.for && d.timeJoined.with).map(d => d.with),
-      ...dates.filter(d => d.with===u.id && d.timeJoined.for && d.timeJoined.with).map(d => d.for)
+      ...dates.filter(d => d.for===u.id && d.timeJoin?.for && d.timeJoin?.with).map(d => d.with),
+      ...dates.filter(d => d.with===u.id && d.timeJoin?.for && d.timeJoin?.with).map(d => d.for)
     ])]
   })
   return usersHere
 }
 
-function loadLocally(type, today) {
-  let filename = `${type} ${today}.json`
-  try { 
-    let data = JSON.parse(fs.readFileSync(`../output/${filename}`, 'utf8'))
-    return data
-  } catch {
-    colorConsoleLog(`${filename} not found.`)
-    return []
-  }
-}

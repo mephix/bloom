@@ -18,15 +18,15 @@ function setFireProfileDefaults(user) {
   if (user['genderPreference']==='x')   user['genderPreference'] = 'fmx'
   if (user['genderPreference']==='all') user['genderPreference'] = 'fmx'
     
-  if (!user['age']) {
-    if (user['birthday']) {
-      // new users have a birthday instead of an age.
-      let millis = (new Date()) - user['birthday'].toDate()
-      user['age'] = millis / 1000 / 60 / 60 / 24 / 365
-    } else
+  if (!user['age'])
+    // if (user['birthday']) {
+    //   // new users have a birthday instead of an age.
+    //   let millis = (new Date()) - user['birthday'].toDate()
+    //   user['age'] = millis / 1000 / 60 / 60 / 24 / 365
+    // } else
       // 40 seems like the least worst default for age.
       user['age'] = 40
-    }
+    // }
   user['agePreferences'] = {
     low: user['agePreferences']?.['low'] || math.max(18, (user['age']/2)+7),
     high: user['agePreferences']?.['high'] || math.min(99, (user['age']-5)*1.5)

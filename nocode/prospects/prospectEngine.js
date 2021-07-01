@@ -21,7 +21,8 @@ function prospectEngine (users) {
     'notself': { transform: z => z, weight: 1, score: [] },
     // For prospects, the further away, the better.
     // Less chance of them being selected as a match.
-    'location': { transform: z => (1-z), weight: 1, score: [] },
+    // But allow people in the same zipcode to see each other via 0.99*
+    'location': { transform: z => (1-0.99*z), weight: 1, score: [] },
     // Only show people with posivibes >=1 as Prospects.
     'posivibes': { transform: z => z>=1, weight: 1, score: [] },
   }

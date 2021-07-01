@@ -1,12 +1,12 @@
 /*
  * SET THESE PARAMS
  */
-let DAY = '2021-06-29'
-let HOUR = '16'
-let SLOT = 3
+let DAY = '2021-07-01'
+let HOUR = '14'
+let SLOT = 9
 let DURING_SLOT = true  // If running during the slot, only match free people.
                         // If running before the slot, match everyone.
-let useTestIds = false  // `false` for real rounds.
+let useTestIds = true  // `false` for real rounds.
 
 let UPDATE_LIKES_LIVE = true
 
@@ -67,7 +67,6 @@ const fireMatchEngine = require('../matches/fireMatchEngine.js')
 const subsetScores = require('../scores/subsetScores.js')
 const fireDateEngine = require('./fireDateEngine.js')
 const fireDisplayPretty = require('./fireDisplayPretty.js')
-const addRoom = require('../rooms/addRoom.js')
 const { readCsv, writeToCsv } = require('../utils/csv.js')
 const postDatesToFirebase = require('./postDatesToFirebase.js')
 const consoleColorLog = require('../utils/consoleColorLog.js')
@@ -89,17 +88,20 @@ async function runFireDateEngine() {
   } else {
     // Only use this option for testing.
     testIds = [
-      'rENCRuRmF6gBxAQsS4E1qqna23L2', // Amel
-      '4IizDnXG2WfJsAT8gbZUDVL78S42', // John
+      'DItEowVmZMdMANWR4Q6E01v7SVv1', // Tasha
+      'Kfo4fhNY9bfLoFdIMdmXNPu7UB22', // Andy
+      // 'rENCRuRmF6gBxAQsS4E1qqna23L2', // Amel
+      // '4IizDnXG2WfJsAT8gbZUDVL78S42', // John
     ]
     docs = await Promise.all(testIds.map((id => db.collection('Users-dev').doc(id).get())))
   }
   let usersHere = docs.map(doc => { return { id: doc.id, ...doc.data() } })
 
   // Filter out users who are finished.
-  usersHere = usersHere.filter(u => !u.finished)
   if (usersHere) {
-    console.log(`${usersHere.length} people are Here:`)
+    console.log(`Out of ${usersHere.length} people Here,`)
+    usersHere = usersHere.filter(u => !u.finished)
+    console.log(`${usersHere.length} people are Here and not finished:`)
     console.log(`${usersHere.map(u => u.firstName).join(', ')}`)
   }
 

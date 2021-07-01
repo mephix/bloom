@@ -68,8 +68,8 @@
             ],
         },
         {
-            "name": "download Likes Nexts Dates locally",
-            "program": "${workspaceFolder}/nocode/db/downloadLikesNextsDatesLocally.js",
+            "name": "download Collections locally",
+            "program": "${workspaceFolder}/nocode/db/downloadCollectionsLocally.js",
             "type": "pwa-node",
             "request": "launch",
             "skipFiles": [
