@@ -5,9 +5,9 @@ module.exports = addLikesNextsDatesLocally
 
 function addLikesNextsDatesLocally(usersHere, today) {
   // Get latest downloaded collections.
-  let likes = loadLocally('Likes')
-  let nexts = loadLocally('Nexts')
-  let dates = loadLocally('Dates')
+  let likes = loadLocally('Likes', today)
+  let nexts = loadLocally('Nexts', today)
+  let dates = loadLocally('Dates', today)
 
   usersHere.forEach(u => {
     // Likes & Nexts:
@@ -27,7 +27,7 @@ function addLikesNextsDatesLocally(usersHere, today) {
   return usersHere
 }
 
-function loadLocally(type) {
+function loadLocally(type, today) {
   let filename = `${type} ${today}.json`
   try { 
     let data = JSON.parse(fs.readFileSync(`../output/${filename}`, 'utf8'))

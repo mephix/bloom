@@ -68,6 +68,15 @@
             ],
         },
         {
+            "name": "download Likes Nexts Dates locally",
+            "program": "${workspaceFolder}/nocode/db/downloadLikesNextsDatesLocally.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
+        {
             "name": "run Fire Match Engine",
             "program": "${workspaceFolder}/nocode/matches/runFireMatchEngine.js",
             "type": "pwa-node",

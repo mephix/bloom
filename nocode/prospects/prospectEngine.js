@@ -20,7 +20,7 @@ function prospectEngine (users) {
     // Don't show someone themself.
     'notself': { transform: z => z, weight: 1, score: [] },
     // For prospects, the further away, the better.
-    // Less chance of them being in the round.
+    // Less chance of them being selected as a match.
     'location': { transform: z => (1-z), weight: 1, score: [] },
     // Only show people with posivibes >=1 as Prospects.
     'posivibes': { transform: z => z>=1, weight: 1, score: [] },
