@@ -4,6 +4,7 @@ import { authUserByCode } from 'firebaseService/utils'
 import { useToast } from 'hooks/toast.hook'
 import { FC, useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
+import { UserService } from 'services/user.service'
 
 import { onEnterKey } from 'utils'
 import { Screen } from 'wrappers/Screen'
@@ -29,6 +30,7 @@ export const CodeScreen: FC<CodeScreenProps> = ({ register }) => {
 
   const checkCodeHandler = useCallback(() => {
     setLoading(true)
+    UserService.setPhoneNumber(register.phone)
     authUserByCode(register, code).catch(() => {
       showError(
         'Wrong code! Please try again or contact hello@thezerodate.com for help',

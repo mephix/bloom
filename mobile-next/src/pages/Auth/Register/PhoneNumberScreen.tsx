@@ -95,7 +95,7 @@ async function sendVerificationCode(
       )
     register.setConfirmationResult(confirmationResult)
   }
-  register.setPhone(phoneNumber)
+  register.setPhone(phoneNumber.trim())
 }
 
 function createRecaptchaVerifier() {

@@ -39,9 +39,11 @@ export const AppImage: FC<AppImageProps> = ({ defaultSrc, src, ...rest }) => {
   useEffect(() => {
     setLoaded(false)
     const image = img.current as HTMLImageElement
-    image.addEventListener('load', () => {
-      setLoaded(true)
-    })
+    const loadedHandler = () => setLoaded(true)
+    image.addEventListener('load', loadedHandler)
+    return () => {
+      image.removeEventListener('load', loadedHandler)
+    }
   }, [setLoaded, src])
   const styles = loaded ? mountedStyle : unmountedStyle
 

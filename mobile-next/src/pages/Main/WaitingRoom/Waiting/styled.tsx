@@ -1,3 +1,4 @@
+import { Toggle } from 'components/Toggle'
 import styled from 'styled-components'
 import { WaitingContainer } from '../styled'
 
@@ -22,4 +23,7 @@ export const CountdownBox = styled.div`
   padding: 10px;
   border: 2px solid white;
   border-radius: 5px;
+`
+export const StyledToggle = styled(Toggle)`
+  margin: 20px 0;
 `

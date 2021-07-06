@@ -1,5 +1,5 @@
 import { IonIcon } from '@ionic/react'
-import { AppImage } from 'components/AppImage/AppImage'
+import { AppImage } from 'components/AppImage'
 import styled, { css } from 'styled-components'
 
 export const SectionsContainer = styled.div`

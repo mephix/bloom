@@ -1,4 +1,7 @@
 import { createGlobalStyle, css } from 'styled-components'
+import close from './assets/images/icons/close.svg'
+import heart from './assets/images/icons/heart.svg'
+import camera from './assets/images/icons/camera.svg'
 
 const OldStyles = css`
   html,
@@ -58,20 +61,16 @@ const OldStyles = css`
     cursor: pointer;
     transition: 0.1s;
     &.reject {
-      background: url('../../../assets/images/icons/close.svg') no-repeat center
-        center / 30px 30px;
+      background: url(${close}) no-repeat center center / 30px 30px;
     }
     &.reject.small {
-      background: url('../../../assets/images/icons/close.svg') no-repeat center
-        center / 20px 20px;
+      background: url(${close}) no-repeat center center / 20px 20px;
     }
     &.like {
-      background: url('../../../assets/images/icons/heart.svg') no-repeat center
-        center / 50px 50px;
+      background: url(${heart}) no-repeat center center / 50px 50px;
     }
     &.join {
-      background: url('../../../assets/images/icons/camera.svg') no-repeat
-        center center / 100% 100%;
+      background: url(${camera}) no-repeat center center / 100% 100%;
     }
     &.invite {
       color: black;

@@ -1,4 +1,4 @@
-import { AppImage } from 'components/AppImage/AppImage'
+import { AppImage } from 'components/AppImage'
 import styled from 'styled-components'
 
 export const CardContainer = styled.div`

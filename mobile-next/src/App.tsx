@@ -1,13 +1,11 @@
 import { IonApp } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
 import { useAuth } from 'hooks/auth.hook'
-import { useRenderLog } from 'hooks/render.log.temp.hook'
 import { LoaderPage } from 'pages/LoaderPage'
 import { AuthStatus } from 'store/user/types'
 import { AuthRoutes, MainRoutes } from 'routes'
 
 export const App = () => {
-  useRenderLog('App')
   const auth = useAuth()
   const appContext = defineContext(auth)
   return (

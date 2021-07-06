@@ -78,5 +78,8 @@ function validateFormData(
   const birthdayDate = DateTime.fromISO(formData.birthday)
   const age = Math.floor(Math.abs(birthdayDate.diffNow('years').years))
   if (age < 18) return ['You must be 18 or older to join!', null]
-  return [null, { firstName: formData.name, age, gender: formData.gender }]
+  return [
+    null,
+    { firstName: formData.name.trim(), age, gender: formData.gender }
+  ]
 }

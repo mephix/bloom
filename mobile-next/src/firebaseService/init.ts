@@ -1,8 +1,11 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
+import 'firebase/functions'
 import 'firebase/auth'
 import 'firebase/storage'
 import 'firebase/messaging'
+import 'firebase/database'
+// import { isProd } from 'utils'
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -16,10 +19,15 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig)
 
+const functions = firebase.functions()
+// if (!isProd) functions.useEmulator('localhost', 8080)
+
 export const FirebaseService = {
   db: firebase.firestore(),
   time: firebase.firestore.Timestamp,
   auth: firebase.auth,
-  storage: firebase.storage()
+  storage: firebase.storage(),
+  functions,
+  database: firebase.database
   // messaging: firebase.messaging()
 }

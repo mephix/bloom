@@ -1,6 +1,6 @@
 import { StyledParagraph, WaitingContainer } from './styled'
 
-export const NotDafari = () => {
+export const NotSafari = () => {
   return (
     <WaitingContainer>
       <p>Oops, please use Safari</p>

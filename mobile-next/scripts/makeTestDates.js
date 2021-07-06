@@ -9,8 +9,15 @@ const daily = require('./dailyApi.js')
 const nanoid = require('nanoid')
 
 async function main() {
-  let query = await db.collection('Users-dev').where('here', '==', true).get()
-  let usersHere = query.docs
+  let queryHere = await db
+    .collection('UserStatuses')
+    .where('here', '==', true)
+    .get()
+  const query = queryHere.docs.map(doc =>
+    db.collection('Users-dev').doc(doc.id).get()
+  )
+
+  let usersHere = await Promise.all(query)
   if (usersHere.length > 0) console.log(`${usersHere.length} people are Here.`)
   let userFor, userWith, nameFor, nameWith
   if (usersHere.length > 1) {

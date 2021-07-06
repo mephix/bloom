@@ -2,9 +2,11 @@ import { AndroidPermissions } from '@ionic-native/android-permissions'
 import { isPlatform } from '@ionic/react'
 import { FirebaseService } from 'firebaseService'
 import { PARAMETERS_COLLECTION } from 'firebaseService/constants'
+import { useEffect } from 'react'
 import { useLocation } from 'react-router'
-import { store } from 'store'
-import { setAppParams } from 'store/app'
+import { UserService } from 'services/user.service'
+import { store, useAppDispatch } from 'store'
+import { setAppParams, setAppState } from 'store/app'
 import { Params } from 'store/app/types'
 
 export async function updateAppParams() {
@@ -56,7 +58,62 @@ export async function checkPermission() {
   return true
 }
 
-export const useIsWaitingRoom = () => {
+export const useWaitingRoomOnline = () => {
+  const dispatch = useAppDispatch()
   const location = useLocation()
-  return location.pathname === '/waitingroom'
+
+  useEffect(() => {
+    if (location.pathname === '/waitingroom') UserService.setHiddenHere(true)
+    else {
+      const state = store.getState().app.state
+      if (state === 'VIDEO') dispatch(setAppState('WAITING'))
+      UserService.setHiddenHere(false)
+    }
+  }, [location, dispatch])
+}
+
+export function usePageVisibilityOnline() {
+  useEffect(onlineSubscriber, [])
+}
+
+export function useUserEvents() {
+  useEffect(() => UserService.subcribeOnEvents(), [])
+}
+
+function onlineSubscriber() {
+  let unsubscribe: () => void = () => {}
+  if (isPlatform('ios') || isPlatform('android')) {
+    const blurHandler = () => {
+      UserService.setHiddenHere(false)
+    }
+    const focusHandler = () => {
+      UserService.setHiddenHere(true)
+    }
+    window.addEventListener('pageshow', focusHandler)
+    window.addEventListener('pagehide', blurHandler)
+    window.addEventListener('beforeunload', blurHandler)
+    window.addEventListener('blur', blurHandler)
+    window.addEventListener('focus', focusHandler)
+
+    unsubscribe = () => {
+      window.removeEventListener('pageshow', focusHandler)
+      window.removeEventListener('pagehide', blurHandler)
+      window.removeEventListener('beforeunload', blurHandler)
+      window.removeEventListener('blur', blurHandler)
+      window.removeEventListener('focus', focusHandler)
+    }
+  } else {
+    const closeHandler = () => UserService.setHiddenHere(false)
+    const visibilityChangeHandler = () => {
+      if (document.hidden) UserService.setHiddenHere(false)
+      else UserService.setHiddenHere(true)
+    }
+    window.addEventListener('beforeunload', closeHandler)
+    window.addEventListener('visibilitychange', visibilityChangeHandler)
+    unsubscribe = () => {
+      window.removeEventListener('beforeunload', closeHandler)
+      window.removeEventListener('visibilitychange', visibilityChangeHandler)
+    }
+  }
+  return unsubscribe
 }

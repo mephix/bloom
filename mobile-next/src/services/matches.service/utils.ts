@@ -47,7 +47,7 @@ export async function convertDateToUser(
   )
   return {
     dateId: id,
-    dateEnd: date.end,
+    dateEnd: date.end.seconds,
     firstName: user.firstName,
     avatar: user.avatar,
     bio: user.bio,
@@ -63,4 +63,4 @@ function getMatchType(myMatch: boolean, otherMatch: boolean): MatchType {
 }
 
 export const byDesc = (userA: UserMatch, userB: UserMatch) =>
-  userB.dateEnd.seconds - userA.dateEnd.seconds
+  userB.dateEnd - userA.dateEnd

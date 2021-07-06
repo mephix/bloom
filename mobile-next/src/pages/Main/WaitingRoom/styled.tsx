@@ -14,3 +14,10 @@ export const StyledParagraph = styled.p`
   text-align: center;
   padding: 0 30px;
 `
+
+export const FullScreen = styled.div`
+  position: fixed;
+  top: 0;
+  height: 100% !important;
+  width: 100%;
+`

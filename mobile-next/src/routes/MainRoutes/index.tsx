@@ -18,11 +18,11 @@ import { useInitApp } from './init.app.hook'
 export const MainRoutes = () => {
   useStatusBar(Style.Dark)
   useInitApp()
-  const { TabContextProvider, tabHidden } = useTabContext()
+  const { TabContextProvider, value, tabHidden } = useTabContext()
   return (
-    <TabContextProvider>
-      <IonTabs>
-        <IonRouterOutlet animated={false}>
+    <IonTabs>
+      <IonRouterOutlet animated={false}>
+        <TabContextProvider value={value}>
           <Route exact path="/waitingroom">
             <WaitingRoom />
           </Route>
@@ -33,19 +33,19 @@ export const MainRoutes = () => {
             <Profile />
           </Route>
           <Redirect to="/waitingroom" />
-        </IonRouterOutlet>
-        <IonTabBar hidden={tabHidden} color="primary" slot="bottom">
-          <IonTabButton tab="matches" href="/matches">
-            <IonIcon icon={heartOutline} />
-          </IonTabButton>
-          <IonTabButton tab="waitingroom" href="/waitingroom">
-            <IonIcon icon={home} />
-          </IonTabButton>
-          <IonTabButton tab="profile" href="/profile">
-            <IonIcon icon={personOutline} />
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </TabContextProvider>
+        </TabContextProvider>
+      </IonRouterOutlet>
+      <IonTabBar hidden={tabHidden} color="primary" slot="bottom">
+        <IonTabButton tab="matches" href="/matches">
+          <IonIcon icon={heartOutline} />
+        </IonTabButton>
+        <IonTabButton tab="waitingroom" href="/waitingroom">
+          <IonIcon icon={home} />
+        </IonTabButton>
+        <IonTabButton tab="profile" href="/profile">
+          <IonIcon icon={personOutline} />
+        </IonTabButton>
+      </IonTabBar>
+    </IonTabs>
   )
 }

@@ -42,14 +42,20 @@ export const userSlice = createSlice({
     },
     setHere: (state, { payload }: PayloadAction<boolean>) => {
       state.here = payload
+    },
+    setFree: (state, { payload }: PayloadAction<boolean>) => {
+      state.free = payload
     }
   }
 })
 
 export const selectAuth = (state: RootState) => state.user.auth
 export const selectUserId = (state: RootState) => state.user.id
+export const selectUserHere = (state: RootState) => state.user.here
+export const selectUserFree = (state: RootState) => state.user.free
 export const selectUserData = (state: RootState) => state.user.data
 
-export const { setId, updateUserData, setAuth, setHere } = userSlice.actions
+export const { setId, updateUserData, setAuth, setHere, setFree } =
+  userSlice.actions
 
 export default userSlice.reducer

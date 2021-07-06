@@ -5,6 +5,7 @@ import { CountdownBox, CountdownContainer } from './styled'
 
 interface DateNightCountdownProps {
   timeTilNextDateNight: number
+  onDateNightStart: () => void
 }
 
 const zero = (num: number) => (num < 10 ? <span>0</span> : '')
@@ -31,7 +32,8 @@ const CountdownNumber: FC<CountdownNumberProps> = ({ num }) => {
 }
 
 export const DateNightCountdown: FC<DateNightCountdownProps> = ({
-  timeTilNextDateNight
+  timeTilNextDateNight,
+  onDateNightStart
 }) => {
   const dateNight = Date.now() + timeTilNextDateNight
 
@@ -39,6 +41,7 @@ export const DateNightCountdown: FC<DateNightCountdownProps> = ({
     <>
       <Countdown
         date={dateNight}
+        onComplete={onDateNightStart}
         renderer={({ seconds, minutes, hours, days }) => {
           return (
             <CountdownContainer>
