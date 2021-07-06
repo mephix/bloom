@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Card } from 'components/Card'
 import { Toggle } from 'components/Toggle'
 import commonStyles from '../Common.module.scss'
@@ -13,10 +13,23 @@ import meetup from 'state/meetup'
 import placeholderImage from 'assets/images/placeholder.jpg'
 import { DateNightCountdown } from 'components/DateNightCountdown'
 import { DateClockService } from 'services/dateClock.service'
+import { useLocation } from 'react-router'
 
 export const WaitingRoom = observer(() => {
   const toggleHandler = useCallback(state => user.setHere(state), [])
-  const timeTilNextDateNight = DateClockService.timeTilNextDateNight()
+  const [timeTilNextDateNight, setTimeTilNextDateNight] = useState(
+    DateClockService.timeTilNextDateNight()
+  )
+  const [disabled, setDisabledCountdown] = useState(false)
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.pathname === '/waitingroom') setDisabledCountdown(false)
+    else {
+      setTimeTilNextDateNight(DateClockService.timeTilNextDateNight())
+      setDisabledCountdown(true)
+    }
+  }, [location])
 
   const resolveHandler = useCallback(() => {
     if (!meetup.updatingProspects) meetup.shiftCards()
@@ -73,7 +86,9 @@ export const WaitingRoom = observer(() => {
   ) : (
     <>
       <div>{app.params[PARAMS.WAITING_FOR_DATE_NIGTH]}</div>
-      <DateNightCountdown timeTilNextDateNight={timeTilNextDateNight} />
+      {!disabled && (
+        <DateNightCountdown timeTilNextDateNight={timeTilNextDateNight} />
+      )}
     </>
   )
 

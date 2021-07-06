@@ -1,5 +1,9 @@
 const { db } = require('./firestoreApi')
-const ids = ['9Z3PHTpJWOhxi2YAnpapP3hHL652', 'sltYAEsWs8hHIS3M208foDWMoQm2']
+const ids = [
+  'M4u3UXCQENNHnLwnCurfseu6b5I2',
+  'VPqB1JhqXyewmzYskFfZGSp8MqP2',
+  'iMONQXyIySUG8GsWfLEwhC2D9Nu2'
+]
 
 const PROSPECTS_COLLECTION = 'Prospects-dev'
 const USERS_COLLECTION = 'Users-dev'

@@ -47,15 +47,7 @@ export const AppImage: FC<AppImageProps> = ({ defaultSrc, src, ...rest }) => {
 
   return (
     <>
-      {/* <img
-        // ref={img}
-        src={src}
-        // style={{ ...styles, display: !loaded ? 'none' : 'inline-block' }}
-        alt={rest.alt}
-        {...rest}
-      /> */}
       <div
-        // {...rest}
         style={{
           ...styles,
           display: !loaded ? 'none' : 'inline-block'

@@ -115,7 +115,6 @@ async function checkPermission() {
         let res = await AndroidPermissions.checkPermission(perm)
         if (!res.hasPermission)
           res = await AndroidPermissions.requestPermission(perm)
-        // alert(`${perm} ${JSON.stringify(res)}`)
         havePermissions = !res.hasPermission && havePermissions ? false : true
       }
       return havePermissions

@@ -4,6 +4,6 @@ export interface ToggleProps {
     on: string
     off: string
   }
-  onToggle?: (state: boolean) => void,
+  onToggle?: (state: boolean) => void
   className?: string
 }
