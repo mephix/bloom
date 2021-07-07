@@ -72,6 +72,7 @@ export class MeetupService {
     const [topCard] = store.getState().meetup.cards
     if (!topCard) return
     store.dispatch(shiftCards())
+    console.log('move')
     return await FirebaseService.functions.httpsCallable('moveProspects')({
       id: topCard.userId,
       matches,
@@ -80,6 +81,8 @@ export class MeetupService {
   }
 
   static async acceptDate(dateId: string, choice: boolean) {
+    console.log('accept')
+
     return await FirebaseService.functions.httpsCallable('acceptDate')({
       dateId,
       choice

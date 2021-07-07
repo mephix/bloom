@@ -1,6 +1,6 @@
 {
-  "name": "mobile",
-  "version": "0.1.0",
+  "name": "thezerodate",
+  "version": "2.0.2",
   "private": true,
   "dependencies": {
     "@capacitor/android": "^3.0.1",

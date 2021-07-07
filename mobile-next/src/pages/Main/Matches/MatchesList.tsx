@@ -79,7 +79,7 @@ export const MatchesList: FC<MatchesListProps> = ({ setUserProfile }) => {
   const users = section === 'recent' ? allUsers : matchesUsers
 
   return (
-    <Screen header>
+    <Screen fixed header>
       <SectionsContainer>
         <Section
           selected={section === 'recent'}

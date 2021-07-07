@@ -58,7 +58,8 @@ export class UserService {
   static async createUser(data: InitUser) {
     const userRef = FirebaseService.db.collection(USERS_COLLECTION).doc(this.id)
     await userRef.set({
-      ...data
+      ...data,
+      created: FirebaseService.time.now()
     })
   }
   static async updateAvatar(image: File): Promise<void> {
@@ -98,7 +99,9 @@ export class UserService {
   }
 
   static async checkUserCollections() {
-    await FirebaseService.functions.httpsCallable('checkUserCollections')()
+    await FirebaseService.functions
+      .httpsCallable('checkUserCollections')()
+      .catch(err => console.log(err))
   }
 
   static async updateUserStatus(data: UserStatus) {
@@ -149,22 +152,26 @@ export class UserService {
     this.phoneNumber = phone
   }
 
-  static async tryRestoreUser(userId: string): Promise<DocumentData | null> {
-    const restoreUserQuery = await FirebaseService.db
-      .collection(RESTORE_USERS_COLLECTION)
-      .where('phone', '==', this.phoneNumber)
-      .get()
-    const [restoreUserDoc] = restoreUserQuery.docs
-    if (restoreUserDoc) {
-      const restoreUser = restoreUserDoc.data()
-      await this.createUser({
-        firstName: restoreUser.firstName,
-        age: restoreUser.age,
-        gender: restoreUser.gender
-      })
-      return restoreUser
+  static async tryRestoreUser(): Promise<DocumentData | null> {
+    try {
+      const restoreUserQuery = await FirebaseService.db
+        .collection(RESTORE_USERS_COLLECTION)
+        .where('phone', '==', this.phoneNumber)
+        .get()
+      const [restoreUserDoc] = restoreUserQuery.docs
+      if (restoreUserDoc) {
+        const restoreUser = restoreUserDoc.data()
+        await this.createUser({
+          firstName: restoreUser.firstName,
+          age: restoreUser.age,
+          gender: restoreUser.gender
+        })
+        return restoreUser
+      }
+      return null
+    } catch (err) {
+      return null
     }
-    return null
   }
 }
 

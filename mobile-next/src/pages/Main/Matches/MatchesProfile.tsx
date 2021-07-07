@@ -12,7 +12,7 @@ export const MatchesProfile: FC<MatchesProfileProps> = ({ user }) => {
   const history = useHistory()
 
   return (
-    <Screen header color="dark">
+    <Screen fixed header color="dark">
       <Card
         type="profile"
         user={user}

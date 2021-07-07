@@ -27,9 +27,9 @@ export const GetInfoScreen: FC = () => {
 
   const saveHandler = useCallback(async () => {
     try {
-      setLoading(true)
       const [error, user] = validateFormData(formData)
       if (error) return showError(error)
+      setLoading(true)
       await UserService.createUser(user!)
       const userData = mapUserToUserData(user)
       dispatch(updateUserData(userData))
@@ -46,15 +46,15 @@ export const GetInfoScreen: FC = () => {
     <Screen>
       <AuthContainer>
         <AppInput
-          value={formData.name}
-          onChange={e => setFormData({ ...formData, name: e.target.value })}
-          label="What's your name?"
-        />
-        <AppInput
           onChangeText={birthday => setFormData({ ...formData, birthday })}
           label="When is your birthday?"
           date
           small="You must be 18 or older to join."
+        />
+        <AppInput
+          value={formData.name}
+          onChange={e => setFormData({ ...formData, name: e.target.value })}
+          label="What's your name?"
         />
         <AppRadio
           onChange={gender => setFormData({ ...formData, gender })}

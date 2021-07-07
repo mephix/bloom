@@ -33,7 +33,7 @@ export const ProfileInfo = () => {
   }, [history])
 
   return (
-    <Screen header color="dark">
+    <Screen header fixed color="dark">
       <Card
         type="profile"
         user={{

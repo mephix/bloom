@@ -19,7 +19,7 @@ export class DateClockService {
       .doc(DATE_NIGHT_SETTINGS)
       .get()
     const options = optionsDoc.data()
-    const crontab = options?.cron_TEST
+    const crontab = options?.cron
     const roundMinutes = options?.roundMinutes
     const maxRounds = options?.maxRounds
     // const maxActiveIntervals = options?.maxActiveIntervals
@@ -29,10 +29,7 @@ export class DateClockService {
     return { crontab, roundMinutes, maxRounds }
   }
 
-  static nextDateNight(
-    crontab: string,
-    dateNightDuration: number
-  ) {
+  static nextDateNight(crontab: string, dateNightDuration: number) {
     const interval = CronParser.parseExpression(crontab)
 
     const prevDateNight = dayjs(interval.prev().toDate())

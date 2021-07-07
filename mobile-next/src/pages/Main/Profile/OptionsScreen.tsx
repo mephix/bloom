@@ -32,7 +32,7 @@ export const OptionsScreen = () => {
   const genderChangeHandler = useCallback(gender => setGender(gender), [])
 
   return (
-    <Screen>
+    <Screen fixed>
       <EditContainer>
         <AppRadio
           label="I'd like to meet people of gender(s)..."

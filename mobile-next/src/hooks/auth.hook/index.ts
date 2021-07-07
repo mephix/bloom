@@ -21,8 +21,12 @@ export const useAuth = () => {
           dispatch(setId(userId))
           const user = await UserService.getUser()
           if (!user) {
-            const restoredUser = await UserService.tryRestoreUser(userId)
+            logger.log('Unregistered user! Trying to restore')
+
+            const restoredUser = await UserService.tryRestoreUser()
+            logger.log('Check collections')
             await UserService.checkUserCollections()
+            logger.log('Collections checked!')
             if (restoredUser) {
               const userData = mapUserToUserData(restoredUser)
               dispatch(updateUserData(userData))
@@ -34,10 +38,16 @@ export const useAuth = () => {
               })
               return dispatch(setAuth('authorized'))
             }
+            logger.log('Geting user information')
+
             return dispatch(setAuth('without_information'))
           }
+          logger.log('Check collections')
           await UserService.checkUserCollections()
+          logger.log('Collections checked!')
+
           const userData = mapUserToUserData(user)
+          logger.log('Authorize user')
           dispatch(updateUserData(userData))
           dispatch(setAuth('authorized'))
         } else dispatch(setAuth('unauthorized'))

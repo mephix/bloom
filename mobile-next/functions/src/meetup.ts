@@ -253,7 +253,7 @@ export const onUserStatusUpdate = functions.firestore
     }
 
     const forUser = await MeetupService.getUserById(userId)
-    const withUser = await MeetupService.getUserById(userId)
+    const withUser = await MeetupService.getUserById(availableDate.userId)
 
     const forToken = await ConferenceService.getToken(forUser.firstName)
     const withToken = await ConferenceService.getToken(withUser.firstName)
@@ -264,7 +264,7 @@ export const onUserStatusUpdate = functions.firestore
       .doc(userId)
     const withUserEventsRef = FirebaseService.db
       .collection(USER_EVENTS_COLLECTION)
-      .doc(availableDate?.userId)
+      .doc(availableDate.userId)
 
     batch.update(forUserEventsRef, {
       date: MeetupService.mapUserToDate(

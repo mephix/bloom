@@ -57,8 +57,8 @@ export async function convertDateToUser(
     dateId: id,
     dateEnd: date.end.seconds,
     firstName: user.firstName,
-    avatar: user.avatar,
-    bio: user.bio,
+    avatar: user.avatar || '',
+    bio: user.bio || '',
     userId: userDoc.id,
     type
   }

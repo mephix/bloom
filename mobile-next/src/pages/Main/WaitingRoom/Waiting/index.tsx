@@ -44,6 +44,7 @@ export const Waiting = () => {
       if (topCard.type === CardType.Date) {
         MeetupService.acceptDate(topCard.dateId!, choice)
         if (choice) UserService.setHere(true)
+        return
       }
       setDelayed(true)
       await MeetupService.moveProspect(choice, here)
@@ -94,7 +95,7 @@ export const Waiting = () => {
     else
       return (
         <>
-          <div>{params.WAITING_FOR_DATE_NIGTH}</div>
+          <div>{params.NOT_DATE_NIGHT}</div>
           <DateNightCountdown
             onDateNightStart={() => dispatch(startDateNight())}
             timeTilNextDateNight={timeTilNextDateNight}

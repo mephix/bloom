@@ -5,13 +5,16 @@ import { FC } from 'react'
 interface ScreenProps {
   color?: string
   header?: boolean
+  fixed?: boolean
 }
 
-export const Screen: FC<ScreenProps> = ({ children, color, header }) => {
+export const Screen: FC<ScreenProps> = ({ children, color, header, fixed }) => {
   return (
     <IonPage>
       {header && <Header />}
-      <IonContent color={color}>{children}</IonContent>
+      <IonContent scrollY={!fixed} color={color}>
+        {children}
+      </IonContent>
     </IonPage>
   )
 }
