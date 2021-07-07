@@ -1,6 +1,6 @@
 import { FC, useCallback } from 'react'
 import { noop } from '../../utils/common'
-import { ActionButtonProps } from './Card.type'
+import { ActionButtonProps } from './type'
 
 export const ActionButton: FC<ActionButtonProps> = ({
   type,

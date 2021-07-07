@@ -3,7 +3,7 @@ import { DateTime } from 'luxon'
 const TIME_COLOR = 'grey'
 
 export class Logger {
-  static active = false
+  static active = true
   constructor(private prefix: string, private color: string) {}
 
   get wrappedPrefix() {

@@ -2,6 +2,15 @@
 <widget version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <access origin="*" />
   
+  <feature name="DatePicker">
+    <param name="ios-package" value="DatePicker"/>
+  </feature>
+
+  <feature name="FirebaseAuthentication">
+    <param name="ios-package" value="FirebaseAuthenticationPlugin"/>
+    <param name="onload" value="false"/>
+  </feature>
+
   <feature name="iosrtcPlugin">
     <param name="ios-package" value="iosrtcPlugin"/>
     <param name="onload" value="true"/>

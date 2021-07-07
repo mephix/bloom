@@ -1,12 +1,27 @@
-import { useInit } from './hooks/init.hook'
-import { Screen } from './screens'
-import './scss/App.scss'
+import { IonApp } from '@ionic/react'
+import { IonReactRouter } from '@ionic/react-router'
+import { useAuth } from 'hooks/auth.hook'
+import { LoaderPage } from 'pages/LoaderPage'
+import { AuthStatus } from 'store/user/types'
+import { AuthRoutes, MainRoutes } from 'routes'
 
 export const App = () => {
-  useInit()
+  const auth = useAuth()
+  const appContext = defineContext(auth)
   return (
-    <>
-      <Screen />
-    </>
+    <IonApp>
+      <IonReactRouter>{appContext}</IonReactRouter>
+    </IonApp>
   )
+}
+
+function defineContext(auth: AuthStatus) {
+  switch (auth) {
+    case 'unknown':
+      return <LoaderPage />
+    case 'authorized':
+      return <MainRoutes />
+    default:
+      return <AuthRoutes />
+  }
 }

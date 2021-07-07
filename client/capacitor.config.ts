@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'john.bloom.app',
-  appName: 'bloom',
+  appId: 'com.thezerodate.ios',
+  appName: 'The Zero Date',
   webDir: 'build',
   bundledWebRuntime: false
 }
