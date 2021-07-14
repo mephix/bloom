@@ -1,9 +1,12 @@
+/* eslint-disable no-restricted-globals */
 import { AndroidPermissions } from '@ionic-native/android-permissions'
 import { isPlatform } from '@ionic/react'
 import { FirebaseService } from 'firebaseService'
 import { PARAMETERS_COLLECTION } from 'firebaseService/constants'
-import { useEffect } from 'react'
+import { useToast } from 'hooks/toast.hook'
+import { useCallback, useEffect } from 'react'
 import { useLocation } from 'react-router'
+import { NotificationService } from 'services/notification.service'
 import { UserService } from 'services/user.service'
 import { store, useAppDispatch } from 'store'
 import { setAppParams, setAppState } from 'store/app'
@@ -80,6 +83,31 @@ export function useUserEvents() {
   useEffect(() => UserService.subcribeOnEvents(), [])
 }
 
+export function useUserStatus() {
+  useEffect(() => UserService.subscribeOnStatus(), [])
+}
+
+export const useSetupNotifications = () => {
+  // const [show] = useToast('info')
+  const setupNotifications = useCallback(async () => {
+    alert('Getting token')
+    const token = await NotificationService.getToken()
+    if (!token) return
+    UserService.saveFcmToken(token)
+  }, [])
+
+  useEffect(() => {
+    alert('effect')
+    setupNotifications()
+    // return NotificationService.onMessage(({ notification }) => {
+    //   console.log(notification) // ! TEMP
+    //   if (!location.pathname.includes('/waitingroom')) {
+    //     show(notification?.body)
+    //   }
+    // })
+  }, [setupNotifications])
+}
+
 function onlineSubscriber() {
   let unsubscribe: () => void = () => {}
   if (isPlatform('ios') || isPlatform('android')) {
@@ -87,7 +115,8 @@ function onlineSubscriber() {
       UserService.setHiddenHere(false)
     }
     const focusHandler = () => {
-      UserService.setHiddenHere(true)
+      if (location.pathname.includes('waitingroom'))
+        UserService.setHiddenHere(true)
     }
     window.addEventListener('pageshow', focusHandler)
     window.addEventListener('pagehide', blurHandler)
@@ -106,7 +135,8 @@ function onlineSubscriber() {
     const closeHandler = () => UserService.setHiddenHere(false)
     const visibilityChangeHandler = () => {
       if (document.hidden) UserService.setHiddenHere(false)
-      else UserService.setHiddenHere(true)
+      else if (location.pathname.includes('waitingroom'))
+        UserService.setHiddenHere(true)
     }
     window.addEventListener('beforeunload', closeHandler)
     window.addEventListener('visibilitychange', visibilityChangeHandler)

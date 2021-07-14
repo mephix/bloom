@@ -1,6 +1,6 @@
-import { isPlatform } from "@ionic/react"
-import { RegisterState } from "pages/Auth/Register/register.state.hook"
-import { FirebaseService } from "./init"
+import { isPlatform } from '@ionic/react'
+import { RegisterState } from 'pages/Auth/Register/register.state.hook'
+import { FirebaseService } from './init'
 
 export async function authUserByCode(
   register: RegisterState,

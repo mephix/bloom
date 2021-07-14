@@ -20,14 +20,6 @@ import '@ionic/react/css/text-transformation.css'
 import '@ionic/react/css/flex-utils.css'
 import '@ionic/react/css/display.css'
 import './theme/variables.css'
-import { FirebaseService } from 'firebaseService'
-
-// @ts-ignore
-window.addProspects = () => {
-  FirebaseService.functions
-    .httpsCallable('TEST_addProspects')()
-    .catch(err => console.error(err))
-}
 
 ReactDOM.render(
   <React.StrictMode>

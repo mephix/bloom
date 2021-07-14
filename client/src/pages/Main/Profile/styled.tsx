@@ -1,19 +1,9 @@
-import { IonFab, IonTextarea } from '@ionic/react'
+import { IonFab, IonTextarea, IonInput } from '@ionic/react'
 import styled from 'styled-components'
 
 export const EditContainer = styled.div`
   height: 100%;
   position: relative;
-  padding: 10px;
-  &::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 40px;
-    top: 0;
-    left: 0;
-    z-index: 1;
-  }
 `
 
 export const LowerIonFab = styled(IonFab)`
@@ -23,6 +13,7 @@ export const LowerIonFab = styled(IonFab)`
 export const ScrollableContainer = styled.div`
   height: 100%;
   overflow: auto;
+  padding: 10px;
 `
 
 export const Label = styled.div`
@@ -49,4 +40,13 @@ export const StyledTextarea = styled(IonTextarea)`
   padding: 10px;
   text-align: center;
   margin-bottom: 100px;
+`
+
+export const SocialMediaInput = styled(IonInput)`
+  border: 2px solid #d0d0d0;
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 20px;
 `

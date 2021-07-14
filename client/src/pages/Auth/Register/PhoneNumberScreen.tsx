@@ -48,6 +48,7 @@ export const PhoneNumberScreen: FC<PhoneNumberScreenProps> = ({ register }) => {
       setLoading(false)
       showError('Oops, something went wrong. Try again later!')
       console.error('auth error', err)
+      alert(JSON.stringify(err))
     }
   }, [phoneNumber, showError, history, register, getRecaptchaVerifier])
 
@@ -83,7 +84,7 @@ async function sendVerificationCode(
   if (isPlatform('hybrid')) {
     const verificationId = await FirebaseAuthentication.verifyPhoneNumber(
       phoneNumber,
-      0
+      30
     )
     register.setVerificationId(verificationId)
   } else {

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "671960082645",
+    "firebase_url": "https://bloom-dating.firebaseio.com",
+    "project_id": "bloom-dating",
+    "storage_bucket": "bloom-dating.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:671960082645:android:5e02a1ffc72d454bc19a5c",
+        "android_client_info": {
+          "package_name": "com.thezerodate.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "671960082645-al4aekldo4ef6lvrckkm1boolupbpbkq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thezerodate.app",
+            "certificate_hash": "68a4d585d862bac7bcf5a37ca927c685db56ebdc"
+          }
+        },
+        {
+          "client_id": "671960082645-0m62ksk155mrl0bg4naelvg16grvk160.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQEMTIQiqcvR2lwsIZMSCTXQsZvpSQ43Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "671960082645-0m62ksk155mrl0bg4naelvg16grvk160.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "671960082645-1ailq0q3t32nqcdaqp8lpnoiaso62l7n.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "bloom.app.com"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

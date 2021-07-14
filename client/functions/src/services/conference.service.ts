@@ -35,7 +35,8 @@ export class ConferenceService {
         eject_at_room_exp: true,
         autojoin: true,
         enable_screenshare: false,
-        enable_chat: false
+        enable_chat: false,
+        enable_recording: 'rtp-tracks'
       }
     })
     return response.data.url

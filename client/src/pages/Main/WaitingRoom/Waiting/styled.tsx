@@ -27,3 +27,11 @@ export const CountdownBox = styled.div`
 export const StyledToggle = styled(Toggle)`
   margin: 20px 0;
 `
+
+export const FinishedWrapper = styled.div`
+  font-size: 1.5rem;
+  margin: 10px 0;
+  a {
+    color: #cfb9ff;
+  }
+`

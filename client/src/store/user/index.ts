@@ -13,6 +13,7 @@ export interface UserState {
 export const userDataDefaults: UserData = {
   firstName: '',
   bio: '',
+  socialMedia: '',
   avatar: '',
   finished: false,
   genderPreference: '',
@@ -45,6 +46,9 @@ export const userSlice = createSlice({
     },
     setFree: (state, { payload }: PayloadAction<boolean>) => {
       state.free = payload
+    },
+    setFinished: (state, { payload }: PayloadAction<boolean>) => {
+      state.data.finished = payload
     }
   }
 })
@@ -54,8 +58,9 @@ export const selectUserId = (state: RootState) => state.user.id
 export const selectUserHere = (state: RootState) => state.user.here
 export const selectUserFree = (state: RootState) => state.user.free
 export const selectUserData = (state: RootState) => state.user.data
+export const selectFinished = (state: RootState) => state.user.data.finished
 
-export const { setId, updateUserData, setAuth, setHere, setFree } =
+export const { setId, updateUserData, setAuth, setHere, setFree, setFinished } =
   userSlice.actions
 
 export default userSlice.reducer

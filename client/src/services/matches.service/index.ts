@@ -28,16 +28,6 @@ export class MatchesService {
   }
 
   static async setHeart(dateId: string) {
-    // const dateRef = FirebaseService.db.collection(DATES_COLLECTION).doc(dateId)
-    // const dateDoc = await dateRef.get()
-    // const date = dateDoc.data()!
-    // const affiliation = date.for === UserService.id ? 'for' : 'with'
-    // const otherAffiliation = affiliation === 'for' ? 'with' : 'for'
-    // const rate = date.rate
-    // await dateRef.update({
-    //   rate: { ...rate, [affiliation]: { ...rate[affiliation], heart: true } }
-    // })
-    // await PhoneNumberService.allowMyPhoneNumber(date[otherAffiliation])
     await FirebaseService.functions.httpsCallable('heartMatch')(dateId)
   }
 

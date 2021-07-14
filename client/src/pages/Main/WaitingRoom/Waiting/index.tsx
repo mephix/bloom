@@ -10,10 +10,11 @@ import {
   startDateNight
 } from 'store/meetup'
 import { CardType } from 'store/meetup/types'
-import { selectUserHere } from 'store/user'
+import { selectFinished, selectUserHere } from 'store/user'
 import { DateNightCountdown } from './DateNightCountdown'
-import { StyledToggle, WaitingRoomContainer } from './styled'
+import { StyledToggle, WaitingRoomContainer, FinishedWrapper } from './styled'
 import { useTopCard } from './utils'
+import Linkify from 'react-linkify'
 
 // const isDateNight = true
 
@@ -21,6 +22,7 @@ export const Waiting = () => {
   const dispatch = useAppDispatch()
   const params = useAppSelector(selectAppParams)
   const here = useAppSelector(selectUserHere)
+  const finished = useAppSelector(selectFinished)
   const isDateNight = useAppSelector(selectIsDateNight)
   const timeTilNextDateNight = useAppSelector(selectTimeTilDateNight)
   const topCard = useTopCard()
@@ -41,12 +43,12 @@ export const Waiting = () => {
     async (choice: boolean) => {
       if (delayed) return
       if (!topCard) return
+      setDelayed(true)
       if (topCard.type === CardType.Date) {
         MeetupService.acceptDate(topCard.dateId!, choice)
         if (choice) UserService.setHere(true)
-        return
+        return setDelayed(false)
       }
-      setDelayed(true)
       await MeetupService.moveProspect(choice, here)
       setDelayed(false)
     },
@@ -70,19 +72,33 @@ export const Waiting = () => {
     else return here && <div>{params.SETTING_YOU_UP}</div>
   }, [topCard, cardType, here, params, selectHandler])
 
-  const toggle = useMemo(
-    () => (
-      <StyledToggle
-        toggleMessages={{
-          on: params.WANT_TO_GO_ON_DATES,
-          off: params.DONT_WANT_TO_GO_ON_DATES
-        }}
-        toggled={here}
-        onToggle={toggleHandler}
-      />
-    ),
-    [params, here, toggleHandler]
-  )
+  const toggle = useMemo(() => {
+    if (!finished)
+      return (
+        <StyledToggle
+          toggleMessages={{
+            on: params.WANT_TO_GO_ON_DATES,
+            off: params.DONT_WANT_TO_GO_ON_DATES
+          }}
+          toggled={here}
+          onToggle={toggleHandler}
+        />
+      )
+    else
+      return (
+        <FinishedWrapper>
+          <Linkify
+            componentDecorator={(decoratedHref, decoratedText, key) => (
+              <a target="blank" href={decoratedHref} key={key}>
+                {decoratedText}
+              </a>
+            )}
+          >
+            {params.FINISHED}
+          </Linkify>
+        </FinishedWrapper>
+      )
+  }, [params, here, toggleHandler, finished])
 
   const content = useMemo(() => {
     if (isDateNight)

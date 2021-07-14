@@ -8,6 +8,7 @@ export const PARAMETERS_COLLECTION = 'Parameters'
 export const USER_STATUSES_COLLECTION = 'UserStatuses'
 export const USER_EVENTS_COLLECTION = 'UserEvents'
 export const PHONE_NUMBERS_COLLECTION = 'PhoneNumbers'
+export const RESTORE_USERS_COLLECTION = 'RestoreUsers'
 export const RDB_ONLINE_REF = '/online/{uid}'
 
 export const doc = (collection: string) => `${collection}/{docId}`

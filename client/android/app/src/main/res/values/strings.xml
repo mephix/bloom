@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Bloom</string>
-    <string name="title_activity_main">Bloom</string>
-    <string name="package_name">bloom.app.com</string>
-    <string name="custom_url_scheme">bloom.app.com</string>
+    <string name="app_name">The Zero Date</string>
+    <string name="title_activity_main">The Zero Date</string>
+    <string name="package_name">com.thezerodate.app</string>
+    <string name="custom_url_scheme">com.thezerodate.app</string>
 </resources>

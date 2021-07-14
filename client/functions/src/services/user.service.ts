@@ -1,9 +1,11 @@
 import {
   FirebaseService,
   PHONE_NUMBERS_COLLECTION,
+  USERS_COLLECTION,
   USER_EVENTS_COLLECTION,
   USER_STATUSES_COLLECTION
 } from '../firebaseService'
+import { userConverter } from '../firebaseService/converters'
 
 export class UserService {
   static async getUserEventsRef(id: string) {
@@ -31,6 +33,15 @@ export class UserService {
     })
   }
 
+  static async getUserById(id: string) {
+    const doc = await FirebaseService.db
+      .collection(USERS_COLLECTION)
+      .withConverter(userConverter)
+      .doc(id)
+      .get()
+    return doc.data()
+  }
+
   static async allowMyPhoneNumber(
     userId: string,
     phoneNumber: string,
@@ -52,7 +63,8 @@ export class UserService {
           allow: [to]
         })
     } catch (err) {
-      console.log('allow Phone Number error', err)
+      console.error(err)
+      return
     }
   }
 }

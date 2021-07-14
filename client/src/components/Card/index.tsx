@@ -40,6 +40,7 @@ export const Card: FC<CardProps> = ({
           <AvatarImage
             defaultSrc={placeholderImage}
             src={user.avatar || placeholderImage}
+            transform="c_thumb,g_face,h_200,w_200"
             alt="profile-avatar"
           />
           <NameWrapper>{user.name}</NameWrapper>

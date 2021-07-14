@@ -14,6 +14,7 @@ export interface Ages {
 export interface UserData {
   firstName: string
   bio: string
+  socialMedia: string
   avatar: string
   finished: boolean
   genderPreference: Gender

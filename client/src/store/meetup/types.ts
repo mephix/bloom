@@ -26,4 +26,5 @@ export interface DateObject {
   roomUrl: string
   token: string
   end: number
+  start: number
 }

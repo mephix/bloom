@@ -1,9 +1,11 @@
 import styled from 'styled-components'
 import { WaitingContainer } from '../styled'
+import hiddenIcon from 'assets/images/icons/hidden.svg'
 
 export const CountDownContainer = styled(WaitingContainer)`
   justify-content: flex-start;
   position: fixed;
+  z-index: 10;
 `
 export const CountDownInfo = styled.div`
   color: #c8c8c8;
@@ -37,6 +39,7 @@ export const VideoFrame = styled.iframe`
   height: calc(100% - 50px - 60px);
   box-sizing: border-box;
   border: none;
+  width: 100%;
 `
 
 export const VideoHeader = styled.header`
@@ -44,6 +47,28 @@ export const VideoHeader = styled.header`
   display: flex;
   align-items: center;
   background: black;
+`
+
+export const BlindContainer = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50px;
+  height: calc(100% - 50px - 60px - 66px);
+  /* background: url(${hiddenIcon}) no-repeat center center / 100px, black; */
+`
+
+export const BlindTitle = styled.div`
+  color: white;
+  font-size: 2rem;
+  margin-top: 150px;
+  text-align: center;
+`
+export const BlindText = styled.div`
+  color: #a3a3a3;
+  margin-top: 10px;
+  padding: 0 30px;
+  text-align: center;
 `
 
 export const FirstNameSpan = styled.div`

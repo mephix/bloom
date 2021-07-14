@@ -66,6 +66,7 @@ export const UserBlock: FC<UserBlockProps> = ({
           defaultSrc={placeholderImage}
           src={avatar || placeholderImage}
           alt="avatar"
+          transform="c_thumb,g_face,h_60,w_60"
         />
         <UserInfo>
           <span>{name}</span>

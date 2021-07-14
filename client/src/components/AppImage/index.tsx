@@ -6,6 +6,7 @@ import {
   useRef,
   useState
 } from 'react'
+import { ImageService } from 'services/image.service'
 
 export interface AppImageProps
   extends DetailedHTMLProps<
@@ -13,6 +14,8 @@ export interface AppImageProps
     HTMLImageElement
   > {
   defaultSrc: string
+  src: string
+  transform?: string
 }
 
 const placeholderSkeleton = {
@@ -32,7 +35,12 @@ const unmountedStyle = {
   animationFillMode: 'forwards'
 }
 
-export const AppImage: FC<AppImageProps> = ({ defaultSrc, src, ...rest }) => {
+export const AppImage: FC<AppImageProps> = ({
+  defaultSrc,
+  src,
+  transform,
+  ...rest
+}) => {
   const [loaded, setLoaded] = useState(false)
   const img = useRef<any>(null)
 
@@ -55,7 +63,12 @@ export const AppImage: FC<AppImageProps> = ({ defaultSrc, src, ...rest }) => {
           display: !loaded ? 'none' : 'inline-block'
         }}
       >
-        <img {...rest} ref={img} src={src} alt={rest.alt} />
+        <img
+          {...rest}
+          ref={img}
+          src={ImageService.transform(src, transform)}
+          alt={rest.alt}
+        />
       </div>
 
       {!loaded && (

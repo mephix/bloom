@@ -7,7 +7,7 @@ import {
   IonTabs
 } from '@ionic/react'
 import { useStatusBar } from 'hooks/status-bar.hook'
-import { Redirect, Route } from 'react-router'
+import { Redirect, Route, Switch } from 'react-router'
 import { heartOutline, home, personOutline } from 'ionicons/icons'
 import { useTabContext } from './TabContext'
 import { Profile } from 'pages/Main/Profile'
@@ -23,16 +23,18 @@ export const MainRoutes = () => {
     <IonTabs>
       <IonRouterOutlet animated={false}>
         <TabContextProvider value={value}>
-          <Route exact path="/waitingroom">
-            <WaitingRoom />
-          </Route>
-          <Route path="/matches">
-            <Matches />
-          </Route>
-          <Route path="/profile">
-            <Profile />
-          </Route>
-          <Redirect to="/waitingroom" />
+          <Switch>
+            <Route exact path="/waitingroom">
+              <WaitingRoom />
+            </Route>
+            <Route path="/matches">
+              <Matches />
+            </Route>
+            <Route path="/profile">
+              <Profile />
+            </Route>
+            <Redirect to="/waitingroom" />
+          </Switch>
         </TabContextProvider>
       </IonRouterOutlet>
       <IonTabBar hidden={tabHidden} color="primary" slot="bottom">

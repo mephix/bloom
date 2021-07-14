@@ -14,7 +14,7 @@ import { MeetupService } from 'services/meetup.service'
 import { UserService } from 'services/user.service'
 import { useAppDispatch, useAppSelector } from 'store'
 import { setAppState } from 'store/app'
-import { selectCurrentDate } from 'store/meetup'
+import { selectBlindDate, selectCurrentDate } from 'store/meetup'
 import { Logger } from 'utils'
 import { FullScreen } from '../styled'
 import { CountDown } from './CountDown'
@@ -25,6 +25,7 @@ import {
   VideoFrame,
   VideoHeader
 } from './styled'
+import { BlindScreen } from './BlindScreen'
 
 const logger = new Logger('Video', 'red')
 
@@ -37,13 +38,19 @@ const COUNT_DOWN = 10
 export const Video = () => {
   const dispatch = useAppDispatch()
   const currentDate = useAppSelector(selectCurrentDate)
+  const blindDate = useAppSelector(selectBlindDate)
   // const defaultEndDateTime = Date.now() + 10 * 60 * 60 * 1000
   const videoFrameRef = useRef<HTMLIFrameElement>(null)
   const [dailyObj, setDailyObj] = useState<DailyCall | null>(null)
-  const [timeoutObject] = useState<{ current: null | NodeJS.Timeout }>({
-    current: null
+  const [timeoutObject] = useState<{
+    black: null | NodeJS.Timeout
+    blind: null | NodeJS.Timeout
+  }>({
+    black: null,
+    blind: null
   })
   const [visibleCountDown, setVisibleCountDown] = useState(true)
+  const [visibleBlindScreen, setVisibleBlindScreen] = useState(true)
   const [dateEnding, setDateEnding] = useState(false)
   const timeout = useMemo(() => Date.now() + COUNT_DOWN * 1000, [])
   const { hideTabs } = useContext(TabContext)
@@ -57,11 +64,15 @@ export const Video = () => {
     logger.log('CountDown End')
     if (!dailyObj) {
       logger.error('No dailyObj!')
-      if (timeoutObject.current) clearTimeout(timeoutObject.current)
+      if (timeoutObject.black) clearTimeout(timeoutObject.black)
+      if (timeoutObject.blind) clearTimeout(timeoutObject.blind)
+
       return dispatch(setAppState('WAITING'))
     }
     if (!currentDate?.dateId) {
-      if (timeoutObject.current) clearTimeout(timeoutObject.current)
+      if (timeoutObject.black) clearTimeout(timeoutObject.black)
+      if (timeoutObject.blind) clearTimeout(timeoutObject.blind)
+
       dispatch(setAppState('WAITING'))
       return UserService.setFree(true)
     }
@@ -69,22 +80,40 @@ export const Video = () => {
       currentDate.dateId
     )
     if (!available) {
-      if (timeoutObject.current) clearTimeout(timeoutObject.current)
+      if (timeoutObject.black) clearTimeout(timeoutObject.black)
+      if (timeoutObject.blind) clearTimeout(timeoutObject.blind)
       return
     }
     setVisibleCountDown(false)
     dailyObj.setLocalAudio(true)
+    dailyObj.setLocalVideo(true)
+
     MeetupService.setCurrentDateTimeField('timeJoin')
   }, [dailyObj, dispatch, currentDate, timeoutObject])
 
-  const startDate = useCallback(async () => {
-    console.log('end', currentDate?.end!)
+  const setupBlindDate = useCallback(() => {
+    const dateStartTime = currentDate?.start!
     const dateEndTime = currentDate?.end!
+    const timeTilDateSecondHalf = calcTimeTilDateSecondHalf(
+      dateStartTime,
+      dateEndTime
+    )
+    console.log('time till second half', timeTilDateSecondHalf)
+    timeoutObject.blind = setTimeout(() => {
+      console.log('blinc ended!')
+      setVisibleBlindScreen(false)
+    }, timeTilDateSecondHalf)
+  }, [currentDate, timeoutObject])
+
+  const startDate = useCallback(async () => {
+    const dateEndTime = currentDate?.end!
+    if (blindDate) setupBlindDate()
+    else setVisibleBlindScreen(false)
     const tenSecondsBeforeEnd = dayjs(dateEndTime * 1000)
       .subtract(10, 'seconds')
       .diff(dayjs())
 
-    timeoutObject.current = setTimeout(() => {
+    timeoutObject.black = setTimeout(() => {
       setDateEnding(true)
       console.log('end date 10 sec')
     }, tenSecondsBeforeEnd)
@@ -97,21 +126,33 @@ export const Video = () => {
     })
     daily.on('joined-meeting', () => {
       daily.setLocalAudio(false)
+      daily.setLocalVideo(false)
+      // daily.startRecording()
     })
     daily.on('left-meeting', () => {
-      if (timeoutObject.current) clearTimeout(timeoutObject.current)
+      if (timeoutObject.black) clearTimeout(timeoutObject.black)
+      if (timeoutObject.blind) clearTimeout(timeoutObject.blind)
+      // daily.stopRecording()
       dispatch(setAppState('RATING'))
       MeetupService.setCurrentDateTimeField('timeLeft')
     })
 
     daily.join({ url: roomUrl })
     setDailyObj(daily)
-  }, [videoFrameRef, currentDate, dispatch, timeoutObject])
+  }, [
+    videoFrameRef,
+    currentDate,
+    dispatch,
+    timeoutObject,
+    setupBlindDate,
+    blindDate
+  ])
 
   useEffect(() => {
     hideTabs()
     startDate()
   }, [startDate, hideTabs])
+  console.log('current date', currentDate)
 
   return (
     <FullScreen>
@@ -149,10 +190,21 @@ export const Video = () => {
         title="date-video"
         ref={videoFrameRef}
         allow="camera; microphone; fullscreen; autoplay; display-capture;"
-        height="100%"
-        width="100%"
       ></VideoFrame>
+      {visibleBlindScreen && <BlindScreen />}
       <LeaveVideoButton onClick={endDate}>Leave date</LeaveVideoButton>
     </FullScreen>
   )
+}
+
+function calcTimeTilDateSecondHalf(dateStart: number, dateEnd: number): number {
+  const start = dayjs(dateStart * 1000)
+  const end = dayjs(dateEnd * 1000)
+  console.log(start.format(), end.format())
+  const startEndDiff = end.diff(start)
+  const dateHalf = start.add(startEndDiff / 2, 'milliseconds')
+  console.log(dateHalf.format())
+  const timeTilHalf = dateHalf.diff(dayjs())
+  console.log(timeTilHalf)
+  return timeTilHalf > 0 ? timeTilHalf : 0
 }

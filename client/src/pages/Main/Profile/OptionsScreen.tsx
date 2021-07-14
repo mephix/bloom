@@ -26,6 +26,7 @@ export const OptionsScreen = () => {
       genderPreference: gender,
       agePreferences: { low: ageRange.lower, high: ageRange.upper }
     })
+    setLoading(false)
     history.goBack()
   }, [history, gender, ageRange])
 

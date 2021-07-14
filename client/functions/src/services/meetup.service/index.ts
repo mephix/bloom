@@ -72,14 +72,6 @@ export class MeetupService {
     await batch.commit()
   }
 
-  static async getUserById(id: string) {
-    const doc = await FirebaseService.db
-      .collection(USERS_COLLECTION)
-      .doc(id)
-      .get()
-    return { ...doc.data()!, id: doc.id } as any
-  }
-
   static async getFirstAvailableDate(userId: string) {
     const dates = await MeetupService.getUserAvailableDates(userId)
     console.log('All dates', dates)
@@ -135,6 +127,13 @@ export class MeetupService {
 
   static async createDate(forId: string, withId: string) {
     console.log('creatingDate......')
+    if (forId.includes('+')) {
+      const userRecord = await FirebaseService.auth
+        .getUserByPhoneNumber(forId)
+        .catch(err => console.error(err))
+      if (!userRecord || !userRecord.uid) return
+      forId = userRecord.uid
+    }
     const { roundStartTime, roundEndTime } =
       await DateClockService.currentRoundStartEnd()
     await FirebaseService.db.collection(DATES_COLLECTION).add({
@@ -148,7 +147,8 @@ export class MeetupService {
   }
 
   static async addDateCard(dateId: string, date: any) {
-    const withUser = await MeetupService.getUserById(date.with)
+    const withUser = await UserService.getUserById(date.with)
+    if (!withUser) return
     const card = {
       userId: withUser.id,
       firstName: withUser.firstName,
@@ -223,6 +223,7 @@ export class MeetupService {
   }
 
   static async initEventProspects(userId: string, prospects: UserCard[]) {
+    console.log(prospects)
     await FirebaseService.db
       .collection(USER_EVENTS_COLLECTION)
       .doc(userId)
@@ -247,7 +248,8 @@ export class MeetupService {
     const dateCards = []
     for (const dateDoc of datesDocs.docs) {
       const date = { id: dateDoc.id, ...dateDoc.data() } as any
-      const withUser = await MeetupService.getUserById(date.with)
+      const withUser = await UserService.getUserById(date.with)
+      if (!withUser) continue
       dateCards.push({
         userId: withUser.id,
         firstName: withUser.firstName,
@@ -275,20 +277,25 @@ export class MeetupService {
       async moveProspectTransaction => {
         const prospectsDoc = await moveProspectTransaction.get(prospectsRef)
         const collectionDoc = await moveProspectTransaction.get(collectionRef)
-        const prospects: FirebaseFirestore.DocumentReference[] =
+        const prospects: Array<FirebaseFirestore.DocumentReference | string> =
           prospectsDoc.data()?.prospects || []
         const collection: FirebaseFirestore.DocumentReference[] =
           collectionDoc.data()?.[to] || []
-        const newProspects = prospects.filter(
-          prospect => prospect.id !== prospectId
+        const newProspects = prospects.filter(prospect =>
+          typeof prospect === 'string'
+            ? prospect !== prospectId
+            : prospect.id !== prospectId
         )
+        console.log('NEW', newProspects)
         await moveProspectTransaction.update(prospectsRef, {
           prospects: newProspects
         })
         await moveProspectTransaction.update(collectionRef, {
           [to]: [
             ...collection,
-            FirebaseService.db.collection(USERS_COLLECTION).doc(prospectId)
+            prospectId.includes('+')
+              ? prospectId
+              : FirebaseService.db.collection(USERS_COLLECTION).doc(prospectId)
           ]
         })
 
@@ -368,8 +375,9 @@ export class MeetupService {
     if (dateCards.length >= 10)
       return this.initEventProspects(userId, dateCards)
     const prospects = await this.getProspects(userId)
+    console.log(prospects)
     const prospectCards = await mapProspectsToCards(prospects)
-    // console.log('updated cards', [...dateCards, ...prospectCards])
+
     await this.initEventProspects(userId, [...dateCards, ...prospectCards])
   }
 
@@ -378,7 +386,8 @@ export class MeetupService {
     user: any,
     roomUrl: string,
     token: string,
-    end: number
+    end: number,
+    start: number
   ) {
     return {
       dateId,
@@ -388,7 +397,8 @@ export class MeetupService {
       avatar: user.avatar,
       roomUrl,
       token,
-      end
+      end,
+      start
     }
   }
 

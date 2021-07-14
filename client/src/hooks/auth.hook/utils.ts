@@ -9,6 +9,7 @@ export function mapUserToUserData(user: any): UserData {
     finished: user.finished || userDataDefaults.finished,
     genderPreference:
       user.genderPreference || userDataDefaults.genderPreference,
-    agePreferences: user.agePreferences || userDataDefaults.agePreferences
+    agePreferences: user.agePreferences || userDataDefaults.agePreferences,
+    socialMedia: user.socialMedia || userDataDefaults.socialMedia
   }
 }

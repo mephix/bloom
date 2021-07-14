@@ -8,12 +8,13 @@ import {
 import { DocumentData, Timestamp } from 'firebaseService/types'
 import { store } from 'store'
 import { setCards, setCurrentDate, setMatches } from 'store/meetup'
-import { setFree, setHere, updateUserData } from 'store/user'
+import { setFinished, setFree, setHere, updateUserData } from 'store/user'
 import { Ages, Gender } from 'store/user/types'
 // import difference from 'lodash/difference'
 import equal from 'fast-deep-equal'
 import { UserMatch } from './matches.service/types'
 import { Logger } from 'utils'
+import { ImageService } from './image.service'
 // import store from 'store'
 
 const ENTITY_NOT_FOUND_ERROR = 'Requested entity was not found.'
@@ -28,6 +29,7 @@ interface InitUser {
 
 interface UserDataUpdate {
   bio?: string
+  socialMedia?: string
   avatar?: string
   genderPreference?: Gender
   agePreferences?: Ages
@@ -63,12 +65,8 @@ export class UserService {
     })
   }
   static async updateAvatar(image: File): Promise<void> {
-    const storageRef = FirebaseService.storage.ref()
-    const [, type] = image.type.split('/')
-    const avatarFileRef = storageRef.child(`${this.id}.${type}`)
-    await avatarFileRef.put(image)
-    const avatarUrl = await avatarFileRef.getDownloadURL()
-    this.updateUserData({ avatar: avatarUrl })
+    const imageId = await ImageService.upload(image)
+    this.updateUserData({ avatar: imageId })
   }
 
   static updateUserData(data: UserDataUpdate) {
@@ -128,8 +126,6 @@ export class UserService {
     }
   }
 
-  // static async create
-
   static setWaitStartTime() {
     this.updateUserData({ waitStartTime: FirebaseService.time.now() })
   }
@@ -148,8 +144,44 @@ export class UserService {
       .onSnapshot(onEvent)
   }
 
+  static subscribeOnStatus() {
+    const onStatus = (event: DocumentData) => {
+      const currentFinished = store.getState().user.data.finished
+      const { finished } = event.data()
+      if (finished !== currentFinished) {
+        store.dispatch(setFinished(!!finished))
+        if (finished) store.dispatch(setHere(false))
+      }
+    }
+    return FirebaseService.db
+      .collection(USER_STATUSES_COLLECTION)
+      .doc(this.id)
+      .onSnapshot(onStatus)
+  }
+
   static setPhoneNumber(phone: string) {
     this.phoneNumber = phone
+  }
+
+  static async saveFcmToken(token: string) {
+    const statusRef = FirebaseService.db
+      .collection(USER_STATUSES_COLLECTION)
+      .doc(this.id)
+    const statusDoc = await statusRef.get()
+    const status = statusDoc.data()
+    if (!status) {
+      return statusRef.set({
+        here: false,
+        free: true,
+        finished: false,
+        notifications: {
+          token
+        }
+      })
+    }
+    const notifications = status.notifications
+    if (!notifications) return statusRef.update({ notifications: { token } })
+    statusRef.update({ notifications: { ...notifications, token } })
   }
 
   static async tryRestoreUser(): Promise<DocumentData | null> {
@@ -193,28 +225,3 @@ function updateMatches(matches: UserMatch[]) {
   const diff = equal(matches, prevMatches)
   if (!diff) return store.dispatch(setMatches(matches))
 }
-
-// const restoreUserQuery = await db
-//         .collection(RESTORE_USERS_COLLECTION)
-//         .where('phone', '==', register.phone.trim())
-//         .get()
-//       const [restoreUserDoc] = restoreUserQuery.docs
-//       if (restoreUserDoc) {
-//         const restoreUser = restoreUserDoc.data()
-//         await userRef.set({
-//           firstName: restoreUser.firstName,
-//           age: restoreUser.age,
-//           gender: restoreUser.gender
-//         })
-//         user.setUser({
-//           id: userId,
-//           firstName: restoreUser.firstName
-//         })
-//         user.updateUserData({
-//           bio: restoreUser.bio || '',
-//           avatar: restoreUser.avatar || '',
-//           genderPreference: restoreUser.genderPreference,
-//           agePreferences: restoreUser.agePreferences,
-//           email: restoreUserDoc.id
-//         })
-//         return user.setAuth('authorized')

@@ -5,7 +5,6 @@ import { FC, useCallback, useMemo, useState } from 'react'
 import { PhoneNumberService } from 'services/phone.number.service'
 import { Screen } from 'wrappers/Screen'
 import { UserBlock } from './UserBlock'
-import copy from 'copy-to-clipboard'
 import { useHistory } from 'react-router'
 import { UserInfo } from '.'
 import { MatchType } from 'services/matches.service/types'
@@ -40,15 +39,21 @@ export const MatchesList: FC<MatchesListProps> = ({ setUserProfile }) => {
     async (userId: string, dateId: string, type: MatchType) => {
       switch (type) {
         case 'both': {
-          const phoneNumber = await PhoneNumberService.getUserPhoneNumber(
-            userId
-          )
-          if (!phoneNumber)
+          const contact = await PhoneNumberService.getUserContact(userId)
+          if (!contact)
             return showError(
-              'Opps.. there was an error while getting the phone number'
+              "Opps.. there was an error while retrieving the user's contact"
             )
-          copy(phoneNumber)
-          showInfo(`Phone number ${phoneNumber} copied to clipboard`)
+          if (contact.type === 'phone') {
+            PhoneNumberService.interactWithPhoneNumber(contact.data)
+            showInfo(`Phone number ${contact.data} copied to clipboard`)
+          } else {
+            PhoneNumberService.copy(contact.data)
+            showInfo(
+              `User contact ${contact.data} has been copied to the clipboard.`
+            )
+          }
+
           break
         }
         case 'unknown': {

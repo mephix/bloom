@@ -1,4 +1,9 @@
-import { FirebaseService, USERS_COLLECTION } from '../../firebaseService'
+import {
+  FirebaseService,
+  RESTORE_USERS_COLLECTION,
+  USERS_COLLECTION
+} from '../../firebaseService'
+import { userConverter } from '../../firebaseService/converters'
 import { CardType, MatchType, UserCard, UserMatch } from './types'
 
 export const PROSPECTS_LIMIT = 3
@@ -8,21 +13,71 @@ export async function mapProspectsToCards(
 ): Promise<UserCard[]> {
   const prospectCards = []
   prospects = prospects.slice(0, PROSPECTS_LIMIT)
-  // console.log('pros', prospects)
   for (const userRef of prospects) {
     if (!userRef) continue
-    const userDoc = await userRef.get()
-    const user = userDoc.data()
-    if (!user) continue
-    prospectCards.push({
-      userId: userDoc.id,
-      firstName: user.firstName,
-      avatar: user.avatar || '',
-      bio: user.bio || '',
-      type: CardType.Prospect
-    })
+
+    const card = await mapCardByRef(userRef)
+    if (!card) continue
+    prospectCards.push(card)
   }
   return prospectCards
+}
+
+export async function mapCardByRef(
+  ref: FirebaseFirestore.DocumentReference | string
+): Promise<UserCard | undefined> {
+  if (typeof ref === 'string') {
+    const userRecord = await FirebaseService.auth
+      .getUserByPhoneNumber(ref)
+      .catch(err => console.error(err))
+    if (userRecord && userRecord.uid) {
+      const userDoc = await FirebaseService.db
+        .collection(USERS_COLLECTION)
+        .doc(userRecord.uid)
+        .withConverter(userConverter)
+        .get()
+      const user = userDoc.data()
+      if (!user) return
+      if (!user.avatar) return
+      return {
+        userId: ref,
+        firstName: user.firstName,
+        avatar: user.avatar,
+        bio: user.bio || '',
+        type: CardType.Prospect
+      }
+    }
+
+    const users = await FirebaseService.db
+      .collection(RESTORE_USERS_COLLECTION)
+      .withConverter(userConverter)
+      .where('phone', '==', ref)
+      .limit(1)
+      .get()
+    const [userDoc] = users.docs
+    const user = userDoc.data()
+    if (!user) return
+    if (!user.avatar) return
+    return {
+      userId: ref,
+      firstName: user.firstName,
+      avatar: user.avatar,
+      bio: user.bio || '',
+      type: CardType.Prospect
+    }
+  } else {
+    const userDoc = await ref.withConverter(userConverter).get()
+    const user = userDoc.data()
+    if (!user) return
+    if (!user.avatar) return
+    return {
+      userId: user.id,
+      firstName: user.firstName,
+      avatar: user.avatar,
+      bio: user.bio || '',
+      type: CardType.Prospect
+    }
+  }
 }
 
 export function getMatchType(myMatch: boolean, otherMatch: boolean): MatchType {

@@ -3,14 +3,20 @@ import {
   DATES_COLLECTION,
   doc,
   FirebaseService,
+  PHONE_NUMBERS_COLLECTION,
   PROSPECTS_COLLECTION,
+  USERS_COLLECTION,
   USER_EVENTS_COLLECTION,
   USER_STATUSES_COLLECTION
 } from './firebaseService'
 import { ConferenceService } from './services/conference.service'
 import { MeetupService } from './services/meetup.service'
-import { CardType, UserCard } from './services/meetup.service/types'
-import { getMatchType, PROSPECTS_LIMIT } from './services/meetup.service/utils'
+import { UserCard } from './services/meetup.service/types'
+import {
+  getMatchType,
+  mapCardByRef,
+  PROSPECTS_LIMIT
+} from './services/meetup.service/utils'
 import { UserService } from './services/user.service'
 
 export const onProspectsUpdate = functions.firestore
@@ -45,8 +51,9 @@ export const onDateWrite = functions.firestore
     if (!date.accepted) return MeetupService.addDateCard(dateDoc.id, date)
     const forUserStatusRef = MeetupService.getUserStatusRef(date.for)
     const withUserStatusRef = MeetupService.getUserStatusRef(date.with)
-    const forUser = await MeetupService.getUserById(date.for)
-    const withUser = await MeetupService.getUserById(date.with)
+    const forUser = await UserService.getUserById(date.for)
+    const withUser = await UserService.getUserById(date.with)
+    if (!forUser || !withUser) return
     let roomUrl = date.roomUrl
     if (!roomUrl) {
       roomUrl = await ConferenceService.makeConferenceRoom(date.start, date.end)
@@ -93,7 +100,8 @@ export const onDateWrite = functions.firestore
         withUser,
         roomUrl,
         forToken,
-        date.end.seconds
+        date.end.seconds,
+        date.start.seconds
       )
     })
     batch.update(withUserEventsRef, {
@@ -102,7 +110,8 @@ export const onDateWrite = functions.firestore
         forUser,
         roomUrl,
         withToken,
-        date.end.seconds
+        date.end.seconds,
+        date.start.seconds
       )
     })
     await batch.commit()
@@ -133,14 +142,52 @@ export const acceptDate = functions.https.onCall(
   }
 )
 
-export const blockMatch = functions.https.onCall(async dateId => {
+export const blockMatch = functions.https.onCall(async (dateId, context) => {
+  const userId = context.auth?.uid
+  if (!userId) return
   const dateRef = FirebaseService.db.collection(DATES_COLLECTION).doc(dateId)
   const dateDoc = await dateRef.get()
   const date = dateDoc.data()
   if (!date) return console.error('no date!')
-  await dateRef.update({ blocked: true })
+  const affiliation = date.for === userId ? 'for' : 'with'
+  await dateRef.update({ blocked: true, blockedBy: affiliation })
   await MeetupService.deleteMatchForUsers(dateId, date.with, date.for)
 })
+
+export const allowPhoneNumber = functions.https.onCall(
+  async (otherUser, context) => {
+    const userId = context.auth?.uid
+    if (!userId) return
+    const phoneNumber = (await FirebaseService.auth.getUser(userId))
+      .phoneNumber!
+    UserService.allowMyPhoneNumber(userId, phoneNumber, otherUser)
+  }
+)
+
+export const requestPhoneNumber = functions.https.onCall(
+  async (userId, context) => {
+    try {
+      const requesterId = context.auth?.uid!
+      const userDoc = await FirebaseService.db
+        .collection(USERS_COLLECTION)
+        .doc(userId)
+        .get()
+      const socialMedia = userDoc.data()!.socialMedia
+      if (socialMedia) return { type: 'media', data: socialMedia }
+      const phoneNumberDoc = await FirebaseService.db
+        .collection(PHONE_NUMBERS_COLLECTION)
+        .doc(userId)
+        .get()
+      const phoneNumberData = phoneNumberDoc.data()!
+      if (!phoneNumberData.allow.includes(requesterId)) return null
+
+      return { type: 'phone', data: phoneNumberDoc.data()!.phone }
+    } catch (err) {
+      console.error(err)
+      return null
+    }
+  }
+)
 
 export const heartMatch = functions.https.onCall(async (dateId, context) => {
   const userId = context.auth?.uid
@@ -177,7 +224,7 @@ export const moveProspects = functions.https.onCall(
   async ({ id, matches, createDate }, context): Promise<void> => {
     const userId = context.auth?.uid
     if (!userId) return
-    if (createDate) await MeetupService.createDate(id, userId)
+    if (matches && createDate) await MeetupService.createDate(id, userId)
     const addUserRef = await MeetupService.moveProspect(
       userId,
       id,
@@ -201,16 +248,7 @@ export const moveProspects = functions.https.onCall(
       return
     }
 
-    const userDoc = await addUserRef.get()
-    const user = userDoc.data()
-    if (!user) return
-    const card: UserCard = {
-      userId: userDoc.id,
-      firstName: user.firstName,
-      avatar: user.avatar || '',
-      bio: user.bio || '',
-      type: CardType.Prospect
-    }
+    const card = await mapCardByRef(addUserRef)
 
     eventProspects.push(card)
     await FirebaseService.db
@@ -240,7 +278,6 @@ export const onUserStatusUpdate = functions.firestore
     if (!status.here || !status.free) return
     const availableDate = await MeetupService.getFirstAvailableDate(userId)
     console.log('available date', availableDate)
-    // todo: refactor
     if (!availableDate) return
 
     let roomUrl = availableDate.roomUrl
@@ -252,8 +289,9 @@ export const onUserStatusUpdate = functions.firestore
       await availableDate.ref.update({ roomUrl })
     }
 
-    const forUser = await MeetupService.getUserById(userId)
-    const withUser = await MeetupService.getUserById(availableDate.userId)
+    const forUser = await UserService.getUserById(userId)
+    const withUser = await UserService.getUserById(availableDate.userId)
+    if (!forUser || !withUser) return
 
     const forToken = await ConferenceService.getToken(forUser.firstName)
     const withToken = await ConferenceService.getToken(withUser.firstName)
@@ -272,7 +310,8 @@ export const onUserStatusUpdate = functions.firestore
         withUser,
         roomUrl,
         forToken,
-        availableDate.end.seconds
+        availableDate.end.seconds,
+        availableDate.start.seconds
       )
     })
     batch.update(withUserEventsRef, {
@@ -281,7 +320,8 @@ export const onUserStatusUpdate = functions.firestore
         forUser,
         roomUrl,
         withToken,
-        availableDate.end.seconds
+        availableDate.end.seconds,
+        availableDate.start.seconds
       )
     })
     await batch.commit()

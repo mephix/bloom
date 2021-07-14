@@ -4,7 +4,8 @@ import { RootState } from 'store'
 import { DateNightInfo, DateObject, UserCard } from './types'
 
 export interface MeetupState {
-  loading: boolean
+  blindDates: boolean
+  matchesLoading: boolean
   matches: UserMatch[]
   cards: UserCard[]
   dateNightInfo: Omit<DateNightInfo, 'timeTilDateNightEnd'>
@@ -12,7 +13,8 @@ export interface MeetupState {
 }
 
 const initialState: MeetupState = {
-  loading: false,
+  blindDates: false,
+  matchesLoading: false,
   matches: [],
   cards: [],
   dateNightInfo: {
@@ -28,7 +30,7 @@ export const meetupSlice = createSlice({
   reducers: {
     setMatches: (store, action: PayloadAction<UserMatch[]>) => {
       store.matches = action.payload
-      store.loading = false
+      store.matchesLoading = false
     },
     setDateNightInfo: (store, action: PayloadAction<DateNightInfo>) => {
       store.dateNightInfo = action.payload
@@ -44,6 +46,9 @@ export const meetupSlice = createSlice({
     },
     shiftCards: store => {
       store.cards.shift()
+    },
+    setBlindDates: (store, action: PayloadAction<boolean>) => {
+      store.blindDates = action.payload
     }
   }
 })
@@ -54,28 +59,20 @@ export const {
   startDateNight,
   setCurrentDate,
   setCards,
-  shiftCards
+  shiftCards,
+  setBlindDates
 } = meetupSlice.actions
 
 export const selectMatches = (state: RootState) => state.meetup.matches
-export const selectMatchesLoading = (state: RootState) => state.meetup.loading
+export const selectMatchesLoading = (state: RootState) =>
+  state.meetup.matchesLoading
 export const selectCards = (state: RootState) => state.meetup.cards
 export const selectIsDateNight = (state: RootState) =>
   state.meetup.dateNightInfo.currentDateNight
 export const selectCurrentDate = (state: RootState) => state.meetup.currentDate
+export const selectBlindDate = (state: RootState) => state.meetup.blindDates
 export const selectTimeTilDateNight = (state: RootState) =>
   state.meetup.dateNightInfo.timeTilNextDateNight
-
-// export const selectAuth = (state: RootState) => state.user.auth
-
-// export const incrementIfOdd =
-//   (amount: number): AppThunk =>
-//   (dispatch, getState) => {
-//     const currentValue = selectCount(getState())
-//     if (currentValue % 2 === 1) {
-//       dispatch(incrementByAmount(amount))
-//     }
-//   }
 
 export * from './actions'
 
