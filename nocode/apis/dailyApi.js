@@ -98,6 +98,7 @@ async function makeRoom ({ nbf, exp }) {
         autojoin: true,
         enable_screenshare: false,
         enable_chat: true,
+        // start_cloud_recording: true,
       },
     }
   })

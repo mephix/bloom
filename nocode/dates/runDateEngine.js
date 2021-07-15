@@ -1,10 +1,10 @@
 /*
 SET THESE PARAMS
 */
-let DAY = '2021-06-28'
+let DAY = '2021-07-12'
 let HOUR = 19
-let SLOT = 6
-let RERUN = true
+let SLOT = 5
+let RERUN = false
 let CUTOFF = 0.00      // >0 makes the dateEngine more picky.
 let useTestIds = false   // `false` for real rounds.
 
@@ -70,7 +70,7 @@ async function runDateEngine() {
   let idsOfUsersHere
   if (useTestIds) {
     // Only use this option for testing.
-    idsOfUsersHere = [3,4] // [1052,1051,1050,1049,1081,1080,1076,1075,]
+    idsOfUsersHere = [3,4,664,670] // [1052,1051,1050,1049,1081,1080,1076,1075,]
     // "id":4,"Email":"amel.assioua@gmail.com","First Name":"Amel"
     // "id":836,"Email":"female_straight_25_SF@bloom.com","First Name":"Anastasia"
     // "id":837,"Email":"female_straight_33_LA@bloom.com","First Name":"Christine"

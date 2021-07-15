@@ -1,5 +1,5 @@
 // Parameter to update.
-const today = '2021-06-29'
+const today = '2021-07-06'
 const dev = '-dev' // '' // 
 
 // Other parameters.

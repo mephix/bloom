@@ -24,6 +24,12 @@ function postDateToFirebase(date) {
     'end':   new Date(date.endTime),
     'room': date.dailyRoomURL,
     'active': true,
+
+    // The following is ONLY FOR TEST DATES
+    // // !! temp set `active` false and add `rate` so testers can see the date in Activity !!
+    // 'active': false,
+    // 'rate': { for: { heart: false }, with: { heart: false } },
+
     // Start with accepted=true, and later on don't set it.
     'accepted': true,
     'for': date.for,

@@ -9,10 +9,12 @@ function fireMatchEngine (users) {
   // of signals, acts like an overall signal weight.
   const subScores = {
     // Match people of their gender preference.
+    // !! CHANGED for Chattrbox to 0 !!
     'gender': { transform: z => z, weight: 1, score: [] },
     // Match people of their age preference.
     // Allow leeway of 10 years beyond their min or max.
-    'age': { transform: z => z, weight: 1, score: [], params: { T: 10 } },
+    // !! CHANGED for Chattrbox to 21 !!
+    'age': { transform: z => z, weight: 1, score: [], params: { T: 21 } },
     // Don't match someone they've dated already.
     'dated': { transform: z => !z, weight: 1, score: [] },
     // Match more with someone they've liked.

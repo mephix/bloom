@@ -11,7 +11,7 @@ const consoleColorLog = require('../utils/consoleColorLog.js')
 /*
  * PARAMETERS TO SET
  */
-today = '2021-07-01'
+today = '2021-07-13'
 const dev = '-dev' // '' //
 
 runFireProspectEngine()
@@ -19,13 +19,26 @@ runFireProspectEngine()
 async function runFireProspectEngine() {
 
   // Load users.
-  let users = loadLocally('Users-dev', today)
+  let currentUsers = loadLocally('Users-dev', today)
+  let currentIds = currentUsers.map(u => u.id)
+
+  // Add Likes Nexts & Dated.
+  currentUsers = addLikesNextsDatesLocally(currentUsers, today)
+
+  // Load old users and make their phone their id.
+  let restoreUsers = loadLocally('RestoreUsers', today)
+  restoreUsers = restoreUsers
+    .filter(u => u.phone)
+    .map(u => {
+      u.id = u.phone
+      return u
+    })
+
+  // Merge the two sets of users
+  let users = [...currentUsers, ...restoreUsers]
 
   // Fill in missing profile fields with best guesses.
   users = users.map(setFireProfileDefaults)
-
-  // Add Likes Nexts & Dated.
-  users = addLikesNextsDatesLocally(users, today)
 
   // Map field names for shared use of `prospectEngine`.
   let usersOldFieldNames = fireMapFieldNames(users)
@@ -41,7 +54,7 @@ async function runFireProspectEngine() {
   // Post prospects to Firebase.
   // Max 500 writes allowed in a batch.
   const batch = firestoreApi.db.batch()
-  let fireIds = Object.keys(score)
+  let fireIds = currentUsers.map(u => u.id) // Object.keys(score)
   const MAX_WRITES = 500
   const N_BATCHES = Math.ceil(fireIds.length / MAX_WRITES)
   for (let batchNumber=1; batchNumber <= N_BATCHES; batchNumber++) {
@@ -52,9 +65,17 @@ async function runFireProspectEngine() {
       // because we want people to first see people who have liked them already.
       let prospects = Object.keys(score[fireId]).slice(0,100)
 
-      // Convert person & their prospects to refs.
+      // Convert person & their prospects to refs or phone numbers
+      // depending on whether they are from Users-dev or RestoreUsers.
       const ref = firestoreApi.db.collection('Prospects-dev').doc(fireId)
-      prospects = prospects.map(p => firestoreApi.db.collection('Users-dev').doc(p))
+      prospects = prospects.map(p => {
+        if (currentIds.includes(p)) return firestoreApi.db.collection('Users-dev').doc(p)
+        // At the moment, we could show restored users by phone, but for safety, don't do it yet.
+        // else return null
+        else 
+          return restoreUsers.find(u => u.id === p)?.phone || null
+      })
+      prospects = prospects.filter(p => p !== null)
 
       // Add prospects to batch.
       const firstName = users.filter(u => u.id === fireId)[0].firstName

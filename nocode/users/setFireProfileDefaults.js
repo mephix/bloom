@@ -35,5 +35,9 @@ function setFireProfileDefaults(user) {
   // Default location is set to LA.
   user['zipcode'] = Number(user['zipcode']) || 90210
 
+  if (user['likes'] === undefined) user['likes'] = []
+  if (user['nexts'] === undefined) user['nexts'] = []
+  if (user['dated'] === undefined) user['dated'] = []
+
   return user
 }

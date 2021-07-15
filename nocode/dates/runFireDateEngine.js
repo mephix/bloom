@@ -1,19 +1,22 @@
 /*
  * SET THESE PARAMS
  */
-let DAY = '2021-07-01'
-let HOUR = '14'
-let SLOT = 9
-let DURING_SLOT = true  // If running during the slot, only match free people.
+let DAY = '2021-07-13'
+let HOUR = '18'
+let SLOT = 3
+let DURING_SLOT = false  // If running during the slot, only match free people.
                         // If running before the slot, match everyone.
-let useTestIds = true  // `false` for real rounds.
+let useTestIds = false  // `false` for real rounds.
 
-let UPDATE_LIKES_LIVE = true
+// `true` for real rounds.
+// Can be set to `false` for making multiple dates between X and Y.
+let UPDATE_LIKES_LIVE = false
 
 // Give people a second chance on dates that didn't actually work.
-let ONLY_COUNT_DATES_THEY_BOTH_JOINED = false
+let ONLY_COUNT_DATES_THEY_BOTH_JOINED = true
 
-// Use the local dates file as a safeguard.
+// Use the local dates file as a safeguard. `true` for real rounds.
+// Can be set to `false` for making multiple dates between X and Y.
 let UPDATE_DATED_FROM_OUTPUT_FILE = true
 
 // Matches are scored 0-100.
@@ -79,31 +82,52 @@ runFireDateEngine()
 
 async function runFireDateEngine() {
 
-  // Get users here.
-  let docs
+  // Get which users are here.
+  let statusDocs
   if (!useTestIds) {
     // A real round should always use this option.
-    let querySnapshot = await db.collection('Users-dev').where('here', '==', true).get()
-    docs = querySnapshot.docs
+    let querySnapshot = await db.collection('UserStatuses').where('here', '==', true).get()
+    statusDocs = querySnapshot.docs.map(doc =>  { return { id: doc.id, ...doc.data() } })
   } else {
     // Only use this option for testing.
-    testIds = [
-      'DItEowVmZMdMANWR4Q6E01v7SVv1', // Tasha
-      'Kfo4fhNY9bfLoFdIMdmXNPu7UB22', // Andy
+    let hereIds = [
+      // 'DItEowVmZMdMANWR4Q6E01v7SVv1', // Tasha
+      // 'Kfo4fhNY9bfLoFdIMdmXNPu7UB22', // Andy
       // 'rENCRuRmF6gBxAQsS4E1qqna23L2', // Amel
-      // '4IizDnXG2WfJsAT8gbZUDVL78S42', // John
+      'TTfy4kFpc2gKZ7aOb1F7VUrDx4F3', // Lauren
+      '4IizDnXG2WfJsAT8gbZUDVL78S42', // John
     ]
-    docs = await Promise.all(testIds.map((id => db.collection('Users-dev').doc(id).get())))
+    let userStatusDefaults = { here: true, free: true, finished: false}
+    statusDocs = hereIds.map(id =>  { return { id, ...userStatusDefaults } })
   }
-  let usersHere = docs.map(doc => { return { id: doc.id, ...doc.data() } })
 
   // Filter out users who are finished.
-  if (usersHere) {
-    console.log(`Out of ${usersHere.length} people Here,`)
-    usersHere = usersHere.filter(u => !u.finished)
-    console.log(`${usersHere.length} people are Here and not finished:`)
-    console.log(`${usersHere.map(u => u.firstName).join(', ')}`)
+  if (statusDocs.length > 0) {
+    console.log(`Out of ${statusDocs.length} people Here,`)
+    statusDocs = statusDocs.filter(u => !u.finished)
+    console.log(`${statusDocs.length} people are Here and not finished.`)
   }
+
+  // If running during the slot, filter for only people who are free.
+  // These will be people who are already in a date.
+  // This means we *dont* want to filter this way if running before the slot starts.
+  // (as people will be not free due to their date in the current slot).
+  if (DURING_SLOT) {
+    console.log(`Out of ${statusDocs.length} people Here and not Finished,`)
+    statusDocs = statusDocs.filter(u => u.free)
+    console.log(`${statusDocs.length} people are Free.`)
+  }
+  if (statusDocs.length === 0) {
+    consoleColorLog(`Nobody is Here, Free and not Finished. Exiting`, 'red')
+    return
+  }
+
+  // Get the profiles of the users who are here.
+  let usersHere = await Promise.all(statusDocs.map(async statusDoc => {
+    let userDoc = await db.collection('Users-dev').doc(statusDoc.id).get()
+    return { ...statusDoc, ...userDoc.data() }
+  }))
+  console.log(`${usersHere.map(u => u.firstName).join(', ')}`)
 
   // Fill in missing profile fields with best guesses.
   usersHere = usersHere.map(setFireProfileDefaults)
@@ -112,7 +136,7 @@ async function runFireDateEngine() {
   if (UPDATE_LIKES_LIVE) {
     usersHere = await addLikesNextsDatesLive(db, usersHere, ONLY_COUNT_DATES_THEY_BOTH_JOINED)
   } else {
-    usersHere = addLikesNextsDatesLocally(usersHere, DAY)
+    usersHere = addLikesNextsDatesLocally(usersHere, DAY, ONLY_COUNT_DATES_THEY_BOTH_JOINED)
   }
 
   // As a backup, read dates already created during this date night from the csv file.
@@ -124,16 +148,6 @@ async function runFireDateEngine() {
       if (userFor) userFor.dated ? userFor.dated.push(d.with) : userFor.dated = [d.with]
       if (userWith) userWith.dated ? userWith.dated.push(d.for) : userWith.dated = [d.for]
     })
-  }
-
-  // If running during the slot, filter for only people who are free.
-  // These will be people who are already in a date.
-  // This means we *dont* want to filter this way if running before the slot starts.
-  // (as people will be not free due to their date in the current slot).
- if (DURING_SLOT) {
-    console.log(`Out of ${usersHere.length} people Here,`)
-    usersHere = usersHere.filter(u => u.free)
-    console.log(`${usersHere.length} people are Free.`)
   }
 
   // Prioritize Users (by waitStartTime and posivibes).
@@ -162,8 +176,6 @@ async function runFireDateEngine() {
     postDatesToFirebase(dates, params)
     
   } else {
-
     consoleColorLog(`No dates created. Exiting`, 'red')
-
   }
 }
