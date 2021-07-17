@@ -25,7 +25,7 @@ function fireDateEngine (people, matches) {
       let pi = people[ids[i]].priority
       let pj = people[ids[j]].priority
 
-      // Match benefit is the (symmetric) match score weighted by priorities.
+      // Match benefit (symmetric) is the match score weighted by priorities.
       // Minus sign converts benefits to costs.
       P[i][j] = - M[i][j] * pi * pj
     }

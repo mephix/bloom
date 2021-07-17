@@ -77,6 +77,24 @@
             ],
         },
         {
+            "name": "print user csv for Amel",
+            "program": "${workspaceFolder}/nocode/db/print user csv for Amel.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
+        {
+            "name": "run Fire Date Engine Dev",
+            "program": "${workspaceFolder}/nocode/dates/runFireDateEngineDev.js",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
+        {
             "name": "run Fire Match Engine",
             "program": "${workspaceFolder}/nocode/matches/runFireMatchEngine.js",
             "type": "pwa-node",
@@ -124,15 +142,6 @@
         {
             "name": "run Fire Prospect Engine",
             "program": "${workspaceFolder}/nocode/prospects/runFireProspectEngine.js",
-            "type": "pwa-node",
-            "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-        },
-        {
-            "name": "run Fire Date Engine Dev",
-            "program": "${workspaceFolder}/nocode/dates/runFireDateEngineDev.js",
             "type": "pwa-node",
             "request": "launch",
             "skipFiles": [

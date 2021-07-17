@@ -1,29 +1,12 @@
 var { DateTime } = require('luxon')
 
-// `roundMinutes` is the length of each round in minutes.
-// Should always be a divisor of 60 (eg 1,2,3,4,5,6,10...)
-const roundMinutes = 2
-
-// `intervalSeconds` is the length of each interval in seconds.
-// Should always be a divisor of 60.
-const intervalSeconds = 4
-
-// `maxActiveInterval` is the maximum interval at which the matchmaker is
-// active.
-const maxActiveInterval = 99
-
-// `delay` is the number of intervals after being willing to send invites
-// to matches with a particular score that the matchmaker should accept
-// invites from matches of this score.
-const delay = 5
-
 // Debugging convenience functions.
 const LOG = true
 const printTime = (h,m,s,mm) =>
   `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}:${mm}`
 
 // Calculate time remaining until the next round starts, in seconds.
-function timeTilNextRound() {
+function timeTilNextRound(roundMinutes) {
   const { hour, minute, second, millisecond} = DateTime.now().toObject()
   const remainingMinutes = roundMinutes - (minute % roundMinutes)
   const remainingTime = remainingMinutes*60 - (second + millisecond/1000)
@@ -35,7 +18,7 @@ function timeTilNextRound() {
 }
 
 // Calculate time remaining until the next interval starts, in seconds.
-function timeTilNextInterval() {
+function timeTilNextInterval(intervalSeconds) {
   const { hour, minute, second, millisecond} = DateTime.now().toObject()
   const remainingSeconds = intervalSeconds - (second % intervalSeconds)
   const remainingTime = remainingSeconds - millisecond/1000
@@ -47,7 +30,7 @@ function timeTilNextInterval() {
 }
 
 // Calculate which is the current number interval of the round.
-function currentInterval() {
+function currentInterval(roundMinutes, intervalSeconds) {
   const { hour, minute, second, millisecond} = DateTime.now().toObject()
   const elapsedMinutes = minute % roundMinutes
   const elapsedSeconds = elapsedMinutes*60 + second + millisecond/1000
@@ -60,7 +43,7 @@ function currentInterval() {
   return elapsedIntervals
 }
 
-function currentRoundStartEnd () {
+function currentRoundStartEnd (roundMinutes) {
   const now = DateTime.now()
   const { year, month, day, hour, minute, second, millisecond} = now.toObject()
   const elapsedMillis = (minute % roundMinutes)*60000 + second*1000 + millisecond
@@ -82,12 +65,33 @@ function currentRoundStartEnd () {
   return { roundStartTime, roundEndTime }
 }
 
-module.exports = {
-  timeTilNextDateNight: () => 0,
-  timeTilNextRound,
-  timeTilNextInterval,
-  currentRoundStartEnd,
-  currentInterval,
-  maxActiveInterval,
-  delay,
+function dateClock(
+  // `roundMinutes` is the length of each round in minutes.
+  // Should always be a divisor of 60 (eg 1,2,3,4,5,6,10...)
+  roundMinutes = 5,
+
+  // `intervalSeconds` is the length of each interval in seconds.
+  // Should always be a divisor of 60.
+  intervalSeconds = 1,
+
+  // `maxActiveInterval` is the maximum interval at which the matchmaker is
+  // active.
+  maxActiveInterval = 99,
+
+  // `delay` is the number of intervals after being willing to send invites
+  // to matches with a particular score that the matchmaker should accept
+  // invites from matches of this score.
+  delay = 0,
+) {
+  return {
+    timeTilNextDateNight: () => 0,
+    timeTilNextRound: () => timeTilNextRound(roundMinutes),
+    timeTilNextInterval: () => timeTilNextInterval(intervalSeconds),
+    currentInterval: () => currentInterval(roundMinutes, intervalSeconds),
+    currentRoundStartEnd: () => currentRoundStartEnd(roundMinutes),
+    maxActiveInterval,
+    delay,
+  }
 }
+
+module.exports = dateClock
