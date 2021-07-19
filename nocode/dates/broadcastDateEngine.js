@@ -2,29 +2,29 @@ const munkres = require('munkres-js')
 
 module.exports = broadcastDateEngine
 
-function broadcastDateEngine (people, matches, score_min) {
+function broadcastDateEngine (people, matches, users, score_min) {
   let dates = []
   if (people.length < 2) return dates
-  let ids = Object.keys(matches)
-  let rows = Object.keys(ids)
 
-  for (let i=0; i<rows.length; i++) {
-    for (let j=i+1; j<rows.length; j++) {
-      // Get match score in each direction.
-      let mij = matches[ids[i]]?.[ids[j]] || 0
-      let mji = matches[ids[j]]?.[ids[i]] || 0
+  // `people` is a map, and `matches` is an object double-keyed by ids.
+  for (let pid of people.keys()) {
+    for (let mid of Object.keys(matches)) {
+      // Get match score in both directions.
+      let mij = matches[pid]?.[mid] || 0
+      let mji = matches[mid]?.[pid] || 0
       // Construct the symmetric match score.
       // Divide by 100 once because both match scores are scaled 0-100.
       let score = mij * mji / 100
 
-      if (score >= score_min) {
-        // The date is 'with' the gentleman and 'for' the lady.
-        let [f, w] = people[ids[i]].gender === 'f' ? [i,j] : [j,i]
+      // Check that the score is positive (to avoid corner cases like someone
+      // getting a date with themselves) in addition to being greater than the
+      // minimum score.
+      if (score > 0 && score >= score_min) {
         dates.push({
-          for: ids[f],
-          with: ids[w],
-          forName: people[ids[f]].firstName,
-          withName: people[ids[w]].firstName,
+          for: mid,
+          with: pid,
+          forName: users.get(mid).firstName,
+          withName: users.get(pid).firstName,
           score,
         })
       }

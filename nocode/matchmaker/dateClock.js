@@ -1,7 +1,7 @@
 var { DateTime } = require('luxon')
 
 // Debugging convenience functions.
-const LOG = true
+const LOG = false
 const printTime = (h,m,s,mm) =>
   `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}:${mm}`
 
@@ -43,6 +43,17 @@ function currentInterval(roundMinutes, intervalSeconds) {
   return elapsedIntervals
 }
 
+// Calculate which is the current number interval of the round.
+function currentRound(roundMinutes) {
+  const { hour, minute, second, millisecond} = DateTime.now().toObject()
+  const roundNumber = Math.floor(minute / roundMinutes)
+  if (LOG) {
+    // console.log(`Time now ${printTime(hour,minute,second,millisecond)}`)
+    // console.log(`currentRound: ${roundNumber}`)
+  }
+  return roundNumber
+}
+
 function currentRoundStartEnd (roundMinutes) {
   const now = DateTime.now()
   const { year, month, day, hour, minute, second, millisecond} = now.toObject()
@@ -52,8 +63,8 @@ function currentRoundStartEnd (roundMinutes) {
   const roundStartTime = now.minus(elapsedMillis).toISO({ suppressMilliseconds: true, suppressSeconds: true })
   const roundEndTime = now.plus(remainingMillis).toISO({ suppressMilliseconds: true, suppressSeconds: true })
   if (LOG) {
-    console.log(`Time now:     ${now.toISO()}`)
     console.log(`Round starts: ${roundStartTime}`)
+    console.log(`Time now:     ${now.toISO()}`)
     console.log(`Round ends:   ${roundEndTime}`)
   }
   // // Convert to '2021-02-02T19:00-07:00' format
@@ -88,6 +99,7 @@ function dateClock(
     timeTilNextRound: () => timeTilNextRound(roundMinutes),
     timeTilNextInterval: () => timeTilNextInterval(intervalSeconds),
     currentInterval: () => currentInterval(roundMinutes, intervalSeconds),
+    currentRound: () => currentRound(roundMinutes),
     currentRoundStartEnd: () => currentRoundStartEnd(roundMinutes),
     maxActiveInterval,
     delay,

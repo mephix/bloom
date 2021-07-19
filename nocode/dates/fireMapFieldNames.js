@@ -5,7 +5,7 @@ function fireMapFieldNames(users) {
     'id': u.id,
     'Posivibes': u.posivibes,
     'Gender': u.gender.toUpperCase(),
-    'Gender Preference': u.genderPreference.toUpperCase(),
+    'Gender Preference': (typeof u.genderPreference === "string" ? u.genderPreference : u.genderPreference.join('')).toUpperCase(),
     'Age': u.age,
     'Age Preference Low': u.agePreferences.low,
     'Age Preference High': u.agePreferences.high,
